@@ -93,6 +93,13 @@ export default function LoginPage() {
                     Dengan masuk, Anda menyetujui Ketentuan Layanan dan Kebijakan Privasi kami.
                 </p>
             </div>
+            {/* Temporary Debugger */}
+            <div className="hidden">
+                {/* @ts-ignore */}
+            </div>
         </div>
     );
 }
+
+// Ensure the component is used to trigger the console log
+import DebugEnv from '@/components/DebugEnv';
