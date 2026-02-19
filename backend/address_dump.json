@@ -1,0 +1,35 @@
+[
+  {
+    "id": "cmlrjzs5c0009ig6kl5pwpy7f",
+    "shippingAddress": {
+      "name": "Solusi IT",
+      "phone": "081280212068",
+      "address": "Metland Cibitung BLOK A5 24"
+    },
+    "user": {
+      "name": "Saritem"
+    }
+  },
+  {
+    "id": "cmlrhwcwj0007igeszkvvy7uu",
+    "shippingAddress": {
+      "name": "Par wanto",
+      "phone": "081280212068",
+      "address": "Metland Cibitung Blok S6 / 34"
+    },
+    "user": {
+      "name": "Parwanto"
+    }
+  },
+  {
+    "id": "cmlrg606p000gig38fsk5vevz",
+    "shippingAddress": {
+      "name": "Par wanto",
+      "phone": "081280212068",
+      "address": "Metland Cibitung Blok S3/23"
+    },
+    "user": {
+      "name": "Parwanto"
+    }
+  }
+]
