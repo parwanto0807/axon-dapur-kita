@@ -11,6 +11,7 @@ import Image from 'next/image';
 import { useCartStore } from '@/store/cartStore';
 import { useAuthStore } from '@/store/authStore';
 import { formatPrice } from '@/utils/format';
+import { getImageUrl } from '@/utils/image';
 
 
 interface Product {
@@ -34,11 +35,7 @@ interface Product {
     isActive: boolean;
 }
 
-const getImageUrl = (path: string | null) => {
-    if (!path) return null;
-    if (path.startsWith('http')) return path;
-    return `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '')}${path}`;
-};
+
 
 export default function ProductPage() {
     const params = useParams();

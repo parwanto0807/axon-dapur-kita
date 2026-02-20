@@ -13,6 +13,7 @@ import Link from "next/link";
 import axios from "axios";
 import clsx from 'clsx';
 import { formatPrice } from "@/utils/format";
+import { getImageUrl } from "@/utils/image";
 
 interface Shop {
   id: string;
@@ -43,11 +44,7 @@ interface Category {
   slug: string;
 }
 
-const getImageUrl = (path: string | null) => {
-  if (!path) return null;
-  if (path.startsWith('http')) return path;
-  return `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '')}${path}`;
-};
+
 
 // ... (existing getCategoryStyle function)
 const getCategoryStyle = (slug: string) => {

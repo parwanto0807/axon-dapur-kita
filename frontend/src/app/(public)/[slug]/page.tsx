@@ -6,6 +6,7 @@ import axios from 'axios';
 import { MapPin, Clock, Star, Phone, Share2, Info, Store } from 'lucide-react';
 import Image from 'next/image';
 import { formatPrice } from '@/utils/format';
+import { getImageUrl } from '@/utils/image';
 import ShareDialog from '@/components/ui/ShareDialog';
 
 interface Product {
@@ -31,11 +32,7 @@ interface Shop {
     products: Product[];
 }
 
-const getImageUrl = (path: string | null) => {
-    if (!path) return null;
-    if (path.startsWith('http')) return path;
-    return `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '')}${path}`;
-};
+
 
 export default function ShopPage() {
     const params = useParams();

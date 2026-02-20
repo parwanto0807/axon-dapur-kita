@@ -6,13 +6,9 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Trash2, Minus, Plus, ShoppingBag, ArrowRight, Store } from 'lucide-react';
 import { formatPrice } from '@/utils/format';
+import { getImageUrl } from '@/utils/image';
 
-const getImageUrl = (path: string | null) => {
-    if (!path) return null;
-    if (path.startsWith('http')) return path;
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-    return `${apiBaseUrl.replace('/api', '')}${path}`;
-};
+
 
 export default function CartPage() {
     const { items, updateQuantity, removeItem, totalPrice, totalItems } = useCart();

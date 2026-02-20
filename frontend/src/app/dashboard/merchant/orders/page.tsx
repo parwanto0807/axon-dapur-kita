@@ -25,6 +25,7 @@ import Link from 'next/link';
 import clsx from 'clsx';
 import MerchantBottomNav from '@/components/merchant/MerchantBottomNav';
 import { formatPrice, formatShortDate } from '@/utils/format';
+import { getImageUrl } from '@/utils/image';
 import { useMerchantSocket } from '@/hooks/useMerchantSocket';
 import { useAuthStore } from '@/store/authStore';
 import { toast } from 'react-hot-toast';
@@ -65,14 +66,7 @@ interface Order {
     };
 }
 
-const getImageUrl = (path: string | null) => {
-    if (!path) return null;
-    if (path.startsWith('http')) return path;
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-    const baseUrl = apiBaseUrl.replace('/api', '');
-    const cleanPath = path.startsWith('/') ? path : `/${path}`;
-    return `${baseUrl}${cleanPath}`;
-};
+
 
 export default function MerchantOrdersPage() {
     const { user } = useAuthStore();
