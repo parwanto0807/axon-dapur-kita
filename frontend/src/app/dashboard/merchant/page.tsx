@@ -65,6 +65,13 @@ export default function MerchantDashboardPage() {
     const [newOrderNotification, setNewOrderNotification] = useState<RealtimeOrder | null>(null);
     const [unreadCount, setUnreadCount] = useState(0);
     const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+    const [notifPermission, setNotifPermission] = useState<string>('unknown');
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setNotifPermission(Notification.permission);
+        }
+    }, []);
 
     // ── Handle incoming real-time order ──────────────────────────────────────
     const handleNewOrder = useCallback((order: RealtimeOrder) => {
@@ -111,6 +118,17 @@ export default function MerchantDashboardPage() {
             console.error('Error fetching stats:', error);
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleTestFCM = async () => {
+        try {
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const response = await axios.post(`${apiBaseUrl}/notifications/test-fcm`, {}, { withCredentials: true });
+            toast.success(response.data.message || 'Notifikasi percobaan dikirim!');
+        } catch (error: any) {
+            const message = error.response?.data?.message || 'Gagal mengirim notifikasi percobaan';
+            toast.error(message);
         }
     };
 
@@ -233,8 +251,24 @@ export default function MerchantDashboardPage() {
                             <ConnectionStatusBadge status={connectionStatus} lastSync={lastSync} reconnectCount={reconnectCount} />
                         </div>
                         <p className="text-gray-400 text-[8px] sm:text-sm font-medium">Ringkasan aktivitas tokomu hari ini.</p>
+                        <div className="flex items-center gap-2 mt-1">
+                            <span className={clsx(
+                                "text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider",
+                                notifPermission === 'granted' ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                            )}>
+                                Notif: {notifPermission}
+                            </span>
+                        </div>
                     </div>
                     <div className="mt-4 sm:mt-0 flex space-x-2 sm:space-x-3 w-full sm:w-auto">
+                        <button
+                            onClick={handleTestFCM}
+                            className="flex-1 sm:flex-none flex items-center justify-center space-x-1.5 sm:space-x-2 bg-orange-50 text-orange-600 px-3 py-2 sm:px-4 sm:py-2 rounded-2xl border border-orange-100 hover:bg-orange-100 transition-colors"
+                            title="Tes Notifikasi Push"
+                        >
+                            <Bell className="h-3 w-3 sm:h-4 sm:w-4" />
+                            <span className="font-bold text-[8px] sm:text-sm">Tes Notif</span>
+                        </button>
                         <Link href="/dashboard/merchant/profile" className="flex-1 sm:flex-none flex items-center justify-center space-x-1.5 sm:space-x-2 bg-white text-gray-700 px-3 py-2 sm:px-4 sm:py-2 rounded-2xl border border-gray-100 hover:bg-gray-50 transition-colors">
                             <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
                             <span className="font-bold text-[8px] sm:text-sm">Pengaturan</span>

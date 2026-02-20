@@ -81,6 +81,8 @@ export const updateFCMToken = async (req, res) => {
             where: { id: req.user.id },
             data: { fcmToken }
         });
+        
+        console.log(`[FCM] Token updated for user: ${req.user.name || req.user.id}`);
 
         res.json({ message: 'Token FCM berhasil diperbarui' });
     } catch (error) {
@@ -116,5 +118,34 @@ export const createNotification = async ({ userId, title, body, type, link }) =>
         return notification;
     } catch (error) {
         console.error('Error creating notification:', error);
+    }
+};
+
+/**
+ * TEST: Send a dummy FCM notification to the current user
+ */
+export const testFCM = async (req, res) => {
+    try {
+        const user = await prisma.user.findUnique({
+            where: { id: req.user.id },
+            select: { fcmToken: true, name: true }
+        });
+
+        if (!user?.fcmToken) {
+            return res.status(400).json({ message: 'Token FCM Anda tidak ditemukan di database. Pastikan sudah login di web.' });
+        }
+
+        console.log(`[FCM-TEST] Sending test push to ${user.name}...`);
+        const result = await sendPushNotification(
+            user.fcmToken, 
+            'Tes Notifikasi Axon', 
+            'Ini adalah notifikasi percobaan. Jika Anda melihat ini, FCM sudah jalan!', 
+            { type: 'TEST', link: '/dashboard' }
+        );
+
+        res.json({ message: 'Notifikasi percobaan berhasil dikirim!', result });
+    } catch (error) {
+        console.error('Error in testFCM:', error);
+        res.status(500).json({ message: 'Gagal mengirim notifikasi percobaan' });
     }
 };

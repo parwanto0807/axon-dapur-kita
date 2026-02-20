@@ -25,7 +25,7 @@ export const useBuyerSocket = (onOrderUpdate?: (order: any) => void, options: { 
         }
 
         const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
-        const socketUrl = typeof window !== 'undefined' ? window.location.origin : apiBaseUrl.replace('/api', '');
+        const socketUrl = apiBaseUrl.replace('/api', '');
 
         console.log('[BuyerSocket] Connecting to:', socketUrl);
 

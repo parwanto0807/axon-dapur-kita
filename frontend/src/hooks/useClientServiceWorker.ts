@@ -8,9 +8,9 @@ export function useClientServiceWorker() {
             console.log('PWA: Service Worker found in navigator');
             window.addEventListener('load', () => {
                 navigator.serviceWorker
-                    .register('/sw.js')
+                    .register('/firebase-messaging-sw.js')
                     .then((registration) => {
-                        console.log('PWA: Service Worker registered successfully with scope:', registration.scope);
+                        console.log('PWA: Unified Service Worker registered successfully with scope:', registration.scope);
                     })
                     .catch((registrationError) => {
                         console.error('PWA: Service Worker registration failed:', registrationError);

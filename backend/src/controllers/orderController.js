@@ -432,17 +432,21 @@ export const confirmPayment = async (req, res) => {
             shopName: updatedOrder.shop.name
         });
         
-        // Let's use the DB notification as the primary persistent record
-        await createNotification({
-            userId: order.shop.ownerId ? order.shop.ownerId : (await prisma.shop.findUnique({where:{id:order.shopId}})).ownerId, 
-            // Wait, we need ownerId. order.shop might not include ownerId if not included in query.
-            // createNotification handles finding user? No, it takes userId.
-            // We need to fetch shop owner.
-            title: 'Pembayaran Dikonfirmasi Buyer',
-            body: `Buyer ${req.user.name} telah mengonfirmasi pembayaran untuk Order #${order.id.slice(-6).toUpperCase()}`,
-            type: 'ORDER_PAYMENT',
-            link: `/dashboard/merchant/orders/${order.id}`
+        // Find shop owner to notify them
+        const shopOwner = await prisma.user.findFirst({
+            where: { shopId: order.shopId }
         });
+
+        if (shopOwner) {
+            console.log(`[OrderController] Creating payment notification for owner: ${shopOwner.id}`);
+            await createNotification({
+                userId: shopOwner.id,
+                title: 'Pembayaran Dikonfirmasi Buyer',
+                body: `Buyer ${req.user.name} telah mengonfirmasi pembayaran untuk Order #${order.id.slice(-6).toUpperCase()}`,
+                type: 'ORDER_PAYMENT',
+                link: `/dashboard/merchant/orders/${order.id}`
+            });
+        }
 
         res.json(updatedOrder);
 

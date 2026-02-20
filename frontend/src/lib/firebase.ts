@@ -18,9 +18,18 @@ const app = initializeApp(firebaseConfig);
 
 export const requestForToken = async () => {
     try {
+        if (typeof window === 'undefined') return;
+
+        // 1. Check for notification permission
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') {
+            console.log('[FCM] Notification permission not granted');
+            return null;
+        }
+
         const messaging = getMessaging(app);
         const currentToken = await getToken(messaging, {
-            vapidKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY // From .env.local
+            vapidKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
         });
 
         if (currentToken) {
@@ -32,10 +41,10 @@ export const requestForToken = async () => {
             );
             return currentToken;
         } else {
-            console.log('No registration token available. Request permission to generate one.');
+            console.log('No registration token available.');
         }
     } catch (err) {
-        console.log('An error occurred while retrieving token. ', err);
+        console.log('An error occurred while retrieving token: ', err);
     }
 };
 

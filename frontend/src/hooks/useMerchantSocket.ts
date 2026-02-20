@@ -32,7 +32,7 @@ interface UseMerchantSocketReturn {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
-const SOCKET_URL = typeof window !== 'undefined' ? window.location.origin : API_URL.replace('/api', '');
+const SOCKET_URL = API_URL.replace('/api', '');
 
 // Exponential backoff intervals: 30s, 60s, 120s
 const POLLING_INTERVALS = [30_000, 60_000, 120_000];
