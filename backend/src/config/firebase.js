@@ -6,14 +6,12 @@ import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Path to your service account JSON file
-// The user provided the path: d:\Project WebApp\online-shop\frontend\webapp-monorepo-management-ism-firebase-adminsdk-fbsvc-04a8e1c6ef.json
-// It's better to keep it in the backend or use an absolute path for now if it's outside.
-// I'll assume the path relative to project root or use the absolute path provided.
-
-const serviceAccountPath = 'd:/Project WebApp/online-shop/frontend/webapp-monorepo-management-ism-firebase-adminsdk-fbsvc-04a8e1c6ef.json';
+// We try to load from ENV variable first, then fallback to a relative path
+const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH || join(__dirname, '../../firebase-service-account.json');
 
 try {
-    const serviceAccount = JSON.parse(readFileSync(serviceAccountPath, 'utf8'));
+    const serviceAccountContent = readFileSync(serviceAccountPath, 'utf8');
+    const serviceAccount = JSON.parse(serviceAccountContent);
 
     admin.initializeApp({
         credential: admin.credential.cert(serviceAccount)
@@ -21,7 +19,8 @@ try {
 
     console.log('[Firebase] Admin SDK initialized successfully');
 } catch (error) {
-    console.error('[Firebase] Failed to initialize Admin SDK:', error.message);
+    console.warn('[Firebase] Warning: Failed to initialize Admin SDK. Push notifications will be disabled.', error.message);
+    console.info('[Firebase] Expected service account JSON at:', serviceAccountPath);
 }
 
 export const sendPushNotification = async (fcmToken, title, body, data = {}) => {

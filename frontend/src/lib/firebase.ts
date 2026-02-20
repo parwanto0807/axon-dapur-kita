@@ -4,12 +4,13 @@ import axios from "axios";
 
 // NOTE: These values must be provided by the user from Firebase Console
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
+    apiKey: "AIzaSyDOgJcM8nxoKJRKqCDm1ps1aZ9NPHoSYKM",
     authDomain: "webapp-monorepo-management-ism.firebaseapp.com",
     projectId: "webapp-monorepo-management-ism",
     storageBucket: "webapp-monorepo-management-ism.firebasestorage.app",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    messagingSenderId: "210071266940",
+    appId: "1:210071266940:web:a524d1288018f365554bf9",
+    measurementId: "G-JBZL8Z0WT8"
 };
 
 // Initialize Firebase

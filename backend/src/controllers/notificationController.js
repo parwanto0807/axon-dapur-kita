@@ -102,11 +102,14 @@ export const createNotification = async ({ userId, title, body, type, link }) =>
         // 2. Fetch user's FCM token
         const user = await prisma.user.findUnique({
             where: { id: userId },
-            select: { fcmToken: true }
+            select: { fcmToken: true, name: true }
         });
+
+        console.log(`[FCM] Checking token for user ${user?.name || userId}: ${user?.fcmToken ? 'Token found' : 'Token NOT found'}`);
 
         // 3. Send Push Notification if token exists
         if (user?.fcmToken) {
+            console.log(`[FCM] Attempting to send push to ${user.name}`);
             await sendPushNotification(user.fcmToken, title, body, { type, link: link || '' });
         }
 
