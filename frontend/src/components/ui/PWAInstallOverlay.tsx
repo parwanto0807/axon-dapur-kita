@@ -7,6 +7,7 @@ export default function PWAInstallOverlay() {
     const [isVisible, setIsVisible] = useState(false);
     const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
     const [mounted, setMounted] = useState(false);
+    const [debugInfo, setDebugInfo] = useState<any>({});
 
     useEffect(() => {
         setMounted(true);
@@ -19,17 +20,25 @@ export default function PWAInstallOverlay() {
 
         window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
-        // Small delay to ensure browser media queries are ready
+        // Use a longer delay to ensure all PWA checks are stable in production
         const timer = setTimeout(() => {
-            const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches
-                || (window.navigator as any).standalone
-                || document.referrer.includes('android-app://');
+            const isDMStandalone = window.matchMedia('(display-mode: standalone)').matches;
+            const isNavStandalone = (window.navigator as any).standalone === true;
+            const isRootStandalone = typeof window !== 'undefined' && window.location.search.includes('mode=standalone');
+            const isAndroidApp = typeof document !== 'undefined' && document.referrer.includes('android-app://');
 
-            console.log('PWA: Standalone check:', { isStandaloneMode });
+            const isStandaloneMode = isDMStandalone || isNavStandalone || isRootStandalone || isAndroidApp;
 
-            // Show overlay if NOT installed
-            setIsVisible(!isStandaloneMode);
-        }, 200);
+            // Mobile detection
+            const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+
+            console.log('PWA: Device Check:', { isMobile, isStandaloneMode });
+            setDebugInfo({ isDMStandalone, isNavStandalone, isRootStandalone, isAndroidApp, isStandaloneMode, isMobile });
+
+            // Show overlay ONLY if mobile AND NOT installed
+            setIsVisible(isMobile && !isStandaloneMode);
+        }, 1000);
 
         return () => {
             window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -113,6 +122,7 @@ export default function PWAInstallOverlay() {
                     >
                         Lanjutkan di Browser (Khusus Testing)
                     </button>
+
                 </div>
             </div>
 
