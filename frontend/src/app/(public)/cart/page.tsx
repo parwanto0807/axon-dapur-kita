@@ -45,15 +45,15 @@ export default function CartPage() {
 
     return (
         <div className="min-h-screen bg-gray-50 font-[family-name:var(--font-poppins)] pb-24">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <h1 className="text-2xl font-black text-gray-900 mb-8">Keranjang Belanja</h1>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
+                <h1 className="text-xl md:text-2xl font-black text-gray-900 mb-6 md:mb-8">Keranjang Belanja</h1>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     {/* Items List */}
                     <div className="lg:col-span-8 space-y-4">
                         {items.map((item) => (
-                            <div key={item.productId} className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center space-x-4">
-                                <div className="h-20 w-20 bg-gray-50 rounded-xl overflow-hidden flex-shrink-0 border border-gray-100">
+                            <div className="bg-white p-3 md:p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center space-x-3 md:space-x-4">
+                                <div className="h-16 w-16 md:h-20 md:w-20 bg-gray-50 rounded-xl overflow-hidden flex-shrink-0 border border-gray-100">
                                     <img
                                         src={getImageUrl(item.image) || ''}
                                         alt={item.name}
@@ -65,10 +65,10 @@ export default function CartPage() {
                                         <Store className="h-3 w-3 text-gray-400" />
                                         <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{item.shopId}</span>
                                     </div>
-                                    <h3 className="font-bold text-gray-900 truncate">{item.name}</h3>
-                                    <p className="text-sm font-bold text-[#1B5E20] mt-1">
+                                    <h3 className="text-sm font-bold text-gray-900 truncate">{item.name}</h3>
+                                    <p className="text-xs md:text-sm font-bold text-[#1B5E20] mt-0.5">
                                         {formatPrice(item.price)}
-                                        <span className="text-xs text-gray-400 font-normal ml-1">/{item.unit}</span>
+                                        <span className="text-[10px] md:text-xs text-gray-400 font-normal ml-1">/{item.unit}</span>
                                     </p>
                                 </div>
 
@@ -87,7 +87,7 @@ export default function CartPage() {
                                         >
                                             <Minus className="h-4 w-4" />
                                         </button>
-                                        <span className="w-8 text-center text-sm font-bold text-gray-900">{item.quantity}</span>
+                                        <span className="w-6 md:w-8 text-center text-xs md:text-sm font-bold text-gray-900">{item.quantity}</span>
                                         <button
                                             onClick={() => updateQuantity(item.productId, item.quantity + 1)}
                                             className="p-1 px-2 text-gray-600 hover:text-[#1B5E20]"
@@ -124,10 +124,10 @@ export default function CartPage() {
 
                             <button
                                 onClick={handleCheckout}
-                                className="w-full py-4 bg-[#1B5E20] text-white rounded-2xl font-bold hover:bg-green-800 transition shadow-lg shadow-green-100 flex items-center justify-center space-x-2"
+                                className="w-full py-3 md:py-4 bg-[#1B5E20] text-white rounded-2xl text-sm md:text-base font-bold hover:bg-green-800 transition shadow-lg shadow-green-100 flex items-center justify-center space-x-2"
                             >
                                 <span>Lanjut ke Checkout</span>
-                                <ArrowRight className="h-5 w-5" />
+                                <ArrowRight className="h-4 w-4 md:h-5 md:w-5" />
                             </button>
 
                             <p className="text-[10px] text-gray-400 text-center mt-4 font-medium uppercase tracking-widest">

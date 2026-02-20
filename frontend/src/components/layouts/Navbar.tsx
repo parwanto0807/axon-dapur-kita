@@ -9,6 +9,7 @@ import { useAuthStore } from '@/store/authStore';
 import { useCartStore } from '@/store/cartStore';
 import { useBuyerSocket } from '@/hooks/useBuyerSocket';
 import { formatPrice, formatDate, formatShortDate } from '@/utils/format';
+import { getImageUrl } from '@/utils/image';
 import axios from 'axios';
 
 interface Notification {
@@ -281,7 +282,7 @@ export default function Navbar() {
                                                         <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl border border-gray-100 bg-gray-50 overflow-hidden shrink-0">
                                                             {item.image ? (
                                                                 <img
-                                                                    src={item.image.startsWith('http') ? item.image : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '')}${item.image}`}
+                                                                    src={getImageUrl(item.image) || ''}
                                                                     alt={item.name}
                                                                     className="h-full w-full object-cover"
                                                                 />
@@ -311,6 +312,7 @@ export default function Navbar() {
                                                 </div>
                                                 <Link
                                                     href="/cart"
+                                                    onClick={() => setIsCartOpen(false)}
                                                     className="block w-full py-3 sm:py-3.5 bg-[#1B5E20] text-white text-center text-[10px] sm:text-xs font-bold rounded-2xl hover:bg-green-800 transition-all shadow-lg shadow-green-100 active:scale-95"
                                                 >
                                                     Lihat Keranjang Belanja

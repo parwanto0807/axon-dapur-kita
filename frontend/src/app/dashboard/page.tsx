@@ -335,10 +335,10 @@ export default function DashboardPage() {
                                             <div className={clsx(
                                                 "w-10 h-10 sm:w-20 sm:h-20 rounded-full flex items-center justify-center mb-1 sm:mb-3 transition-all duration-300 border shadow-sm",
                                                 isSelected
-                                                    ? `bg-white ${style.color} ${style.border} ring-2 ${style.ring} ring-offset-1 sm:ring-offset-2 scale-105`
-                                                    : "bg-white text-gray-400 border-gray-200 hover:border-gray-300 hover:shadow-md hover:scale-105 group-hover:text-gray-600"
+                                                    ? `${style.bg} ${style.color} ${style.border} ring-2 ${style.ring} ring-offset-1 sm:ring-offset-2 scale-105`
+                                                    : `${style.bg} ${style.color} ${style.border} opacity-80 hover:opacity-100 hover:shadow-md hover:scale-105 group-hover:text-gray-600`
                                             )}>
-                                                <Icon className={clsx("h-4 w-4 sm:h-8 sm:w-8 transition-colors", isSelected ? style.color : "text-gray-400 group-hover:text-gray-600")} />
+                                                <Icon className={clsx("h-4 w-4 sm:h-8 sm:w-8 transition-colors", isSelected ? style.color : style.color)} />
                                             </div>
                                             <span className={clsx(
                                                 "text-[9px] sm:text-xs font-bold text-center max-w-[40px] sm:max-w-[80px] leading-tight",
@@ -417,7 +417,7 @@ export default function DashboardPage() {
                                             >
                                                 <div className={clsx(
                                                     "p-4 rounded-2xl mb-3 transition-colors",
-                                                    isSelected ? "bg-white/10 text-white" : `bg-gray-50 ${style.color} group-hover:bg-gray-100`
+                                                    isSelected ? "bg-white/10 text-white" : `${style.bg} ${style.color} group-hover:opacity-80`
                                                 )}>
                                                     <Icon className="h-8 w-8" />
                                                 </div>

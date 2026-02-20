@@ -210,12 +210,12 @@ export default function ProductPage() {
                     <div className="md:col-span-7 space-y-6 px-4 md:px-0">
                         {/* Generic Info */}
                         <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm mt-4 md:mt-0">
-                            <h1 className="text-xl md:text-2xl font-bold text-gray-900 leading-snug">
+                            <h1 className="text-lg md:text-2xl font-bold text-gray-900 leading-tight">
                                 {product.name}
                             </h1>
 
                             <div className="mt-3 flex items-end justify-between">
-                                <p className="text-2xl md:text-3xl font-bold text-[#1B5E20]">
+                                <p className="text-xl md:text-3xl font-bold text-[#1B5E20]">
                                     {formatPrice(product.price)}
                                     {product.unit && <span className="text-sm text-gray-500 font-normal ml-1">/{product.unit.name}</span>}
                                 </p>
@@ -265,9 +265,9 @@ export default function ProductPage() {
                         </div>
 
                         {/* Description */}
-                        <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
-                            <h3 className="font-bold text-gray-900 mb-3">Deskripsi Produk</h3>
-                            <div className="prose prose-sm text-gray-600 leading-relaxed whitespace-pre-wrap">
+                        <div className="bg-white p-4 md:p-5 rounded-2xl border border-gray-100 shadow-sm">
+                            <h3 className="text-sm md:text-base font-bold text-gray-900 mb-3">Deskripsi Produk</h3>
+                            <div className="prose prose-sm text-gray-600 leading-relaxed whitespace-pre-wrap text-xs md:text-sm">
                                 {product.description || 'Tidak ada deskripsi.'}
                             </div>
                         </div>
@@ -298,17 +298,18 @@ export default function ProductPage() {
                                 <button
                                     onClick={() => handleQuantityChange('dec')}
                                     disabled={quantity <= 1}
-                                    className="p-3 text-gray-600 hover:text-[#1B5E20] disabled:opacity-30"
+                                    className="p-2 md:p-3 text-gray-600 hover:text-[#1B5E20] disabled:opacity-30"
                                 >
-                                    <Minus className="h-4 w-4" />
+                                    <ArrowLeft className="h-4 w-4 rotate-270" />
+                                    <Minus className="h-3 w-3 md:h-4 md:w-4" />
                                 </button>
                                 <span className="w-8 text-center font-semibold text-gray-900">{quantity}</span>
                                 <button
                                     onClick={() => handleQuantityChange('inc')}
                                     disabled={quantity >= product.stock}
-                                    className="p-3 text-gray-600 hover:text-[#1B5E20] disabled:opacity-30"
+                                    className="p-2 md:p-3 text-gray-600 hover:text-[#1B5E20] disabled:opacity-30"
                                 >
-                                    <Plus className="h-4 w-4" />
+                                    <Plus className="h-3 w-3 md:h-4 md:w-4" />
                                 </button>
                             </div>
                         )}
@@ -317,14 +318,14 @@ export default function ProductPage() {
                             <>
                                 <button
                                     onClick={handleAddToCart}
-                                    className="flex-1 md:flex-none md:w-40 py-3 border border-[#1B5E20] text-[#1B5E20] font-bold rounded-xl hover:bg-green-50 transition flex items-center justify-center space-x-2"
+                                    className="flex-1 md:flex-none md:w-40 py-2.5 md:py-3 border border-[#1B5E20] text-[#1B5E20] text-sm md:text-base font-bold rounded-xl hover:bg-green-50 transition flex items-center justify-center space-x-2"
                                 >
-                                    <ShoppingCart className="h-5 w-5" />
+                                    <ShoppingCart className="h-4 w-4 md:h-5 md:w-5" />
                                     <span>Keranjang</span>
                                 </button>
                                 <button
                                     onClick={handleBuyNow}
-                                    className="flex-1 md:flex-none md:w-48 py-3 bg-[#1B5E20] text-white font-bold rounded-xl hover:bg-green-800 transition"
+                                    className="flex-1 md:flex-none md:w-48 py-2.5 md:py-3 bg-[#1B5E20] text-white text-sm md:text-base font-bold rounded-xl hover:bg-green-800 transition"
                                 >
                                     Beli Langsung
                                 </button>
