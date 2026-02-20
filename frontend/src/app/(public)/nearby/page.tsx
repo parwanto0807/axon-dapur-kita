@@ -6,6 +6,7 @@ import axios from 'axios';
 import { clsx } from 'clsx';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import { getImageUrl } from '@/utils/image';
 
 // Dynamically import Leaflet components to avoid SSR errors
 const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { ssr: false });
@@ -70,12 +71,6 @@ export default function NearbyPage() {
         }).format(price);
     };
 
-    const getImageUrl = (url: string | null) => {
-        if (!url) return null;
-        if (url.startsWith('http')) return url;
-        return `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/uploads/${url}`;
-    };
-
     const handleScan = async () => {
         setIsScanning(true);
         setProducts([]);
@@ -93,7 +88,7 @@ export default function NearbyPage() {
                 setLocation({ lat: latitude, lng: longitude });
 
                 try {
-                    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/products/nearby`, {
+                    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api'}/products/nearby`, {
                         params: {
                             lat: latitude,
                             lng: longitude,
