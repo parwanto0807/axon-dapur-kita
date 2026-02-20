@@ -4,6 +4,7 @@ import {
     getNotifications,
     markAsRead,
     markAllAsRead,
+    updateFCMToken,
 } from '../controllers/notificationController.js';
 
 const router = express.Router();
@@ -11,6 +12,7 @@ const router = express.Router();
 router.use(protect);
 
 router.get('/', getNotifications);
+router.post('/fcm-token', updateFCMToken);
 router.patch('/read-all', markAllAsRead);
 router.patch('/:id/read', markAsRead);
 

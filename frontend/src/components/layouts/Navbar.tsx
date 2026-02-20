@@ -93,6 +93,11 @@ export default function Navbar() {
             fetchRecentOrders();
             fetchNotifications();
         }
+
+        // Listen for FCM manual refresh events
+        const handleRefresh = () => fetchNotifications();
+        window.addEventListener('refresh-notifications', handleRefresh);
+        return () => window.removeEventListener('refresh-notifications', handleRefresh);
     }, [isLoggedIn]);
 
     // Close dropdowns on outside click

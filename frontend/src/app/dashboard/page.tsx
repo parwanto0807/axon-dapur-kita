@@ -454,7 +454,7 @@ export default function DashboardPage() {
                             {products.length > 0 ? (
                                 products.map((product) => (
                                     <Link key={product.id} href={`/product/${product.id}`}>
-                                        <div className="group bg-white rounded-3xl overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 border border-gray-200 hover:border-transparent flex flex-col h-full relative">
+                                        <div className="group bg-white rounded-lg overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 border border-gray-200 hover:border-transparent flex flex-col h-full relative">
 
                                             {/* Image Container */}
                                             <div className="aspect-square bg-gray-50 relative overflow-hidden">

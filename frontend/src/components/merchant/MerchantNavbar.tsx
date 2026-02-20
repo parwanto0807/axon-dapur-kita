@@ -83,6 +83,11 @@ export default function MerchantNavbar({ onMenuClick }: { onMenuClick?: () => vo
 
     useEffect(() => {
         fetchNotifications();
+
+        // Listen for FCM manual refresh events
+        const handleRefresh = () => fetchNotifications();
+        window.addEventListener('refresh-notifications', handleRefresh);
+        return () => window.removeEventListener('refresh-notifications', handleRefresh);
     }, []);
 
     // Close dropdowns on outside click

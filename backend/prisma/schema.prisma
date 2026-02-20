@@ -21,6 +21,7 @@ model User {
     dateOfBirth DateTime?
     address     String? // Alamat domisili user
     role        Role      @default(USER)
+    fcmToken    String? // For Firebase Cloud Messaging push notifications
 
     // Relations
     shopId    String?   @unique
