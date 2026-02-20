@@ -415,10 +415,10 @@ export default function Home() {
           <div className="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-3xl max-h-[85vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-white z-10">
               <div>
-                <h3 className="text-xl font-black text-gray-900 flex items-center gap-2">
+                <h3 className="text-base sm:text-xl font-black text-gray-900 flex items-center gap-2">
                   Jelajahi Kategori
                 </h3>
-                <p className="text-sm text-gray-500">Temukan semua kebutuhan dapurmu disini</p>
+                <p className="text-[10px] sm:text-sm text-gray-500">Temukan semua kebutuhan dapurmu disini</p>
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
@@ -431,24 +431,24 @@ export default function Home() {
               </button>
             </div>
 
-            <div className="p-6 sm:p-8 overflow-y-auto custom-scrollbar">
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            <div className="p-4 sm:p-8 overflow-y-auto custom-scrollbar">
+              <div className="grid grid-cols-4 md:grid-cols-4 gap-2 sm:gap-4">
                 <button
                   onClick={() => { setSelectedCategory('all'); setIsModalOpen(false); }}
                   className={clsx(
-                    "flex flex-col items-center justify-center p-6 rounded-3xl border transition-all text-center h-full group",
+                    "flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl sm:rounded-3xl border transition-all text-center h-full group",
                     selectedCategory === 'all'
                       ? "bg-green-50 border-[#1B5E20] ring-1 ring-[#1B5E20]"
                       : "bg-white border-gray-100 hover:border-green-200 hover:bg-green-50/30 hover:shadow-lg"
                   )}
                 >
                   <div className={clsx(
-                    "p-4 rounded-2xl mb-3 transition-colors",
+                    "p-3 sm:p-4 rounded-xl sm:rounded-2xl mb-2 sm:mb-3 transition-colors",
                     selectedCategory === 'all' ? "bg-[#1B5E20] text-white" : "bg-gray-50 text-gray-400 group-hover:bg-green-100 group-hover:text-green-600"
                   )}>
-                    <Grid className="h-8 w-8" />
+                    <Grid className="h-6 w-6 sm:h-8 sm:w-8" />
                   </div>
-                  <span className={clsx("font-bold text-sm", selectedCategory === 'all' ? "text-[#1B5E20]" : "text-gray-700")}>Semua Produk</span>
+                  <span className={clsx("font-bold text-[9px] sm:text-sm", selectedCategory === 'all' ? "text-[#1B5E20]" : "text-gray-700")}>Semua Produk</span>
                 </button>
 
                 {categories.map((cat) => {
@@ -461,20 +461,20 @@ export default function Home() {
                       key={cat.id}
                       onClick={() => { setSelectedCategory(cat.slug); setIsModalOpen(false); }}
                       className={clsx(
-                        "flex flex-col items-center justify-center p-6 rounded-3xl border transition-all text-center h-full group",
+                        "flex flex-col items-center justify-center p-2 sm:p-6 rounded-2xl sm:rounded-3xl border transition-all text-center h-full group",
                         isSelected
                           ? "bg-gray-900 text-white border-gray-900 shadow-xl"
                           : "bg-white border-gray-100 hover:border-gray-200 hover:shadow-xl hover:-translate-y-1"
                       )}
                     >
                       <div className={clsx(
-                        "p-4 rounded-2xl mb-3 transition-colors",
+                        "p-3 sm:p-4 rounded-xl sm:rounded-2xl mb-2 sm:mb-3 transition-colors",
                         isSelected ? "bg-white/10 text-white" : `bg-gray-50 ${style.color} group-hover:bg-gray-100`
                       )}>
-                        <Icon className="h-8 w-8" />
+                        <Icon className="h-6 w-6 sm:h-8 sm:w-8" />
                       </div>
                       <span className={clsx(
-                        "font-bold text-sm",
+                        "font-bold text-[10px] sm:text-sm",
                         isSelected ? "text-white" : "text-gray-700"
                       )}>
                         {cat.name}

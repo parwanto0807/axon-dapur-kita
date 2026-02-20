@@ -135,10 +135,10 @@ export default function ShopPage() {
 
                         {/* Shop Info */}
                         <div className="mt-4 sm:mt-0 sm:ml-6 pb-6 flex-1">
-                            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{shop.name}</h1>
-                            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-2 text-sm text-gray-600">
+                            <h1 className="text-lg sm:text-3xl font-bold text-gray-900">{shop.name}</h1>
+                            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-2 text-[10px] sm:text-sm text-gray-600">
                                 <div className="flex items-center">
-                                    <MapPin className="h-4 w-4 mr-1" />
+                                    <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                                     <span>{shop.address || 'Lokasi belum diatur'}</span>
                                 </div>
                                 <div className="flex items-center">
@@ -174,9 +174,9 @@ export default function ShopPage() {
                 {/* Tabs / Nav */}
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-2">
                     <div className="flex border-b border-gray-100">
-                        <button className="px-4 py-3 border-b-2 border-[#1B5E20] text-[#1B5E20] font-bold text-sm">Beranda</button>
-                        <button className="px-4 py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm">Produk</button>
-                        <button className="px-4 py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm">Ulasan</button>
+                        <button className="px-4 py-3 border-b-2 border-[#1B5E20] text-[#1B5E20] font-bold text-[11px] sm:text-sm">Beranda</button>
+                        <button className="px-4 py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-[11px] sm:text-sm">Produk</button>
+                        <button className="px-4 py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-[11px] sm:text-sm">Ulasan</button>
                     </div>
                 </div>
             </div>
@@ -188,8 +188,8 @@ export default function ShopPage() {
                     <div className="lg:col-span-2 space-y-8">
                         {shop.description && (
                             <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                                <h3 className="font-bold text-gray-900 mb-2">Tentang Toko</h3>
-                                <p className="text-gray-600 text-sm leading-relaxed">{shop.description}</p>
+                                <h3 className="font-bold text-gray-900 mb-2 text-xs sm:text-base">Tentang Toko</h3>
+                                <p className="text-gray-600 text-[10px] sm:text-sm leading-relaxed">{shop.description}</p>
                             </div>
                         )}
 
@@ -213,13 +213,13 @@ export default function ShopPage() {
                                                 )}
                                             </div>
                                             <div className="p-4 flex flex-col flex-1">
-                                                <h4 className="font-bold text-gray-900 line-clamp-2 mb-1 text-sm sm:text-base">
+                                                <h4 className="font-bold text-gray-900 line-clamp-2 mb-1 text-[10px] sm:text-base">
                                                     {product.name}
                                                 </h4>
-                                                <p className="text-[#1B5E20] font-bold text-sm sm:text-[15px] mb-2">
+                                                <p className="text-[#1B5E20] font-bold text-[11px] sm:text-[15px] mb-2">
                                                     {formatPrice(product.price)}
                                                 </p>
-                                                <button className="mt-auto w-full py-2 bg-green-50 text-[#1B5E20] font-bold text-xs sm:text-sm rounded-lg hover:bg-green-100 transition">
+                                                <button className="mt-auto w-full py-2 bg-green-50 text-[#1B5E20] font-bold text-[10px] sm:text-sm rounded-lg hover:bg-green-100 transition">
                                                     + Keranjang
                                                 </button>
                                             </div>
@@ -244,8 +244,8 @@ export default function ShopPage() {
                                         <MapPin className="h-5 w-5 text-[#1B5E20]" />
                                     </div>
                                     <div>
-                                        <p className="text-sm font-bold text-gray-900">Jarak Maksimal</p>
-                                        <p className="text-gray-500 text-xs">{shop.maxDeliveryDistance} km dari lokasi toko</p>
+                                        <p className="text-[11px] sm:text-sm font-bold text-gray-900">Jarak Maksimal</p>
+                                        <p className="text-gray-500 text-[9px] sm:text-xs">{shop.maxDeliveryDistance} km dari lokasi toko</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start">
@@ -253,16 +253,16 @@ export default function ShopPage() {
                                         <Clock className="h-5 w-5 text-blue-600" />
                                     </div>
                                     <div>
-                                        <p className="text-sm font-bold text-gray-900">Jam Operasional</p>
-                                        <p className="text-gray-500 text-xs">08:00 - 17:00 WIB</p>
+                                        <p className="text-[11px] sm:text-sm font-bold text-gray-900">Jam Operasional</p>
+                                        <p className="text-gray-500 text-[9px] sm:text-xs">08:00 - 17:00 WIB</p>
                                     </div>
                                 </div>
                             </div>
 
                             {!shop.isOpen && (
                                 <div className="mt-6 p-3 bg-red-50 border border-red-100 rounded-xl text-center">
-                                    <p className="text-red-700 font-bold text-sm">Toko Sedang Tutup</p>
-                                    <p className="text-red-500 text-xs mt-1">Tidak menerima pesanan saat ini.</p>
+                                    <p className="text-red-700 font-bold text-[10px] sm:text-sm">Toko Sedang Tutup</p>
+                                    <p className="text-red-500 text-[9px] sm:text-xs mt-1">Tidak menerima pesanan saat ini.</p>
                                 </div>
                             )}
                         </div>
