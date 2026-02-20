@@ -15,6 +15,7 @@ import Link from 'next/link';
 import clsx from 'clsx';
 import { useBuyerSocket } from '@/hooks/useBuyerSocket';
 import { formatPrice, formatShortDate } from '@/utils/format';
+import { getImageUrl } from '@/utils/image';
 
 interface OrderItem {
     id: string;
@@ -246,29 +247,29 @@ export default function OrdersPage() {
                                         {/* Order Meta Info */}
                                         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
                                             <div className="flex items-center space-x-4">
-                                                <div className="h-12 w-12 bg-gray-100 rounded-2xl flex items-center justify-center text-gray-400 group-hover:bg-[#1B5E20]/10 group-hover:text-[#1B5E20] transition-colors">
-                                                    <ShoppingBag className="h-6 w-6" />
+                                                <div className="h-10 w-10 sm:h-12 sm:w-12 bg-gray-100 rounded-xl flex items-center justify-center text-gray-400 group-hover:bg-[#1B5E20]/10 group-hover:text-[#1B5E20] transition-colors">
+                                                    <ShoppingBag className="h-5 w-5 sm:h-6 sm:w-6" />
                                                 </div>
                                                 <div>
                                                     <div className="flex items-center space-x-2">
-                                                        <span className="text-[8px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest">Order ID</span>
-                                                        <span className="text-[9px] sm:text-xs font-black text-gray-900 px-2 py-0.5 bg-gray-100 rounded-lg">#{order.id.slice(-8).toUpperCase()}</span>
+                                                        <span className="text-[7px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest">Order ID</span>
+                                                        <span className="text-[8px] sm:text-xs font-black text-gray-900 px-1.5 py-0.5 bg-gray-100 rounded-lg">#{order.id.slice(-8).toUpperCase()}</span>
                                                     </div>
-                                                    <div className="flex items-center space-x-3 mt-1 text-[8px] sm:text-xs text-gray-500 font-medium">
-                                                        <span className="flex items-center"><Calendar className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1" /> {formatShortDate(order.createdAt)}</span>
+                                                    <div className="flex items-center space-x-2.5 mt-0.5 text-[7px] sm:text-xs text-gray-500 font-medium">
+                                                        <span className="flex items-center"><Calendar className="h-2 w-2 sm:h-3 sm:w-3 mr-0.5" /> {formatShortDate(order.createdAt)}</span>
                                                         <span className="h-1 w-1 bg-gray-300 rounded-full"></span>
-                                                        <span className="flex items-center"><Store className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1" /> {order.shop.name}</span>
+                                                        <span className="flex items-center"><Store className="h-2 w-2 sm:h-3 sm:w-3 mr-0.5" /> {order.shop.name}</span>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div className={clsx(
-                                                "flex items-center space-x-2 px-3 py-1.5 rounded-xl border text-[9px] sm:text-xs font-bold transition-all",
+                                                "flex items-center space-x-1.5 px-2.5 py-1 rounded-lg border text-[8px] sm:text-xs font-bold transition-all",
                                                 status.bg,
                                                 status.text,
                                                 status.border
                                             )}>
-                                                <StatusIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+                                                <StatusIcon className="h-2.5 w-2.5 sm:h-4 sm:w-4" />
                                                 <span>{status.label}</span>
                                             </div>
                                         </div>
@@ -278,44 +279,44 @@ export default function OrdersPage() {
                                             {order.items.slice(0, 1).map((item) => {
                                                 const productImage = item.product.images?.[0]?.url;
                                                 return (
-                                                    <div key={item.id} className="flex items-center space-x-4">
-                                                        <div className="h-16 w-16 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden shrink-0">
+                                                    <div key={item.id} className="flex items-center space-x-3 sm:space-x-4">
+                                                        <div className="h-14 w-14 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden shrink-0">
                                                             {productImage ? (
                                                                 <img
-                                                                    src={productImage.startsWith('http') ? productImage : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'}${productImage.startsWith('/') ? '' : '/'}${productImage}`}
+                                                                    src={getImageUrl(productImage)}
                                                                     alt={item.product.name}
                                                                     className="h-full w-full object-cover"
                                                                 />
                                                             ) : (
                                                                 <div className="h-full w-full flex items-center justify-center text-gray-300">
-                                                                    <Package className="h-6 w-6" />
+                                                                    <Package className="h-5 w-5" />
                                                                 </div>
                                                             )}
                                                         </div>
                                                         <div className="flex-1 min-w-0">
-                                                            <h4 className="font-bold text-gray-900 truncate text-[10px] sm:text-base">{item.product.name}</h4>
-                                                            <p className="text-[9px] sm:text-xs text-gray-500 mt-0.5">{item.quantity} x {formatPrice(item.price)}</p>
+                                                            <h4 className="font-bold text-gray-900 truncate text-[9px] sm:text-base">{item.product.name}</h4>
+                                                            <p className="text-[8px] sm:text-xs text-gray-500 mt-0.5">{item.quantity} x {formatPrice(item.price)}</p>
                                                         </div>
                                                     </div>
                                                 );
                                             })}
                                             {order.items.length > 1 && (
-                                                <p className="text-xs text-gray-400 font-medium pl-20">+ {order.items.length - 1} produk lainnya</p>
+                                                <p className="text-[9px] text-gray-400 font-medium pl-16 md:pl-20">+ {order.items.length - 1} produk lainnya</p>
                                             )}
                                         </div>
 
                                         {/* Total & Action */}
                                         <div className="flex items-center justify-between pt-5 border-t border-gray-50">
                                             <div>
-                                                <p className="text-[8px] sm:text-xs text-gray-400 font-bold uppercase tracking-widest">Total Belanja</p>
-                                                <p className="text-base sm:text-lg font-black text-[#1B5E20]">{formatPrice(order.totalAmount)}</p>
+                                                <p className="text-[7px] sm:text-xs text-gray-400 font-bold uppercase tracking-widest">Total Belanja</p>
+                                                <p className="text-sm sm:text-lg font-black text-[#1B5E20]">{formatPrice(order.totalAmount)}</p>
                                             </div>
                                             <Link
                                                 href={`/dashboard/orders/${order.id}`}
-                                                className="flex items-center space-x-2 px-4 sm:px-6 py-2 sm:py-2.5 bg-gray-900 text-white text-[9px] sm:text-xs font-bold rounded-xl hover:bg-gray-800 transition-all active:scale-95"
+                                                className="flex items-center space-x-1.5 px-3.5 sm:px-6 py-2 sm:py-2.5 bg-gray-900 text-white text-[8px] sm:text-xs font-bold rounded-xl hover:bg-gray-800 transition-all active:scale-95"
                                             >
                                                 <span>Detail Pesanan</span>
-                                                <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
+                                                <ChevronRight className="h-2.5 w-2.5 sm:h-4 sm:w-4" />
                                             </Link>
                                         </div>
                                     </div>

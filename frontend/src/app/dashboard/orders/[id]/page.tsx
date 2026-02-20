@@ -15,6 +15,7 @@ import Link from 'next/link';
 import clsx from 'clsx';
 import { useBuyerSocket } from '@/hooks/useBuyerSocket';
 import { formatPrice, formatShortDate, formatDate } from '@/utils/format';
+import { getImageUrl } from '@/utils/image';
 
 export default function OrderDetailsPage() {
     const { id } = useParams();
@@ -146,30 +147,30 @@ export default function OrderDetailsPage() {
                         <Link href="/dashboard/orders" className="p-2 -ml-2 hover:bg-gray-100 rounded-full transition-colors text-gray-600">
                             <ChevronLeft className="h-6 w-6" />
                         </Link>
-                        <h1 className="font-bold text-gray-900">Detail Pesanan</h1>
+                        <h1 className="font-bold text-gray-900 text-sm sm:text-base">Detail Pesanan</h1>
                     </div>
                 </div>
             </div>
 
-            <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 pb-24">
+            <main className="max-w-4xl mx-auto px-4 sm:px-6 py-6 md:py-8 pb-24">
                 {/* Status Hero Card */}
                 <div className={clsx(
-                    "rounded-[2.5rem] p-8 mb-8 flex flex-col sm:flex-row items-center justify-between gap-6 border border-transparent shadow-xl shadow-gray-200/50",
+                    "rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 mb-6 md:mb-8 flex flex-col sm:flex-row items-center justify-between gap-6 border border-transparent shadow-xl shadow-gray-200/50",
                     statusObj.bg
                 )}>
-                    <div className="flex items-center space-x-6">
-                        <div className="h-16 w-16 bg-white rounded-3xl flex items-center justify-center shadow-sm">
-                            <StatusIcon className={clsx("h-8 w-8", statusObj.text)} />
+                    <div className="flex items-center space-x-4 md:space-x-6">
+                        <div className="h-12 w-12 md:h-16 md:w-16 bg-white rounded-2xl md:rounded-3xl flex items-center justify-center shadow-sm">
+                            <StatusIcon className={clsx("h-6 w-6 md:h-8 md:w-8", statusObj.text)} />
                         </div>
                         <div className="text-center sm:text-left">
-                            <h2 className={clsx("text-xl font-black", statusObj.text)}>{statusObj.label}</h2>
-                            <p className={clsx("text-sm font-medium opacity-70 mt-1")}>{statusObj.sub}</p>
+                            <h2 className={clsx("text-base md:text-xl font-black", statusObj.text)}>{statusObj.label}</h2>
+                            <p className={clsx("text-[10px] md:text-sm font-medium opacity-70 mt-0.5 md:mt-1")}>{statusObj.sub}</p>
                         </div>
                     </div>
 
                     <div className="flex flex-col items-center sm:items-end">
-                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Pembayaran</span>
-                        <p className={clsx("text-2xl font-black", statusObj.text)}>{formatPrice(order.totalAmount)}</p>
+                        <span className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5 md:mb-1">Total Pembayaran</span>
+                        <p className={clsx("text-xl md:text-2xl font-black", statusObj.text)}>{formatPrice(order.totalAmount)}</p>
                     </div>
                 </div>
 
@@ -178,81 +179,81 @@ export default function OrderDetailsPage() {
                     <div className="md:col-span-12 space-y-8">
 
                         {/* Summary Info */}
-                        <div className="bg-white rounded-[2rem] p-6 sm:p-8 border border-gray-100 shadow-sm grid grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div className="bg-white rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-8 border border-gray-100 shadow-sm grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                             <div>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Order ID</p>
+                                <p className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 md:mb-2">Order ID</p>
                                 <div className="flex items-center space-x-2">
-                                    <span className="font-bold text-gray-900">#{order.id.slice(-8).toUpperCase()}</span>
+                                    <span className="font-bold text-gray-900 text-[11px] md:text-base">#{order.id.slice(-8).toUpperCase()}</span>
                                     <button onClick={() => handleCopy(order.id)} className="text-[#1B5E20] hover:bg-green-50 p-1 rounded">
                                         {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                                     </button>
                                 </div>
                             </div>
                             <div>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Waktu Transaksi</p>
-                                <p className="font-bold text-gray-900">{formatDate(order.createdAt)}</p>
+                                <p className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 md:mb-2">Waktu Transaksi</p>
+                                <p className="font-bold text-gray-900 text-[10px] md:text-base">{formatDate(order.createdAt)}</p>
                             </div>
                             <div>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Metode Pembayaran</p>
-                                <p className="font-bold text-gray-900 uppercase">{order.paymentMethod.replace('_', ' ')}</p>
+                                <p className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 md:mb-2">Metode Pembayaran</p>
+                                <p className="font-bold text-gray-900 uppercase text-[10px] md:text-base">{order.paymentMethod.replace('_', ' ')}</p>
                             </div>
                             <div>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Penjual</p>
-                                <Link href={`/${order.shop.slug}`} className="font-bold text-[#1B5E20] hover:underline flex items-center">
+                                <p className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 md:mb-2">Penjual</p>
+                                <Link href={`/${order.shop.slug}`} className="font-bold text-[#1B5E20] hover:underline flex items-center text-[10px] md:text-base">
                                     {order.shop.name}
-                                    <ExternalLink className="h-3 w-3 ml-1" />
+                                    <ExternalLink className="h-2.5 w-2.5 md:h-3 md:w-3 ml-1" />
                                 </Link>
                             </div>
                         </div>
 
                         {/* Order Items */}
-                        <div className="bg-white rounded-[2rem] overflow-hidden border border-gray-100 shadow-sm">
-                            <div className="px-6 py-5 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
-                                <h3 className="font-bold text-gray-900 flex items-center">
-                                    <Package className="h-5 w-5 mr-3 text-[#1B5E20]" />
+                        <div className="bg-white rounded-[1.5rem] md:rounded-[2rem] overflow-hidden border border-gray-100 shadow-sm">
+                            <div className="px-5 md:px-6 py-4 md:py-5 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
+                                <h3 className="font-bold text-gray-900 text-sm md:text-base flex items-center">
+                                    <Package className="h-4 w-4 md:h-5 md:w-5 mr-2 md:mr-3 text-[#1B5E20]" />
                                     Rincian Produk
                                 </h3>
-                                <span className="bg-[#1B5E20] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{order.items.length} Items</span>
+                                <span className="bg-[#1B5E20] text-white text-[8px] md:text-[10px] font-bold px-2 py-0.5 rounded-full">{order.items.length} Items</span>
                             </div>
                             <div className="p-6 sm:p-8 space-y-6">
                                 {order.items.map((item: any) => (
                                     <div key={item.id} className="flex items-start justify-between gap-4">
-                                        <div className="flex items-center space-x-4">
-                                            <div className="h-20 w-20 bg-gray-50 rounded-2xl border border-gray-100 overflow-hidden flex-shrink-0 relative group">
+                                        <div className="flex items-center space-x-3 md:space-x-4">
+                                            <div className="h-16 w-16 md:h-20 md:w-20 bg-gray-50 rounded-xl md:rounded-2xl border border-gray-100 overflow-hidden flex-shrink-0 relative group">
                                                 {item.product.images?.[0]?.url ? (
                                                     <img
-                                                        src={item.product.images[0].url.startsWith('http') ? item.product.images[0].url : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'}${item.product.images[0].url.startsWith('/') ? '' : '/'}${item.product.images[0].url}`}
+                                                        src={getImageUrl(item.product.images[0].url)}
                                                         alt={item.product.name}
                                                         className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
                                                     />
                                                 ) : (
                                                     <div className="h-full w-full flex items-center justify-center text-gray-200">
-                                                        <Package className="h-8 w-8" />
+                                                        <Package className="h-6 w-6 md:h-8 md:w-8" />
                                                     </div>
                                                 )}
                                             </div>
                                             <div>
-                                                <h4 className="font-bold text-gray-900 text-sm sm:text-base mb-1">{item.product.name}</h4>
-                                                <p className="text-xs text-gray-500 font-medium">{item.quantity} x {formatPrice(item.price)}</p>
+                                                <h4 className="font-bold text-gray-900 text-[11px] md:text-base mb-0.5 md:mb-1">{item.product.name}</h4>
+                                                <p className="text-[9px] md:text-xs text-gray-500 font-medium">{item.quantity} x {formatPrice(item.price)}</p>
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            <p className="font-bold text-gray-900">{formatPrice(item.subtotal)}</p>
+                                            <p className="font-bold text-gray-900 text-xs md:text-base">{formatPrice(item.subtotal)}</p>
                                         </div>
                                     </div>
                                 ))}
                             </div>
-                            <div className="p-6 sm:p-8 bg-gray-50/50 border-t border-gray-50">
+                            <div className="p-5 md:p-8 bg-gray-50/50 border-t border-gray-50">
                                 <div className="space-y-3 max-w-sm ml-auto">
-                                    <div className="flex justify-between text-sm text-gray-500">
+                                    <div className="flex justify-between text-[11px] md:text-sm text-gray-500">
                                         <span>Subtotal</span>
                                         <span className="font-bold text-gray-700">{formatPrice(order.totalAmount)}</span>
                                     </div>
-                                    <div className="flex justify-between text-sm text-gray-500">
+                                    <div className="flex justify-between text-[11px] md:text-sm text-gray-500">
                                         <span>Biaya Pengiriman</span>
                                         <span className="font-bold text-green-600">Terhitung Manual</span>
                                     </div>
-                                    <div className="flex justify-between text-lg pt-3 border-t border-gray-200">
+                                    <div className="flex justify-between text-sm md:text-lg pt-3 border-t border-gray-200">
                                         <span className="font-extrabold text-gray-900">Total Akhir</span>
                                         <span className="font-black text-[#1B5E20]">{formatPrice(order.totalAmount)}</span>
                                     </div>
@@ -269,11 +270,11 @@ export default function OrderDetailsPage() {
                                 </h3>
                                 <div className="space-y-4">
                                     <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                                        <p className="font-bold text-gray-900 mb-1">{order.shippingAddress?.receiverName || order.user?.name}</p>
-                                        <p className="text-sm text-gray-600 leading-relaxed">
+                                        <p className="font-bold text-gray-900 mb-1 text-xs md:text-base">{order.shippingAddress?.receiverName || order.user?.name}</p>
+                                        <p className="text-[11px] md:text-sm text-gray-600 leading-relaxed">
                                             {order.shippingAddress?.street}, {order.shippingAddress?.city}, {order.shippingAddress?.province}
                                         </p>
-                                        <p className="text-sm text-gray-800 font-medium mt-2 flex items-center">
+                                        <p className="text-[11px] md:text-sm text-gray-800 font-medium mt-2 flex items-center">
                                             <Hash className="h-3 w-3 mr-1" />
                                             {order.shippingAddress?.phone || 'No phone provided'}
                                         </p>
@@ -317,21 +318,21 @@ export default function OrderDetailsPage() {
 
                                 {order.paymentStatus === 'pending' ? (
                                     <div className="space-y-6">
-                                        <div className="bg-green-50/50 p-5 rounded-3xl border border-green-100">
-                                            <p className="text-[10px] font-bold text-[#1B5E20] uppercase tracking-widest mb-3">Bank Transfer (Manual)</p>
-                                            <div className="flex items-center justify-between mb-4">
+                                        <div className="bg-green-50/50 p-4 md:p-5 rounded-[1.5rem] md:rounded-3xl border border-green-100">
+                                            <p className="text-[8px] md:text-[10px] font-bold text-[#1B5E20] uppercase tracking-widest mb-2 md:mb-3">Bank Transfer (Manual)</p>
+                                            <div className="flex items-center justify-between mb-3 md:mb-4">
                                                 <div>
-                                                    <p className="text-xs text-gray-500 font-bold mb-1">Nomor Rekening</p>
-                                                    <p className="text-xl font-black text-gray-900 tracking-tight">7289-01-013000-53-0</p>
+                                                    <p className="text-[10px] md:text-xs text-gray-500 font-bold mb-0.5 md:mb-1">Nomor Rekening</p>
+                                                    <p className="text-base md:text-xl font-black text-gray-900 tracking-tight">7289-01-013000-53-0</p>
                                                 </div>
                                                 <button
                                                     onClick={() => handleCopy('728901013000530')}
-                                                    className="p-3 bg-white text-[#1B5E20] rounded-2xl shadow-sm border border-green-100 hover:bg-green-50 transition-all font-bold text-xs"
+                                                    className="p-2 md:p-3 bg-white text-[#1B5E20] rounded-xl md:rounded-2xl shadow-sm border border-green-100 hover:bg-green-50 transition-all font-bold text-[10px] md:text-xs"
                                                 >
                                                     Salin
                                                 </button>
                                             </div>
-                                            <p className="text-xs text-gray-500 leading-relaxed font-medium">
+                                            <p className="text-[10px] md:text-xs text-gray-500 leading-relaxed font-medium">
                                                 Bank <span className="font-bold text-gray-900">BRI</span> a/n <span className="font-bold text-gray-900">Parwanto</span>
                                             </p>
                                         </div>
@@ -353,7 +354,7 @@ export default function OrderDetailsPage() {
                                                     } catch (e) { alert('Gagal konfirmasi pembayaran'); }
                                                 }
                                             }}
-                                            className="w-full py-4 bg-white border-2 border-[#1B5E20] text-[#1B5E20] rounded-xl font-bold hover:bg-green-50 transition-all flex items-center justify-center space-x-2"
+                                            className="w-full py-3.5 md:py-4 bg-white border-2 border-[#1B5E20] text-[#1B5E20] rounded-xl font-bold text-xs md:text-base hover:bg-green-50 transition-all flex items-center justify-center space-x-2"
                                         >
                                             <span>Saya Sudah Bayar</span>
                                         </button>
