@@ -12,24 +12,29 @@ export default function PWAInstallOverlay() {
         setMounted(true);
 
         const handleBeforeInstallPrompt = (e: any) => {
-            console.log('beforeinstallprompt event fired');
+            console.log('PWA: beforeinstallprompt triggered');
             e.preventDefault();
             setDeferredPrompt(e);
         };
 
         window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
-        // Check if running in standalone mode (installed)
-        const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches
-            || (window.navigator as any).standalone
-            || document.referrer.includes('android-app://');
+        // Small delay to ensure browser media queries are ready
+        const timer = setTimeout(() => {
+            const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches
+                || (window.navigator as any).standalone
+                || document.referrer.includes('android-app://');
 
-        // Show overlay if NOT installed
-        // Note: For production, you might want to add back isMobile check 
-        // but for now we keep it visible for the user to see the UI.
-        setIsVisible(!isStandaloneMode);
+            console.log('PWA: Standalone check:', { isStandaloneMode });
 
-        return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+            // Show overlay if NOT installed
+            setIsVisible(!isStandaloneMode);
+        }, 200);
+
+        return () => {
+            window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+            clearTimeout(timer);
+        };
     }, []);
 
     const handleInstallClick = async () => {

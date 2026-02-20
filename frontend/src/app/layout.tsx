@@ -51,9 +51,9 @@ export default function RootLayout({
       <body
         className={`${poppins.variable} antialiased`}
       >
+        <PWAInstallOverlay />
         <Providers>
           <PWARegistry />
-          <PWAInstallOverlay />
           <NavbarWithRouteGuard />
           <Toaster position="top-center" reverseOrder={false} />
           <SonnerToaster position="top-center" richColors />
