@@ -170,6 +170,49 @@ export default function MerchantDashboardPage() {
         );
     }
 
+    // Block access if shop is PENDING
+    if (stats && (stats as any).status === 'PENDING') {
+        return (
+            <div className="min-h-[80vh] flex flex-col items-center justify-center p-4 text-center animate-fade-in">
+                <div className="bg-yellow-100 p-6 rounded-full mb-6 relative">
+                    <Clock className="h-16 w-16 text-yellow-600 animate-pulse" />
+                    <div className="absolute -top-2 -right-2 bg-yellow-500 rounded-full p-2 animate-bounce">
+                        <div className="h-3 w-3 bg-white rounded-full"></div>
+                    </div>
+                </div>
+                <h1 className="text-2xl sm:text-3xl font-black text-gray-900 mb-2">
+                    Menunggu Aktivasi
+                </h1>
+                <p className="text-gray-500 max-w-md mb-8 leading-relaxed">
+                    Toko Anda sedang ditinjau oleh Admin. Proses ini biasanya memakan waktu max 1x24 jam setelah bukti pembayaran dikonfirmasi.
+                </p>
+
+                <div className="space-y-3 w-full max-w-xs">
+                    <a
+                        href="https://wa.me/6281234567890"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center justify-center px-6 py-3.5 border border-transparent text-sm font-bold rounded-xl shadow-lg text-white bg-[#25D366] hover:bg-[#128C7E] transition-all transform hover:-translate-y-1 w-full"
+                    >
+                        Hubungi Admin via WhatsApp
+                    </a>
+                    <button
+                        onClick={() => fetchStats()}
+                        className="flex items-center justify-center px-6 py-3.5 border border-gray-200 text-sm font-bold rounded-xl text-gray-600 hover:bg-gray-50 transition-colors w-full"
+                    >
+                        Cek Status Lagi
+                    </button>
+                    <Link
+                        href="/dashboard"
+                        className="block text-xs font-bold text-gray-400 hover:text-gray-600 mt-4"
+                    >
+                        Kembali ke Dashboard Utama
+                    </Link>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-gray-50 font-[family-name:var(--font-poppins)] p-4 sm:p-8 pb-24 lg:pb-8">
             {/* Toast Notification */}

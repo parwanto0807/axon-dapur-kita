@@ -6,7 +6,7 @@ import { Store, ArrowLeft } from 'lucide-react';
 export default function LoginPage() {
     const handleGoogleLogin = () => {
         // Redirect to backend auth endpoint
-        const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+        const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
         window.location.href = `${apiBaseUrl}/auth/google`;
     };
 

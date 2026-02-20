@@ -27,6 +27,8 @@ app.use(cors({
   origin: [
     'http://localhost:3000', 
     'http://127.0.0.1:3000', 
+    'http://localhost:3003',
+    'http://127.0.0.1:3003',
     process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:3000'
   ],
   credentials: true

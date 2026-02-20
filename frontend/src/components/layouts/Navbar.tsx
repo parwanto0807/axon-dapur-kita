@@ -50,7 +50,7 @@ export default function Navbar() {
     const cartItems = useCartStore((state) => state.items);
     const totalPrice = useCartStore((state) => state.getTotalPrice());
 
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
 
     const fetchNotifications = async () => {
         try {
@@ -224,14 +224,12 @@ export default function Navbar() {
                                             Ayo mulai jualan produk dapur Anda hari ini dengan <span className="font-bold text-[#1B5E20]">biaya terjangkau</span> dan jangkau tetangga sekitar!
                                         </p>
                                         <div className="space-y-2">
-                                            <button
-                                                type="button"
-                                                disabled={true}
-                                                className="block w-full py-2.5 px-4 bg-gray-300 text-gray-500 text-xs font-bold rounded-xl cursor-not-allowed opacity-75 select-none"
-                                                title="Silakan baca informasi terlebih dahulu atau login"
+                                            <Link
+                                                href="/seller-registration"
+                                                className="block w-full py-2.5 px-4 bg-[#1B5E20] text-white text-xs font-bold rounded-xl hover:bg-[#154a1a] transition-all shadow-lg shadow-green-100 active:scale-95 text-center"
                                             >
                                                 Mulai buka Toko / Berjualan disini
-                                            </button>
+                                            </Link>
                                             <Link
                                                 href="/seller-info"
                                                 className="block w-full py-2.5 px-4 bg-gray-50 text-gray-700 text-xs font-bold rounded-xl hover:bg-gray-100 border border-gray-100 transition-all active:scale-95"
@@ -617,6 +615,16 @@ export default function Navbar() {
                                         </div>
 
                                         <div className="py-2">
+                                            {user?.role === 'ADMIN' && (
+                                                <Link
+                                                    href="/dashboard/admin"
+                                                    className="flex items-center space-x-3 px-4 py-2.5 text-sm text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors"
+                                                    onClick={() => setIsProfileOpen(false)}
+                                                >
+                                                    <Store className="h-4 w-4" />
+                                                    <span className="font-bold">Dashboard Admin</span>
+                                                </Link>
+                                            )}
                                             {user?.role === 'SELLER' && (
                                                 <Link
                                                     href="/dashboard/merchant"
@@ -711,7 +719,7 @@ export default function Navbar() {
                                 <button
                                     onClick={() => {
                                         logout();
-                                        window.location.href = 'http://localhost:5000/api/auth/logout';
+                                        window.location.href = `${apiBaseUrl}/auth/logout`;
                                     }}
                                     className="w-full py-4 bg-red-500 text-white rounded-2xl font-bold hover:bg-red-600 transition-all shadow-lg shadow-red-200 active:scale-95"
                                 >

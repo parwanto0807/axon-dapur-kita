@@ -10,7 +10,7 @@ export default function AuthSync({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+                const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
                 const response = await axios.get(`${apiBaseUrl}/auth/me`, {
                     withCredentials: true
                 });

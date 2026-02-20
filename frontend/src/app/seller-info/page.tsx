@@ -72,7 +72,7 @@ export default function SellerInfoPage() {
 
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 px-4 sm:px-0">
                         <Link
-                            href="/register?role=seller"
+                            href="/seller-registration"
                             className="w-full sm:w-auto px-6 py-3.5 sm:px-8 sm:py-4 bg-yellow-400 text-yellow-950 font-black rounded-xl sm:rounded-2xl hover:bg-yellow-300 transition-all shadow-xl shadow-yellow-400/20 active:scale-95 flex items-center justify-center text-xs sm:text-lg group"
                         >
                             Mulai Berjualan Sekarang
@@ -257,7 +257,7 @@ export default function SellerInfoPage() {
                                     <span>Full Akses Dashboard</span>
                                 </li>
                             </ul>
-                            <Link href="/register?role=seller&plan=starter" className="w-full py-3.5 sm:py-4 bg-white text-[#1B5E20] font-black rounded-xl sm:rounded-2xl text-center transition-all hover:bg-green-50 text-xs sm:text-base">
+                            <Link href="/seller-registration?plan=starter" className="w-full py-3.5 sm:py-4 bg-white text-[#1B5E20] font-black rounded-xl sm:rounded-2xl text-center transition-all hover:bg-green-50 text-xs sm:text-base">
                                 Ambil Promo Ini
                             </Link>
                         </div>
@@ -291,8 +291,12 @@ export default function SellerInfoPage() {
                                         <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-400" />
                                         <span>Verified Merchant Badge</span>
                                     </li>
+                                    <li className="flex items-center space-x-2 sm:space-x-3 text-white text-[10px] sm:text-sm font-semibold">
+                                        <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-400" />
+                                        <span>Gratis Domain .com (1 thn)</span>
+                                    </li>
                                 </ul>
-                                <Link href="/register?role=seller&plan=annual" className="w-full py-4 sm:py-5 bg-yellow-400 hover:bg-yellow-300 text-yellow-950 font-black rounded-xl sm:rounded-2xl text-center transition-all shadow-lg shadow-yellow-400/20 active:scale-95 text-xs sm:text-lg">
+                                <Link href="/seller-registration?plan=annual" className="w-full py-4 sm:py-5 bg-yellow-400 hover:bg-yellow-300 text-yellow-950 font-black rounded-xl sm:rounded-2xl text-center transition-all shadow-lg shadow-yellow-400/20 active:scale-95 text-xs sm:text-lg">
                                     Pilih Tahunan
                                 </Link>
                             </div>
@@ -318,7 +322,7 @@ export default function SellerInfoPage() {
                                     <span>Full Akses Fitur</span>
                                 </li>
                             </ul>
-                            <Link href="/register?role=seller&plan=monthly" className="w-full py-3.5 sm:py-4 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-xl sm:rounded-2xl text-center transition-all text-xs sm:text-base">
+                            <Link href="/seller-registration?plan=monthly" className="w-full py-3.5 sm:py-4 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-xl sm:rounded-2xl text-center transition-all text-xs sm:text-base">
                                 Daftar Reguler
                             </Link>
                         </div>
@@ -368,7 +372,7 @@ export default function SellerInfoPage() {
                         Jangan biarkan potensi Anda terhenti. Gabung sekarang, bangun reputasi toko Anda, dan nikmati hasil kerja keras Anda 100%.
                     </p>
                     <Link
-                        href="/register?role=seller"
+                        href="/seller-registration"
                         className="inline-flex items-center px-6 py-3.5 sm:px-10 sm:py-5 bg-white text-[#1B5E20] font-black rounded-full text-xs sm:text-lg hover:bg-gray-100 transition-all shadow-2xl shadow-black/20 transform hover:-translate-y-1"
                     >
                         Mulai Berjualan Sekarang

@@ -99,7 +99,7 @@ export default function Home() {
   // Initial Load
   useEffect(() => {
     const fetchData = async () => {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
 
       try {
         const [shopsRes, categoriesRes] = await Promise.all([
@@ -123,7 +123,7 @@ export default function Home() {
     const fetchProducts = async () => {
       setProductsLoading(true);
       try {
-        const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+        const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
         const response = await axios.get(`${apiBaseUrl}/products/public`, {
           params: { category: selectedCategory }
         });

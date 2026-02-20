@@ -3,6 +3,89 @@ import { PrismaClient } from '@prisma/client';
 
 const router = express.Router();
 const prisma = new PrismaClient();
+import { protect, authorize } from '../middlewares/authMiddleware.js';
+
+// @desc    Get all shops (Admin only)
+// @route   GET /api/shops/admin/all
+// @access  Private/Admin
+router.get('/admin/all', protect, authorize('ADMIN'), async (req, res) => {
+    try {
+        const { page = 1, limit = 10, search = '', status } = req.query;
+        const skip = (page - 1) * limit;
+
+        const where = {};
+
+        if (search) {
+            where.OR = [
+                { name: { contains: search, mode: 'insensitive' } },
+                { owner: { name: { contains: search, mode: 'insensitive' } } }
+            ];
+        }
+
+        if (status && status !== 'ALL') {
+             where.status = status;
+        }
+
+        const [shops, total] = await prisma.$transaction([
+            prisma.shop.findMany({
+                where,
+                skip: parseInt(skip),
+                take: parseInt(limit),
+                orderBy: { createdAt: 'desc' },
+                include: {
+                    owner: {
+                        select: { name: true, email: true, whatsapp: true }
+                    },
+                    _count: {
+                        select: { products: true, orders: true }
+                    }
+                }
+            }),
+            prisma.shop.count({ where })
+        ]);
+
+        res.json({
+            shops,
+            totalPages: Math.ceil(total / limit),
+            currentPage: parseInt(page),
+            totalShops: total
+        });
+    } catch (error) {
+        console.error('Error fetching admin shops:', error);
+        res.status(500).json({ message: 'Server error fetching shops' });
+    }
+});
+
+// @desc    Update shop status (Admin only)
+// @route   PUT /api/shops/admin/:id/status
+// @access  Private/Admin
+router.put('/admin/:id/status', protect, authorize('ADMIN'), async (req, res) => {
+    try {
+        const { status } = req.body;
+        const { id } = req.params;
+
+        if (!['PENDING', 'ACTIVE', 'SUSPENDED', 'REJECTED'].includes(status)) {
+             return res.status(400).json({ message: 'Invalid status' });
+        }
+
+        const shop = await prisma.shop.update({
+            where: { id },
+            data: { status },
+            include: {
+                owner: {
+                    select: { email: true, name: true }
+                }
+            }
+        });
+
+        // TODO: Send email notification to shop owner about status change
+
+        res.json(shop);
+    } catch (error) {
+        console.error('Error updating shop status:', error);
+        res.status(500).json({ message: 'Server error updating shop status' });
+    }
+});
 
 // @desc    Create a new shop
 // @route   POST /api/shops
@@ -13,7 +96,7 @@ router.post('/', async (req, res) => {
     }
 
     try {
-        const { name, description, slug, address, domain } = req.body;
+        let { name, description, slug, address, domain, phone, plan } = req.body;
         const userId = req.user.id;
 
         // Check if user already has a shop
@@ -25,40 +108,52 @@ router.post('/', async (req, res) => {
             return res.status(400).json({ message: 'User already has a shop' });
         }
 
+        // Auto-generate slug if not provided
+        if (!slug && name) {
+            slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+            // Append random string to ensure uniqueness
+            slug += '-' + Math.random().toString(36).substring(2, 7);
+        }
+
         // Validate slug format
         const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
         if (!slugRegex.test(slug)) {
             return res.status(400).json({ message: 'Shop URL can only contain lowercase letters, numbers, and hyphens.' });
         }
 
-        // Check if slug is unique
+        // Check if slug is unique (double check)
         const slugExists = await prisma.shop.findUnique({
             where: { slug }
         });
 
         if (slugExists) {
-            return res.status(400).json({ message: 'Shop URL already taken' });
+            return res.status(400).json({ message: 'Shop URL already taken, please try a different name' });
         }
+
+        // Append plan and phone to description if provided (Temporary solution until Subscription model)
+        let finalDescription = description || '';
+        if (phone) finalDescription += ` | Contact: ${phone}`;
+        if (plan) finalDescription += ` | Plan: ${plan}`;
 
         // Create Shop
         const newShop = await prisma.shop.create({
             data: {
                 name,
-                description,
+                description: finalDescription,
                 slug,
                 address,
                 owner: {
                     connect: { id: userId }
-                }
+                },
+                status: 'PENDING' // Explicitly set to PENDING
             }
         });
 
-        // Update User (Link shop but kept role as USER until payment/activation)
-        // Role will be updated to SELLER after payment/admin approval
+        // Update User Role to SELLER so they can access dashboard
         await prisma.user.update({
             where: { id: userId },
             data: { 
-                // role: 'SELLER', // COMMENTED OUT: User remains USER until activated
+                role: 'SELLER', 
                 shopId: newShop.id
             }
         });
@@ -118,6 +213,7 @@ router.get('/stats', async (req, res) => {
 
         const stats = {
             shopId: myShop.id,  // Added for socket room joining
+            status: myShop.status, // Added for frontend access control
             totalRevenue: revenue._sum.netAmount || 0,
             totalOrders: myShop._count.orders,
             totalProducts: myShop._count.products,

@@ -6,7 +6,7 @@ import { Store, ArrowLeft, UserPlus, Mail, Lock, User } from 'lucide-react';
 export default function RegisterPage() {
     const handleGoogleRegister = () => {
         // Redirect to backend auth endpoint (Google handled as both login/register)
-        const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+        const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
         window.location.href = `${apiBaseUrl}/auth/google`;
     };
 
