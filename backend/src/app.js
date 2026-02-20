@@ -30,6 +30,8 @@ app.use(cors({
     'http://127.0.0.1:3000', 
     'http://localhost:3003',
     'http://127.0.0.1:3003',
+    'https://axon-ecosystem.id',
+    'https://www.axon-ecosystem.id',
     process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:3000'
   ],
   credentials: true

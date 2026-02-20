@@ -24,15 +24,19 @@ export const useBuyerSocket = (onOrderUpdate?: (order: any) => void, options: { 
             return;
         }
 
-        const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-        const socketUrl = apiBaseUrl.replace('/api', '');
+        const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
+        const socketUrl = typeof window !== 'undefined' ? window.location.origin : apiBaseUrl.replace('/api', '');
+
+        console.log('[BuyerSocket] Connecting to:', socketUrl);
 
         // Initialize socket connection with session cookies
         const socket = io(socketUrl, {
             withCredentials: true,
-            transports: ['websocket', 'polling'],
-            reconnectionAttempts: 5,
+            transports: ['websocket', 'polling'], // Prioritize websocket
+            reconnection: true,
+            reconnectionAttempts: 10,
             reconnectionDelay: 1000,
+            path: '/socket.io/', // Explicit path for proxying
         });
 
         socketRef.current = socket;

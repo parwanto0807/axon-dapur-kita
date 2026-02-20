@@ -10,6 +10,7 @@ import {
 import Image from 'next/image';
 import { useCartStore } from '@/store/cartStore';
 import { useAuthStore } from '@/store/authStore';
+import clsx from 'clsx';
 import { formatPrice } from '@/utils/format';
 import { getImageUrl } from '@/utils/image';
 
@@ -84,6 +85,18 @@ export default function ProductPage() {
     const addItem = useCartStore((state) => state.addItem);
     const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
+    const handleShare = () => {
+        if (navigator.share) {
+            navigator.share({
+                title: product?.name,
+                url: window.location.href,
+            }).catch(console.error);
+        } else {
+            navigator.clipboard.writeText(window.location.href);
+            alert('Link produk berhasil disalin!');
+        }
+    };
+
     const handleAddToCart = () => {
         if (!product) return;
 
@@ -153,121 +166,148 @@ export default function ProductPage() {
 
     return (
         <div className="min-h-screen bg-gray-50 font-[family-name:var(--font-poppins)] pb-24 md:pb-12">
-            {/* Mobile Header */}
-            <div className="sticky top-0 z-50 bg-white border-b px-4 py-3 flex items-center justify-between md:hidden">
-                <button onClick={() => router.back()} className="p-2 -ml-2 hover:bg-gray-100 rounded-full">
-                    <ArrowLeft className="h-6 w-6 text-gray-700" />
-                </button>
-                <div className="flex items-center space-x-2">
-                    <button className="p-2 hover:bg-gray-100 rounded-full">
-                        <Share2 className="h-6 w-6 text-gray-700" />
-                    </button>
-
-                </div>
-            </div>
+            {/* Mobile Header Removed - Navigation moved to card */}
 
             <main className="max-w-7xl mx-auto md:px-6 md:py-8">
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
 
                     {/* Left: Images */}
-                    <div className="md:col-span-5 bg-white md:rounded-2xl md:p-4">
-                        <div className="relative aspect-square w-full bg-white md:rounded-xl overflow-hidden border-b md:border border-gray-100">
-                            {selectedImage ? (
-                                <img
-                                    src={getImageUrl(selectedImage) || ''}
-                                    alt={product.name}
-                                    className="w-full h-full object-contain"
-                                />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center text-gray-300">
-                                    <Store className="h-20 w-20" />
+                    <div className="md:col-span-5 flex flex-col pt-2 md:pt-0">
+                        <div className="bg-white md:rounded-[2.5rem] p-4 sm:p-10 md:shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/50 relative">
+
+                            {/* In-content Navigation Buttons (Mobile) */}
+                            <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-20 md:hidden">
+                                <button
+                                    onClick={() => router.back()}
+                                    className="px-3 py-1.5 bg-white/95 backdrop-blur-sm shadow-sm rounded-xl flex items-center space-x-1.5 text-[#1B5E20] font-bold text-[10px] active:scale-95 transition-all border border-green-50"
+                                >
+                                    <ArrowLeft className="h-3.5 w-3.5" />
+                                    <span>Kembali</span>
+                                </button>
+                                <button
+                                    onClick={handleShare}
+                                    className="px-3 py-1.5 bg-white/95 backdrop-blur-sm shadow-sm rounded-xl flex items-center space-x-1.5 text-gray-600 font-bold text-[10px] active:scale-95 transition-all border border-gray-50"
+                                >
+                                    <Share2 className="h-3.5 w-3.5" />
+                                    <span>Bagikan</span>
+                                </button>
+                            </div>
+                            <div className="relative w-[65%] mx-auto group">
+                                {selectedImage ? (
+                                    <img
+                                        src={getImageUrl(selectedImage) || ''}
+                                        alt={product.name}
+                                        className="w-full h-auto object-contain transform group-hover:scale-105 transition-transform duration-500"
+                                    />
+                                ) : (
+                                    <div className="aspect-square w-full flex items-center justify-center text-gray-200 bg-gray-50/50 rounded-2xl">
+                                        <Store className="h-12 w-12" />
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Thumbnails integrated into the same card */}
+                            {product.images && product.images.length > 1 && (
+                                <div className="mt-6 flex space-x-2 overflow-x-auto pb-1 scrollbar-hide px-1 justify-center">
+                                    {product.images.map((img, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => setSelectedImage(img.url)}
+                                            className={clsx(
+                                                "relative h-10 w-10 sm:h-16 sm:w-16 shrink-0 rounded-xl overflow-hidden border-2 transition-all duration-300",
+                                                selectedImage === img.url
+                                                    ? 'border-[#1B5E20] shadow-sm scale-110'
+                                                    : 'border-gray-50 opacity-60 hover:opacity-100'
+                                            )}
+                                        >
+                                            <img
+                                                src={getImageUrl(img.url) || ''}
+                                                alt={`Thumbnail ${idx}`}
+                                                className="w-full h-full object-cover"
+                                            />
+                                            {selectedImage === img.url && (
+                                                <div className="absolute inset-0 bg-[#1B5E20]/5" />
+                                            )}
+                                        </button>
+                                    ))}
                                 </div>
                             )}
                         </div>
-
-                        {/* Thumbnails */}
-                        {product.images && product.images.length > 1 && (
-                            <div className="p-4 md:p-0 md:mt-4 flex space-x-3 overflow-x-auto pb-2 scrollbar-hide">
-                                {product.images.map((img, idx) => (
-                                    <button
-                                        key={idx}
-                                        onClick={() => setSelectedImage(img.url)}
-                                        className={`relative h-16 w-16 shrink-0 rounded-lg overflow-hidden border-2 transition ${selectedImage === img.url ? 'border-[#1B5E20]' : 'border-gray-200'
-                                            }`}
-                                    >
-                                        <img
-                                            src={getImageUrl(img.url) || ''}
-                                            alt={`Thumbnail ${idx}`}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    </button>
-                                ))}
-                            </div>
-                        )}
                     </div>
 
                     {/* Right: Product Info */}
                     <div className="md:col-span-7 space-y-6 px-4 md:px-0">
                         {/* Generic Info */}
-                        <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm mt-4 md:mt-0">
-                            <h1 className="text-lg md:text-2xl font-bold text-gray-900 leading-tight">
+                        <div className="bg-white p-6 rounded-[2rem] border border-gray-100/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] mt-2 md:mt-0">
+                            <div className="flex items-center justify-between">
+                                <span className="px-2 py-0.5 bg-green-50 text-[#1B5E20] text-[8px] sm:text-[10px] font-bold rounded-full uppercase tracking-widest">
+                                    {product.category?.name || 'Produk'}
+                                </span>
+                                <div className="flex items-center space-x-1 text-amber-500">
+                                    <Star className="h-3 w-3 sm:h-4 sm:w-4 fill-current" />
+                                    <span className="text-[10px] sm:text-sm font-bold text-gray-900">4.8</span>
+                                    <span className="text-[9px] sm:text-xs text-gray-400 font-medium">(24)</span>
+                                </div>
+                            </div>
+
+                            <h1 className="mt-2 text-sm md:text-3xl font-black text-gray-900 leading-tight">
                                 {product.name}
                             </h1>
 
-                            <div className="mt-3 flex items-end justify-between">
-                                <p className="text-xl md:text-3xl font-bold text-[#1B5E20]">
+                            <div className="mt-2 flex items-baseline space-x-2">
+                                <p className="text-base md:text-4xl font-black text-[#1B5E20]">
                                     {formatPrice(product.price)}
-                                    {product.unit && <span className="text-sm text-gray-500 font-normal ml-1">/{product.unit.name}</span>}
                                 </p>
+                                {product.unit && <span className="text-[9px] md:text-base text-gray-400 font-bold uppercase tracking-wider">/ {product.unit.name}</span>}
                             </div>
 
-                            <div className="mt-4 flex items-center space-x-4 text-sm text-gray-500 border-t pt-4">
-                                <div>
-                                    <span className="block text-xs text-gray-400">Kondisi</span>
-                                    <span className="font-semibold text-gray-900">{product.condition === 'NEW' ? 'Baru' : 'Bekas'}</span>
+                            <div className="mt-4 grid grid-cols-3 gap-2 py-3 border-t border-gray-50">
+                                <div className="text-center">
+                                    <span className="block text-[8px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">Kondisi</span>
+                                    <span className="text-[10px] sm:text-sm font-black text-gray-900">{product.condition === 'NEW' ? 'Baru' : 'Bekas'}</span>
                                 </div>
-                                <div>
-                                    <span className="block text-xs text-gray-400">Berat</span>
-                                    <span className="font-semibold text-gray-900">{product.weight} gr</span>
+                                <div className="text-center border-x border-gray-50">
+                                    <span className="block text-[8px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">Berat</span>
+                                    <span className="text-[10px] sm:text-sm font-black text-gray-900">{product.weight} gr</span>
                                 </div>
-                                <div>
-                                    <span className="block text-xs text-gray-400">Kategori</span>
-                                    <span className="font-semibold text-[#1B5E20]">{product.category?.name || '-'}</span>
+                                <div className="text-center">
+                                    <span className="block text-[7px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">Stok</span>
+                                    <span className="text-[9px] sm:text-sm font-black text-gray-900">{product.stock} {product.unit?.name || 'Pcs'}</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Shop Card */}
-                        <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm cursor-pointer hover:border-[#1B5E20] transition"
+                        <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm cursor-pointer hover:border-[#1B5E20] transition active:scale-[0.98]"
                             onClick={() => router.push(`/${product.shop.slug}`)}>
-                            <div className="flex items-center space-x-4">
-                                <div className="h-14 w-14 rounded-full border border-gray-200 overflow-hidden bg-gray-50">
+                            <div className="flex items-center space-x-3">
+                                <div className="h-10 w-10 sm:h-14 sm:w-14 rounded-full border border-gray-100 overflow-hidden bg-gray-50 shrink-0">
                                     {product.shop.logo ? (
                                         <img src={getImageUrl(product.shop.logo) || ''} alt={product.shop.name} className="h-full w-full object-cover" />
                                     ) : (
-                                        <Store className="h-full w-full p-3 text-gray-400" />
+                                        <Store className="h-full w-full p-2.5 text-gray-300" />
                                     )}
                                 </div>
-                                <div className="flex-1">
-                                    <div className="flex items-center space-x-2">
-                                        <h3 className="font-bold text-gray-900">{product.shop.name}</h3>
-                                        <div className="bg-green-100 px-2 py-0.5 rounded text-[10px] font-bold text-green-700">Official</div>
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-center space-x-1.5">
+                                        <h3 className="font-bold text-[9px] sm:text-base text-gray-900 truncate">{product.shop.name}</h3>
+                                        <div className="bg-green-100 px-1.5 py-0.5 rounded text-[7px] font-bold text-green-700">Official</div>
                                     </div>
-                                    <div className="flex items-center text-xs text-gray-500 mt-1">
-                                        <MapPin className="h-3 w-3 mr-1" />
-                                        <span className="line-clamp-1">{product.shop.address}</span>
+                                    <div className="flex items-center text-[9px] sm:text-xs text-gray-500 mt-0.5">
+                                        <MapPin className="h-2.5 w-2.5 mr-1" />
+                                        <span className="truncate">{product.shop.address}</span>
                                     </div>
                                 </div>
-                                <button className="px-4 py-1.5 border border-[#1B5E20] text-[#1B5E20] text-sm font-semibold rounded-lg hover:bg-green-50">
-                                    Kunjungi
+                                <button className="px-3 py-1 border border-[#1B5E20] text-[#1B5E20] text-[10px] sm:text-sm font-bold rounded-lg hover:bg-green-50 transition-colors">
+                                    Cek Toko
                                 </button>
                             </div>
                         </div>
 
                         {/* Description */}
-                        <div className="bg-white p-4 md:p-5 rounded-2xl border border-gray-100 shadow-sm">
-                            <h3 className="text-sm md:text-base font-bold text-gray-900 mb-3">Deskripsi Produk</h3>
-                            <div className="prose prose-sm text-gray-600 leading-relaxed whitespace-pre-wrap text-xs md:text-sm">
+                        <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+                            <h3 className="text-[9px] md:text-base font-black text-gray-900 mb-2 uppercase tracking-tight">Deskripsi Produk</h3>
+                            <div className="prose prose-sm text-gray-600 leading-relaxed whitespace-pre-wrap text-[9px] sm:text-sm">
                                 {product.description || 'Tidak ada deskripsi.'}
                             </div>
                         </div>
@@ -292,24 +332,23 @@ export default function ProductPage() {
 
                     {/* Action Buttons */}
                     <div className="flex items-center space-x-3 w-full md:w-auto">
-                        {/* Quantity (Hidden if out or stock) */}
+                        {/* Quantity */}
                         {product.stock > 0 && (
-                            <div className="flex items-center border border-gray-300 rounded-xl bg-gray-50">
+                            <div className="flex items-center border border-gray-200 rounded-lg bg-gray-50/50">
                                 <button
                                     onClick={() => handleQuantityChange('dec')}
                                     disabled={quantity <= 1}
-                                    className="p-2 md:p-3 text-gray-600 hover:text-[#1B5E20] disabled:opacity-30"
+                                    className="p-1.5 sm:p-3 text-gray-500 hover:text-[#1B5E20] disabled:opacity-30"
                                 >
-                                    <ArrowLeft className="h-4 w-4 rotate-270" />
-                                    <Minus className="h-3 w-3 md:h-4 md:w-4" />
+                                    <Minus className="h-3 w-3 sm:h-4 sm:w-4" />
                                 </button>
-                                <span className="w-8 text-center font-semibold text-gray-900">{quantity}</span>
+                                <span className="w-5 sm:w-8 text-center font-bold text-[9px] sm:text-base text-gray-900">{quantity}</span>
                                 <button
                                     onClick={() => handleQuantityChange('inc')}
                                     disabled={quantity >= product.stock}
-                                    className="p-2 md:p-3 text-gray-600 hover:text-[#1B5E20] disabled:opacity-30"
+                                    className="p-1.5 sm:p-3 text-gray-500 hover:text-[#1B5E20] disabled:opacity-30"
                                 >
-                                    <Plus className="h-3 w-3 md:h-4 md:w-4" />
+                                    <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
                                 </button>
                             </div>
                         )}
@@ -318,20 +357,20 @@ export default function ProductPage() {
                             <>
                                 <button
                                     onClick={handleAddToCart}
-                                    className="flex-1 md:flex-none md:w-40 py-2.5 md:py-3 border border-[#1B5E20] text-[#1B5E20] text-sm md:text-base font-bold rounded-xl hover:bg-green-50 transition flex items-center justify-center space-x-2"
+                                    className="flex-1 md:flex-none md:w-36 py-1.5 sm:py-3 border border-[#1B5E20] text-[#1B5E20] text-[9px] sm:text-base font-bold rounded-lg hover:bg-green-50 active:bg-green-100 transition flex items-center justify-center space-x-1 sm:space-x-2"
                                 >
-                                    <ShoppingCart className="h-4 w-4 md:h-5 md:w-5" />
+                                    <ShoppingCart className="h-3 w-3 sm:h-5 sm:w-5" />
                                     <span>Keranjang</span>
                                 </button>
                                 <button
                                     onClick={handleBuyNow}
-                                    className="flex-1 md:flex-none md:w-48 py-2.5 md:py-3 bg-[#1B5E20] text-white text-sm md:text-base font-bold rounded-xl hover:bg-green-800 transition"
+                                    className="flex-1 md:flex-none md:w-44 py-1.5 sm:py-3 bg-[#1B5E20] text-white text-[9px] sm:text-base font-bold rounded-lg hover:bg-green-800 active:bg-green-900 shadow-sm transition"
                                 >
                                     Beli Langsung
                                 </button>
                             </>
                         ) : (
-                            <button disabled className="w-full md:w-64 py-3 bg-gray-300 text-gray-500 font-bold rounded-xl cursor-not-allowed">
+                            <button disabled className="w-full md:w-64 py-2 sm:py-3 bg-gray-100 text-gray-400 text-[11px] sm:text-base font-black rounded-xl cursor-not-allowed uppercase tracking-widest">
                                 Stok Habis
                             </button>
                         )}

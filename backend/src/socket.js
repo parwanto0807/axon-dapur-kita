@@ -20,6 +20,8 @@ export const initSocket = (httpServer, sessionMiddleware) => {
             origin: [
                 'http://localhost:3000',
                 'http://127.0.0.1:3000',
+                'https://axon-ecosystem.id',
+                'https://www.axon-ecosystem.id',
                 process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:3000'
             ],
             credentials: true

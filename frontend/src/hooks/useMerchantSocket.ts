@@ -31,8 +31,8 @@ interface UseMerchantSocketReturn {
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-const SOCKET_URL = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000';
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
+const SOCKET_URL = typeof window !== 'undefined' ? window.location.origin : API_URL.replace('/api', '');
 
 // Exponential backoff intervals: 30s, 60s, 120s
 const POLLING_INTERVALS = [30_000, 60_000, 120_000];
@@ -109,11 +109,13 @@ export function useMerchantSocket({ shopId, onNewOrder }: UseMerchantSocketOptio
         // Connect using session cookie (withCredentials) - no JWT needed
         const socket = io(SOCKET_URL, {
             withCredentials: true,  // Send session cookie automatically
+            transports: ['websocket', 'polling'],
             reconnection: true,
-            reconnectionAttempts: 5,
+            reconnectionAttempts: 10,
             reconnectionDelay: 1000,
             reconnectionDelayMax: 10000,
             timeout: 20000,
+            path: '/socket.io/',
         });
 
         socketRef.current = socket;

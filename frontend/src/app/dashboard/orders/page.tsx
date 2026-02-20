@@ -173,7 +173,7 @@ export default function OrdersPage() {
                         <Link href="/dashboard" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
                             <ArrowLeft className="h-5 w-5 text-gray-600" />
                         </Link>
-                        <h1 className="font-bold text-gray-900 text-lg">Pesanan Saya</h1>
+                        <h1 className="font-bold text-gray-900 text-sm sm:text-lg">Pesanan Saya</h1>
                     </div>
                 </div>
             </div>
@@ -189,8 +189,8 @@ export default function OrdersPage() {
                         )}
                     >
                         <Package className={clsx("h-5 w-5 mb-2", filter === 'all' ? "text-green-200" : "text-[#1B5E20]")} />
-                        <p className="text-[10px] font-bold uppercase tracking-wider opacity-80">Semua</p>
-                        <p className="text-xl font-black">{orders.length}</p>
+                        <p className="text-[8px] sm:text-[10px] font-bold uppercase tracking-wider opacity-80">Semua</p>
+                        <p className="text-base sm:text-xl font-black">{orders.length}</p>
                     </button>
 
                     <button
@@ -201,8 +201,8 @@ export default function OrdersPage() {
                         )}
                     >
                         <CreditCard className={clsx("h-5 w-5 mb-2", filter === 'pending' ? "text-yellow-100" : "text-yellow-500")} />
-                        <p className="text-[10px] font-bold uppercase tracking-wider opacity-80">Menunggu</p>
-                        <p className="text-xl font-black">{orders.filter(o => o.paymentStatus === 'pending').length}</p>
+                        <p className="text-[8px] sm:text-[10px] font-bold uppercase tracking-wider opacity-80">Menunggu</p>
+                        <p className="text-base sm:text-xl font-black">{orders.filter(o => o.paymentStatus === 'pending').length}</p>
                     </button>
 
                     <button
@@ -213,8 +213,8 @@ export default function OrdersPage() {
                         )}
                     >
                         <CheckCircle className={clsx("h-5 w-5 mb-2", filter === 'paid' ? "text-green-100" : "text-green-600")} />
-                        <p className="text-[10px] font-bold uppercase tracking-wider opacity-80">Berhasil</p>
-                        <p className="text-xl font-black">{orders.filter(o => o.paymentStatus === 'paid').length}</p>
+                        <p className="text-[8px] sm:text-[10px] font-bold uppercase tracking-wider opacity-80">Berhasil</p>
+                        <p className="text-base sm:text-xl font-black">{orders.filter(o => o.paymentStatus === 'paid').length}</p>
                     </button>
 
                     <button
@@ -222,8 +222,8 @@ export default function OrdersPage() {
                         disabled
                     >
                         <Truck className="h-5 w-5 mb-2" />
-                        <p className="text-[10px] font-bold uppercase tracking-wider">Dikirim</p>
-                        <p className="text-xl font-black">0</p>
+                        <p className="text-[8px] sm:text-[10px] font-bold uppercase tracking-wider">Dikirim</p>
+                        <p className="text-base sm:text-xl font-black">0</p>
                     </button>
                 </div>
 
@@ -251,24 +251,24 @@ export default function OrdersPage() {
                                                 </div>
                                                 <div>
                                                     <div className="flex items-center space-x-2">
-                                                        <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Order ID</span>
-                                                        <span className="text-xs font-black text-gray-900 px-2 py-0.5 bg-gray-100 rounded-lg">#{order.id.slice(-8).toUpperCase()}</span>
+                                                        <span className="text-[8px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest">Order ID</span>
+                                                        <span className="text-[9px] sm:text-xs font-black text-gray-900 px-2 py-0.5 bg-gray-100 rounded-lg">#{order.id.slice(-8).toUpperCase()}</span>
                                                     </div>
-                                                    <div className="flex items-center space-x-3 mt-1 text-xs text-gray-500 font-medium">
-                                                        <span className="flex items-center"><Calendar className="h-3 w-3 mr-1" /> {formatShortDate(order.createdAt)}</span>
+                                                    <div className="flex items-center space-x-3 mt-1 text-[8px] sm:text-xs text-gray-500 font-medium">
+                                                        <span className="flex items-center"><Calendar className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1" /> {formatShortDate(order.createdAt)}</span>
                                                         <span className="h-1 w-1 bg-gray-300 rounded-full"></span>
-                                                        <span className="flex items-center"><Store className="h-3 w-3 mr-1" /> {order.shop.name}</span>
+                                                        <span className="flex items-center"><Store className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1" /> {order.shop.name}</span>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div className={clsx(
-                                                "flex items-center space-x-2 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all",
+                                                "flex items-center space-x-2 px-3 py-1.5 rounded-xl border text-[9px] sm:text-xs font-bold transition-all",
                                                 status.bg,
                                                 status.text,
                                                 status.border
                                             )}>
-                                                <StatusIcon className="h-4 w-4" />
+                                                <StatusIcon className="h-3 w-3 sm:h-4 sm:w-4" />
                                                 <span>{status.label}</span>
                                             </div>
                                         </div>
@@ -293,8 +293,8 @@ export default function OrdersPage() {
                                                             )}
                                                         </div>
                                                         <div className="flex-1 min-w-0">
-                                                            <h4 className="font-bold text-gray-900 truncate text-sm sm:text-base">{item.product.name}</h4>
-                                                            <p className="text-xs text-gray-500 mt-0.5">{item.quantity} x {formatPrice(item.price)}</p>
+                                                            <h4 className="font-bold text-gray-900 truncate text-[10px] sm:text-base">{item.product.name}</h4>
+                                                            <p className="text-[9px] sm:text-xs text-gray-500 mt-0.5">{item.quantity} x {formatPrice(item.price)}</p>
                                                         </div>
                                                     </div>
                                                 );
@@ -307,15 +307,15 @@ export default function OrdersPage() {
                                         {/* Total & Action */}
                                         <div className="flex items-center justify-between pt-5 border-t border-gray-50">
                                             <div>
-                                                <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Total Belanja</p>
-                                                <p className="text-lg font-black text-[#1B5E20]">{formatPrice(order.totalAmount)}</p>
+                                                <p className="text-[8px] sm:text-xs text-gray-400 font-bold uppercase tracking-widest">Total Belanja</p>
+                                                <p className="text-base sm:text-lg font-black text-[#1B5E20]">{formatPrice(order.totalAmount)}</p>
                                             </div>
                                             <Link
                                                 href={`/dashboard/orders/${order.id}`}
-                                                className="flex items-center space-x-2 px-6 py-2.5 bg-gray-900 text-white text-xs font-bold rounded-xl hover:bg-gray-800 transition-all active:scale-95"
+                                                className="flex items-center space-x-2 px-4 sm:px-6 py-2 sm:py-2.5 bg-gray-900 text-white text-[9px] sm:text-xs font-bold rounded-xl hover:bg-gray-800 transition-all active:scale-95"
                                             >
                                                 <span>Detail Pesanan</span>
-                                                <ChevronRight className="h-4 w-4" />
+                                                <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
                                             </Link>
                                         </div>
                                     </div>

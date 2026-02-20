@@ -159,7 +159,7 @@ export default function Home() {
                 <feature.icon className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
               </div>
               <div>
-                <h4 className="text-[10px] sm:text-sm font-bold text-gray-900 leading-tight">{feature.title}</h4>
+                <h4 className="text-[9px] sm:text-sm font-bold text-gray-900 leading-tight">{feature.title}</h4>
                 <p className="text-[8px] sm:text-[10px] text-gray-500 hidden sm:block">{feature.desc}</p>
               </div>
             </div>
@@ -169,7 +169,7 @@ export default function Home() {
         {/* Categories Section - Modern Horizontal Scroll */}
         <section>
           <div className="flex items-center justify-between mb-3 sm:mb-6">
-            <h2 className="text-base sm:text-2xl font-black text-gray-900 tracking-tight flex items-center">
+            <h2 className="text-[11px] sm:text-2xl font-black text-gray-900 tracking-tight flex items-center">
               <Grid className="mr-1.5 sm:mr-2 h-4 w-4 sm:h-6 sm:w-6 text-[#1B5E20]" />
               Kategori Pilihan
             </h2>
@@ -199,7 +199,7 @@ export default function Home() {
                   <Grid className="h-4 w-4 sm:h-8 sm:w-8" />
                 </div>
                 <span className={clsx(
-                  "text-[9px] sm:text-xs font-bold text-center",
+                  "text-[8px] sm:text-xs font-bold text-center",
                   selectedCategory === 'all' ? "text-[#1B5E20]" : "text-gray-600"
                 )}>Semua</span>
               </button>
@@ -232,7 +232,7 @@ export default function Home() {
                         <Icon className={clsx("h-4 w-4 sm:h-8 sm:w-8 transition-colors", isSelected ? style.color : style.color)} />
                       </div>
                       <span className={clsx(
-                        "text-[9px] sm:text-xs font-bold text-center max-w-[40px] sm:max-w-[80px] leading-tight",
+                        "text-[8px] sm:text-xs font-bold text-center max-w-[40px] sm:max-w-[80px] leading-tight",
                         isSelected ? "text-gray-900" : "text-gray-500"
                       )}>{cat.name}</span>
                     </button>
@@ -246,7 +246,7 @@ export default function Home() {
         {/* Featured Shops / Toko Terdekat */}
         <section>
           <div className="flex items-center justify-between mb-2 sm:mb-6">
-            <h2 className="text-base sm:text-2xl font-black text-gray-900 tracking-tight flex items-center">
+            <h2 className="text-[11px] sm:text-2xl font-black text-gray-900 tracking-tight flex items-center">
               <Store className="mr-1.5 sm:mr-2 h-4 w-4 sm:h-6 sm:w-6 text-[#1B5E20]" />
               Toko Pilihan
             </h2>
@@ -279,7 +279,7 @@ export default function Home() {
                         )}
                       </div>
                       <div className="flex-1 min-w-0 relative z-10">
-                        <h3 className="font-bold text-[10px] sm:text-base text-gray-900 group-hover:text-[#1B5E20] transition-colors truncate">
+                        <h3 className="font-bold text-[9px] sm:text-base text-gray-900 group-hover:text-[#1B5E20] transition-colors truncate">
                           {shop.name}
                         </h3>
                         <p className="text-[8px] sm:text-xs text-gray-500 truncate flex items-center mt-0.5">
@@ -303,7 +303,7 @@ export default function Home() {
         <section>
           <div className="flex items-center space-x-1.5 sm:space-x-2 mb-3 sm:mb-6">
             <TrendingUp className="h-4 w-4 sm:h-6 sm:w-6 text-[#1B5E20]" />
-            <h2 className="text-base sm:text-2xl font-black text-gray-900 tracking-tight">Rekomendasi Produk</h2>
+            <h2 className="text-[11px] sm:text-2xl font-black text-gray-900 tracking-tight">Rekomendasi Produk</h2>
           </div>
 
           {loading || productsLoading ? (
@@ -374,7 +374,7 @@ export default function Home() {
                         <div className="mt-auto flex items-end justify-between">
                           <div>
                             <p className="text-[8px] sm:text-[10px] text-gray-500 line-through">{formatPrice(product.price * 1.1)}</p>
-                            <p className="text-xs sm:text-lg font-black text-[#1B5E20]">
+                            <p className="text-[11px] sm:text-lg font-black text-[#1B5E20]">
                               {formatPrice(product.price)}
                             </p>
                           </div>
@@ -412,10 +412,10 @@ export default function Home() {
           <div className="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-3xl max-h-[85vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-white z-10">
               <div>
-                <h3 className="text-base sm:text-xl font-black text-gray-900 flex items-center gap-2">
+                <h3 className="text-[11px] sm:text-xl font-black text-gray-900 flex items-center gap-2">
                   Jelajahi Kategori
                 </h3>
-                <p className="text-[10px] sm:text-sm text-gray-500">Temukan semua kebutuhan dapurmu disini</p>
+                <p className="text-[9px] sm:text-sm text-gray-500">Temukan semua kebutuhan dapurmu disini</p>
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
@@ -445,7 +445,7 @@ export default function Home() {
                   )}>
                     <Grid className="h-6 w-6 sm:h-8 sm:w-8" />
                   </div>
-                  <span className={clsx("font-bold text-[9px] sm:text-sm", selectedCategory === 'all' ? "text-[#1B5E20]" : "text-gray-700")}>Semua Produk</span>
+                  <span className={clsx("font-bold text-[8px] sm:text-sm", selectedCategory === 'all' ? "text-[#1B5E20]" : "text-gray-700")}>Semua Produk</span>
                 </button>
 
                 {categories.map((cat) => {
@@ -471,7 +471,7 @@ export default function Home() {
                         <Icon className="h-6 w-6 sm:h-8 sm:w-8" />
                       </div>
                       <span className={clsx(
-                        "font-bold text-[10px] sm:text-sm",
+                        "font-bold text-[8px] sm:text-sm",
                         isSelected ? "text-white" : "text-gray-700"
                       )}>
                         {cat.name}

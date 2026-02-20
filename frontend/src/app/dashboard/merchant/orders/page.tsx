@@ -210,8 +210,8 @@ export default function MerchantOrdersPage() {
                                     <ArrowLeft className="h-5 w-5" />
                                 </Link>
                                 <div>
-                                    <h1 className="text-lg sm:text-xl font-bold text-gray-900 leading-tight">Pesanan Toko</h1>
-                                    <p className="text-xs text-gray-500">Kelola pesanan masuk</p>
+                                    <h1 className="text-sm sm:text-xl font-bold text-gray-900 leading-tight">Pesanan Toko</h1>
+                                    <p className="text-[9px] text-gray-500">Kelola pesanan masuk</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-2">
@@ -232,7 +232,7 @@ export default function MerchantOrdersPage() {
                                 <input
                                     type="text"
                                     placeholder="Cari ID, Nama Pembeli..."
-                                    className="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:ring-1 focus:ring-[#1B5E20] focus:border-[#1B5E20] outline-none transition-all"
+                                    className="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-[10px] sm:text-sm focus:ring-1 focus:ring-[#1B5E20] focus:border-[#1B5E20] outline-none transition-all"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
@@ -243,7 +243,7 @@ export default function MerchantOrdersPage() {
                                         key={s}
                                         onClick={() => setStatusFilter(s)}
                                         className={clsx(
-                                            "whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all",
+                                            "whitespace-nowrap px-3 py-1.5 rounded-lg text-[9px] sm:text-xs font-semibold border transition-all",
                                             statusFilter === s
                                                 ? "bg-[#1B5E20] text-white border-[#1B5E20]"
                                                 : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
@@ -293,13 +293,13 @@ export default function MerchantOrdersPage() {
                                         <div className="flex items-center gap-3">
                                             <div className="flex flex-col gap-1">
                                                 <div className="flex items-center gap-2">
-                                                    <span className="text-xs font-bold text-gray-900">#{order.id.slice(-8).toUpperCase()}</span>
+                                                    <span className="text-[8px] sm:text-xs font-bold text-gray-900">#{order.id.slice(-8).toUpperCase()}</span>
                                                     <span className="text-[10px] text-gray-400">•</span>
-                                                    <span className="text-[10px] text-gray-500 font-medium">{formatShortDate(order.createdAt)}</span>
+                                                    <span className="text-[8px] sm:text-[10px] text-gray-500 font-medium">{formatShortDate(order.createdAt)}</span>
                                                 </div>
                                                 <div className="flex items-center gap-1">
                                                     <User className="h-3 w-3 text-gray-400" />
-                                                    <span className="text-xs text-gray-600 font-medium truncate max-w-[150px]">{order.user.name}</span>
+                                                    <span className="text-[9px] sm:text-xs text-gray-600 font-medium truncate max-w-[150px]">{order.user.name}</span>
                                                     {order.user.whatsapp && (
                                                         <a
                                                             href={`https://wa.me/62${order.user.whatsapp.replace(/^0/, '')}`}
@@ -314,7 +314,7 @@ export default function MerchantOrdersPage() {
                                                 {/* Shipping Address */}
                                                 <div className="flex items-start gap-1">
                                                     <MapPin className="h-3 w-3 text-gray-400 mt-0.5" />
-                                                    <span className="text-[10px] text-gray-500 font-medium max-w-[200px] sm:max-w-md truncate">
+                                                    <span className="text-[8px] sm:text-[10px] text-gray-500 font-medium max-w-[200px] sm:max-w-md truncate">
                                                         {order.shippingAddress?.address || 'Alamat tidak tersedia'}
                                                     </span>
                                                 </div>
@@ -322,7 +322,7 @@ export default function MerchantOrdersPage() {
                                         </div>
 
                                         <div className={clsx(
-                                            "px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide flex items-center gap-1.5 border",
+                                            "px-2.5 py-1 rounded-md text-[9px] font-bold uppercase tracking-wide flex items-center gap-1.5 border",
                                             statusStyle.bg, statusStyle.text, statusStyle.border
                                         )}>
                                             <StatusIcon className="h-3 w-3" />
@@ -348,8 +348,8 @@ export default function MerchantOrdersPage() {
                                                         )}
                                                     </div>
                                                     <div className="min-w-0 flex-1">
-                                                        <p className="text-xs font-semibold text-gray-900 truncate">{item.product.name}</p>
-                                                        <div className="flex items-center text-[10px] text-gray-500 mt-0.5">
+                                                        <p className="text-[10px] font-semibold text-gray-900 truncate">{item.product.name}</p>
+                                                        <div className="flex items-center text-[8px] sm:text-[10px] text-gray-500 mt-0.5">
                                                             <span className="font-medium text-gray-700">{item.quantity}x</span>
                                                             <span className="mx-1 text-gray-300">|</span>
                                                             <span>{formatPrice(item.price)}</span>
@@ -361,7 +361,7 @@ export default function MerchantOrdersPage() {
                                                 </div>
                                             ))}
                                             {order.items.length > 2 && (
-                                                <p className="text-[10px] text-gray-400 font-medium pl-14">+{order.items.length - 2} produk lainnya</p>
+                                                <p className="text-[8px] text-gray-400 font-medium pl-14">+{order.items.length - 2} produk lainnya</p>
                                             )}
                                         </div>
 
@@ -371,8 +371,8 @@ export default function MerchantOrdersPage() {
                                         {/* Total & Actions */}
                                         <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between gap-4 sm:gap-2 sm:min-w-[140px] shrink-0">
                                             <div className="text-right">
-                                                <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider mb-0.5">Total Belanja</p>
-                                                <p className="text-sm font-bold text-[#1B5E20]">{formatPrice(order.totalAmount)}</p>
+                                                <p className="text-[8px] sm:text-[10px] text-gray-400 font-medium uppercase tracking-wider mb-0.5">Total Belanja</p>
+                                                <p className="text-[11px] sm:text-sm font-bold text-[#1B5E20]">{formatPrice(order.totalAmount)}</p>
                                             </div>
 
                                             <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -380,7 +380,7 @@ export default function MerchantOrdersPage() {
                                                 {order.paymentStatus === 'pending' && (
                                                     <button
                                                         onClick={() => updateStatus(order.id, order.paymentMethod === 'cod' ? 'processing' : 'paid')}
-                                                        className="flex-1 sm:flex-none px-3 py-1.5 bg-[#1B5E20] text-white text-xs font-semibold rounded-lg hover:bg-green-800 transition-colors shadow-sm"
+                                                        className="flex-1 sm:flex-none px-3 py-1.5 bg-[#1B5E20] text-white text-[10px] font-semibold rounded-lg hover:bg-green-800 transition-colors shadow-sm"
                                                     >
                                                         {order.paymentMethod === 'cod' ? 'Konfirmasi' : 'Verifikasi'}
                                                     </button>
@@ -415,7 +415,7 @@ export default function MerchantOrdersPage() {
 
                                                 <Link
                                                     href={`/dashboard/merchant/orders/${order.id}`}
-                                                    className="px-3 py-1.5 bg-white border border-gray-200 text-gray-600 text-xs font-semibold rounded-lg hover:bg-gray-50 transition-colors"
+                                                    className="px-3 py-1.5 bg-white border border-gray-200 text-gray-600 text-[10px] font-semibold rounded-lg hover:bg-gray-50 transition-colors"
                                                 >
                                                     Detail
                                                 </Link>
