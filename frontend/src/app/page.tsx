@@ -146,25 +146,7 @@ export default function Home() {
           <HeroSlider />
         </section>
 
-        {/* Value Proposition / Features */}
-        <section className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
-          {[
-            { icon: MapPin, title: "Dekat Rumah", desc: "Temukan penjual di sekitarmu" },
-            { icon: Star, title: "Terpercaya", desc: "Rating & ulasan transparan" },
-            { icon: ShoppingBag, title: "Bebas Ongkir", desc: "Untuk area terdekat" },
-            { icon: Utensils, title: "Masakan Segar", desc: "Dibuat setiap hari" },
-          ].map((feature, idx) => (
-            <div key={idx} className="bg-white p-2.5 sm:p-4 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-200 flex items-center space-x-2 sm:space-x-3 transition-transform hover:-translate-y-1">
-              <div className="p-1.5 sm:p-2.5 bg-green-50 rounded-lg text-[#1B5E20] shrink-0">
-                <feature.icon className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
-              </div>
-              <div>
-                <h4 className="text-[9px] sm:text-sm font-bold text-gray-900 leading-tight">{feature.title}</h4>
-                <p className="text-[8px] sm:text-[10px] text-gray-500 hidden sm:block">{feature.desc}</p>
-              </div>
-            </div>
-          ))}
-        </section>
+
 
         {/* Categories Section - Modern Horizontal Scroll */}
         <section>

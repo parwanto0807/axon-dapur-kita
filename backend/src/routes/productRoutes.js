@@ -32,9 +32,6 @@ const checkShopOwnership = async (userId) => {
 // @desc    Get public product list (Best Sellers/Latest)
 // @route   GET /api/products/public
 // @access  Public
-// @desc    Get public product list (Best Sellers/Latest)
-// @route   GET /api/products/public
-// @access  Public
 router.get('/public', async (req, res) => {
     try {
         const { category } = req.query;
@@ -79,6 +76,75 @@ router.get('/public', async (req, res) => {
     } catch (error) {
         console.error('Error fetching public products:', error);
         res.status(500).json({ message: 'Server error fetching products' });
+    }
+});
+
+// @desc    Get products nearby
+// @route   GET /api/products/nearby
+// @access  Public
+router.get('/nearby', async (req, res) => {
+    try {
+        const { lat, lng, radius = 5 } = req.query; // radius in km
+
+        if (!lat || !lng) {
+            return res.status(400).json({ message: 'Latitude and longitude are required' });
+        }
+
+        const userLat = parseFloat(lat);
+        const userLng = parseFloat(lng);
+        const searchRadius = parseFloat(radius);
+
+        const products = await prisma.product.findMany({
+            where: {
+                isActive: true,
+                status: 'ACTIVE',
+                stock: { gt: 0 },
+                shop: {
+                    status: 'ACTIVE',
+                    latitude: { not: null },
+                    longitude: { not: null }
+                }
+            },
+            include: {
+                shop: {
+                    select: { name: true, slug: true, address: true, latitude: true, longitude: true }
+                },
+                images: true,
+                category: true
+            }
+        });
+
+        // Haversine formula to filter by distance
+        const R = 6371; // Earth radius in km
+        const nearbyProducts = products.filter(product => {
+            const { latitude, longitude } = product.shop;
+            const dLat = (latitude - userLat) * (Math.PI / 180);
+            const dLng = (longitude - userLng) * (Math.PI / 180);
+            const a = 
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(userLat * (Math.PI / 180)) * Math.cos(latitude * (Math.PI / 180)) * 
+                Math.sin(dLng / 2) * Math.sin(dLng / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const distance = R * c;
+            
+            product.distance = distance; // Add distance for sorting/display
+            return distance <= searchRadius;
+        });
+
+        // Sort by distance
+        nearbyProducts.sort((a, b) => a.distance - b.distance);
+
+        const formattedProducts = nearbyProducts.map(product => ({
+            ...product,
+            image: product.images.length > 0 
+                ? (product.images.find(img => img.isPrimary)?.url || product.images[0].url) 
+                : null
+        }));
+
+        res.json(formattedProducts);
+    } catch (error) {
+        console.error('Error fetching nearby products:', error);
+        res.status(500).json({ message: 'Server error fetching nearby products' });
     }
 });
 

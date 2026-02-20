@@ -99,35 +99,122 @@ export default function AdminShopsPage() {
     };
 
     return (
-        <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <h1 className="text-2xl font-bold text-gray-900">Kelola Toko</h1>
-                <div className="flex gap-2">
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <div className="space-y-4 sm:space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+                <h1 className="text-sm sm:text-2xl font-black text-gray-900 uppercase tracking-tight">Kelola Toko</h1>
+                <div className="flex gap-2 w-full sm:w-auto">
+                    <div className="relative flex-1 sm:flex-none">
+                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
                         <input
                             type="text"
-                            placeholder="Cari toko atau pemilik..."
+                            placeholder="Cari toko..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none w-full sm:w-64"
+                            className="pl-8 pr-3 py-1.5 sm:py-2 border border-gray-200 rounded-lg text-[10px] sm:text-sm font-bold focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none w-full sm:w-64"
                         />
                     </div>
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+                        className="px-2 py-1.5 sm:py-2 border border-gray-200 rounded-lg text-[10px] sm:text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none bg-white min-w-[100px]"
                     >
-                        <option value="ALL">Semua Status</option>
+                        <option value="ALL">Semua</option>
                         <option value="PENDING">Menunggu</option>
                         <option value="ACTIVE">Aktif</option>
-                        <option value="SUSPENDED">Ditangguhkan</option>
+                        <option value="SUSPENDED">Off</option>
                     </select>
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                <div className="overflow-x-auto">
+            <div className="bg-white rounded-xl sm:rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                {/* Mobile View: Card List */}
+                <div className="block sm:hidden divide-y divide-gray-50">
+                    {isLoading ? (
+                        <div className="p-10 text-center text-gray-500">
+                            <Loader2 className="h-6 w-6 animate-spin text-blue-500 mx-auto mb-2" />
+                            <span className="text-[10px] font-bold uppercase tracking-widest">Memuat...</span>
+                        </div>
+                    ) : shops.length === 0 ? (
+                        <div className="p-10 text-center text-gray-400 text-[10px] font-bold uppercase tracking-widest italic">
+                            Kosong
+                        </div>
+                    ) : (
+                        shops.map((shop) => (
+                            <div key={shop.id} className="p-3 bg-white hover:bg-gray-50 transition-colors">
+                                <div className="flex justify-between items-start mb-2">
+                                    <div className="flex items-center gap-2">
+                                        <div className="h-8 w-8 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center shrink-0">
+                                            <Store className="h-4 w-4 text-gray-400" />
+                                        </div>
+                                        <div className="min-w-0">
+                                            <h3 className="text-[10px] font-black text-gray-900 truncate leading-tight uppercase tracking-tight">{shop.name}</h3>
+                                            <p className="text-[7px] font-bold text-gray-400 tracking-widest">#{shop.id.slice(-6)}</p>
+                                        </div>
+                                    </div>
+                                    {getStatusBadge(shop.status)}
+                                </div>
+                                <div className="grid grid-cols-2 gap-2 mb-3">
+                                    <div className="p-1.5 bg-gray-50 rounded-lg">
+                                        <p className="text-[6px] font-black text-gray-400 uppercase tracking-widest mb-0.5">Pemilik</p>
+                                        <p className="text-[8.5px] font-bold text-gray-800 truncate">{shop.owner.name}</p>
+                                        <p className="text-[7px] text-gray-500 truncate leading-none mt-0.5">{shop.owner.email}</p>
+                                    </div>
+                                    <div className="p-1.5 bg-gray-50 rounded-lg">
+                                        <p className="text-[6px] font-black text-gray-400 uppercase tracking-widest mb-0.5">Metrik</p>
+                                        <div className="flex gap-2">
+                                            <span className="text-[8.5px] font-bold text-gray-800">{shop._count.products} Prd</span>
+                                            <span className="text-[8.5px] font-bold text-gray-800">{shop._count.orders} Psn</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-50">
+                                    {shop.status === 'PENDING' && (
+                                        <>
+                                            <button
+                                                onClick={() => updateStatus(shop.id, 'ACTIVE')}
+                                                disabled={actionLoading === shop.id}
+                                                className="bg-green-500 text-white px-2 py-1 rounded text-[8px] font-black uppercase tracking-widest shadow-sm shadow-green-200"
+                                            >
+                                                Approve
+                                            </button>
+                                            <button
+                                                onClick={() => updateStatus(shop.id, 'REJECTED')}
+                                                disabled={actionLoading === shop.id}
+                                                className="bg-red-50 text-red-500 px-2 py-1 rounded text-[8px] font-black uppercase tracking-widest border border-red-100"
+                                            >
+                                                Tolak
+                                            </button>
+                                        </>
+                                    )}
+                                    {shop.status === 'ACTIVE' && (
+                                        <button
+                                            onClick={() => updateStatus(shop.id, 'SUSPENDED')}
+                                            disabled={actionLoading === shop.id}
+                                            className="text-orange-500 px-2 py-1 rounded text-[8px] font-black uppercase tracking-widest bg-orange-50 border border-orange-100"
+                                        >
+                                            Suspend
+                                        </button>
+                                    )}
+                                    {shop.status === 'SUSPENDED' && (
+                                        <button
+                                            onClick={() => updateStatus(shop.id, 'ACTIVE')}
+                                            disabled={actionLoading === shop.id}
+                                            className="text-green-600 px-2 py-1 rounded text-[8px] font-black uppercase tracking-widest bg-green-50 border border-green-100"
+                                        >
+                                            Aktifkan
+                                        </button>
+                                    )}
+                                    <a href={`/shop/${shop.slug}`} target="_blank" rel="noreferrer" className="p-1 text-gray-400">
+                                        <ExternalLink className="h-3.5 w-3.5" />
+                                    </a>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+
+                {/* Desktop View: Table */}
+                <div className="hidden sm:block overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
                             <tr>
@@ -138,7 +225,7 @@ export default function AdminShopsPage() {
                                 <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
+                        <tbody className="bg-white divide-y divide-gray-100">
                             {isLoading ? (
                                 <tr>
                                     <td colSpan={5} className="px-6 py-10 text-center text-gray-500">
@@ -150,7 +237,7 @@ export default function AdminShopsPage() {
                                 </tr>
                             ) : shops.length === 0 ? (
                                 <tr>
-                                    <td colSpan={5} className="px-6 py-10 text-center text-gray-500">
+                                    <td colSpan={5} className="px-6 py-10 text-center text-gray-500 italic">
                                         Tidak ada toko yang ditemukan
                                     </td>
                                 </tr>
@@ -163,13 +250,13 @@ export default function AdminShopsPage() {
                                                     <Store className="h-5 w-5 text-gray-500" />
                                                 </div>
                                                 <div className="ml-4">
-                                                    <div className="text-sm font-medium text-gray-900">{shop.name}</div>
-                                                    <div className="text-xs text-gray-500">ID: #{shop.id.slice(-6)}</div>
+                                                    <div className="text-sm font-bold text-gray-900">{shop.name}</div>
+                                                    <div className="text-xs text-gray-500 uppercase tracking-widest font-bold">ID: #{shop.id.slice(-6)}</div>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-900">{shop.owner.name}</div>
+                                            <div className="text-sm font-bold text-gray-900">{shop.owner.name}</div>
                                             <div className="text-xs text-gray-500">{shop.owner.email}</div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
@@ -177,8 +264,8 @@ export default function AdminShopsPage() {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                             <div className="flex flex-col gap-1">
-                                                <span>{shop._count.products} Produk</span>
-                                                <span>{shop._count.orders} Pesanan</span>
+                                                <span className="font-bold">{shop._count.products} Produk</span>
+                                                <span className="font-bold">{shop._count.orders} Pesanan</span>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -223,7 +310,6 @@ export default function AdminShopsPage() {
                                                         <Check className="h-4 w-4" />
                                                     </button>
                                                 )}
-
                                                 <a href={`/shop/${shop.slug}`} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-blue-600 p-1 transition-colors">
                                                     <ExternalLink className="h-4 w-4" />
                                                 </a>
@@ -238,21 +324,21 @@ export default function AdminShopsPage() {
 
                 {/* Pagination */}
                 {totalPages > 1 && (
-                    <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+                    <div className="px-3 sm:px-6 py-2 sm:py-4 border-t border-gray-50 flex items-center justify-between">
                         <button
                             onClick={() => setPage(p => Math.max(1, p - 1))}
                             disabled={page === 1}
-                            className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50"
+                            className="px-2 py-1 border border-gray-300 rounded text-[9px] sm:text-sm font-bold disabled:opacity-50 uppercase tracking-widest"
                         >
-                            Previous
+                            Prev
                         </button>
-                        <span className="text-sm text-gray-600">
-                            Halaman {page} dari {totalPages}
+                        <span className="text-[9px] sm:text-sm text-gray-400 font-black uppercase tracking-widest">
+                            Hlm {page} / {totalPages}
                         </span>
                         <button
                             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                             disabled={page === totalPages}
-                            className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50"
+                            className="px-2 py-1 border border-gray-300 rounded text-[9px] sm:text-sm font-bold disabled:opacity-50 uppercase tracking-widest"
                         >
                             Next
                         </button>

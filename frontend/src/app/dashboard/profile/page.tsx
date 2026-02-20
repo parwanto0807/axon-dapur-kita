@@ -5,7 +5,6 @@ import { useAuthStore } from "@/store/authStore";
 import { useRouter } from 'next/navigation';
 import { User, Mail, Phone, Camera, Save, ArrowLeft, Loader2, CheckCircle, AlertCircle } from "lucide-react";
 import axios from 'axios';
-import MerchantBottomNav from '@/components/merchant/MerchantBottomNav';
 
 export default function UserProfilePage() {
     const { user, isLoggedIn, isLoading: isAuthLoading, login } = useAuthStore();
@@ -217,34 +216,34 @@ export default function UserProfilePage() {
         <div className="min-h-screen bg-gray-50 font-[family-name:var(--font-poppins)]">
             {/* Header */}
             <div className="bg-white border-b sticky top-0 z-50">
-                <div className="max-w-xl mx-auto px-4 h-16 flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                        <button onClick={() => router.back()} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                            <ArrowLeft className="h-5 w-5 text-gray-600" />
+                <div className="max-w-xl mx-auto px-4 h-12 sm:h-16 flex items-center justify-between">
+                    <div className="flex items-center space-x-3 sm:space-x-4">
+                        <button onClick={() => router.back()} className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-full transition-colors">
+                            <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600" />
                         </button>
-                        <h1 className="font-bold text-gray-900 text-lg uppercase tracking-tight">Profil Saya</h1>
+                        <h1 className="font-bold text-gray-900 text-sm sm:text-lg uppercase tracking-tight">Profil Saya</h1>
                     </div>
                 </div>
             </div>
 
-            <main className="max-w-xl mx-auto px-4 py-8 pb-32">
+            <main className="max-w-xl mx-auto px-1 sm:px-4 py-4 sm:py-8 pb-32">
                 {/* Profile Picture Section */}
-                <div className="flex flex-col items-center mb-8">
+                <div className="flex flex-col items-center mb-6 sm:mb-8">
                     <div className="relative group">
-                        <div className="w-32 h-32 rounded-[2.5rem] overflow-hidden border-4 border-white shadow-xl bg-gray-100">
+                        <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden border-4 border-white shadow-xl bg-gray-100">
                             {previewUrl ? (
                                 <img src={previewUrl} alt="Avatar" className="w-full h-full object-cover" />
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center text-gray-300">
-                                    <User className="h-16 w-16" />
+                                    <User className="h-12 w-12 sm:h-16 sm:w-16" />
                                 </div>
                             )}
                         </div>
                         <button
                             onClick={() => fileInputRef.current?.click()}
-                            className="absolute bottom-0 right-0 p-3 bg-[#1B5E20] text-white rounded-2xl shadow-lg border-2 border-white hover:scale-105 active:scale-95 transition-all"
+                            className="absolute bottom-0 right-0 p-2 sm:p-3 bg-[#1B5E20] text-white rounded-xl sm:rounded-2xl shadow-lg border-2 border-white hover:scale-105 active:scale-95 transition-all"
                         >
-                            <Camera className="h-5 w-5" />
+                            <Camera className="h-4 w-4 sm:h-5 sm:w-5" />
                         </button>
                         <input
                             type="file"
@@ -254,11 +253,11 @@ export default function UserProfilePage() {
                             className="hidden"
                         />
                     </div>
-                    <p className="mt-4 text-sm text-gray-900 font-bold uppercase tracking-tight">Ketuk kamera untuk ubah foto</p>
+                    <p className="mt-3 text-[9px] sm:text-sm text-gray-900 font-bold uppercase tracking-tight">Ganti Foto Profil</p>
                 </div>
 
                 {/* Form Section */}
-                <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-8 space-y-6">
+                <div className="bg-white rounded-xl sm:rounded-[2.5rem] border-y sm:border border-gray-100 shadow-sm p-3.5 sm:p-8 space-y-4 sm:space-y-6">
                     {error && (
                         <div className="p-4 bg-red-50 border border-red-100 text-red-600 rounded-2xl text-sm flex items-start space-x-2 animate-in fade-in slide-in-from-top-1">
                             <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
@@ -275,140 +274,140 @@ export default function UserProfilePage() {
 
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-[10px] sm:text-xs font-black text-gray-900 uppercase tracking-widest mb-2 px-1">Nama Lengkap</label>
+                            <label className="block text-[7px] sm:text-xs font-black text-gray-900 uppercase tracking-widest mb-1 sm:mb-2 px-1">Nama Lengkap</label>
                             <div className="relative group">
-                                <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-[#1B5E20] transition-colors" />
+                                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 group-focus-within:text-[#1B5E20] transition-colors" />
                                 <input
                                     type="text"
                                     name="name"
                                     value={formData.name}
                                     onChange={handleChange}
-                                    placeholder="Masukkan nama Anda"
-                                    className="w-full bg-white border border-gray-300 rounded-2xl py-4 pl-12 pr-4 text-sm font-black text-black focus:border-[#1B5E20] focus:ring-4 focus:ring-[#1B5E20]/5 transition-all outline-none"
+                                    placeholder="Masukkan nama"
+                                    className="w-full bg-white border border-gray-200 rounded-lg sm:rounded-2xl py-2 sm:py-4 pl-10 sm:pl-12 pr-4 text-[10px] sm:text-sm font-bold text-black focus:border-[#1B5E20] focus:ring-2 focus:ring-[#1B5E20]/5 transition-all outline-none"
                                 />
                             </div>
                         </div>
 
                         <div>
-                            <label className="block text-[10px] sm:text-xs font-black text-black uppercase tracking-widest mb-2 px-1">Email (Akun)</label>
+                            <label className="block text-[7px] sm:text-xs font-black text-black uppercase tracking-widest mb-1 sm:mb-2 px-1">Email (Akun)</label>
                             <div className="relative">
-                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-black" />
+                                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-black" />
                                 <input
                                     type="email"
                                     value={formData.email}
                                     disabled
-                                    className="w-full bg-gray-100 border border-gray-300 rounded-2xl py-4 pl-12 pr-4 text-sm font-black text-black cursor-not-allowed"
+                                    className="w-full bg-gray-50 border border-gray-200 rounded-lg sm:rounded-2xl py-2 sm:py-4 pl-10 sm:pl-12 pr-4 text-[10px] sm:text-sm font-bold text-black cursor-not-allowed opacity-60"
                                 />
                             </div>
-                            <p className="mt-1.5 text-[10px] text-black px-1 italic font-black uppercase tracking-tight">Email tidak dapat diubah demi keamanan.</p>
+                            <p className="mt-1 text-[7px] sm:text-[10px] text-gray-400 px-1 italic font-bold uppercase tracking-tight">Email tidak dapat diubah demi keamanan.</p>
                         </div>
 
                         <div>
-                            <label className="block text-[10px] sm:text-xs font-black text-gray-900 uppercase tracking-widest mb-2 px-1">Nomor WhatsApp</label>
+                            <label className="block text-[7px] sm:text-xs font-black text-gray-900 uppercase tracking-widest mb-1 sm:mb-2 px-1">WhatsApp</label>
                             <div className="relative group">
-                                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-[#1B5E20] transition-colors" />
+                                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 group-focus-within:text-[#1B5E20] transition-colors" />
                                 <input
                                     type="text"
                                     name="whatsapp"
                                     value={formData.whatsapp}
                                     onChange={handleChange}
-                                    placeholder="Contoh: 08123456789"
-                                    className="w-full bg-white border border-gray-300 rounded-2xl py-4 pl-12 pr-4 text-sm font-black text-black focus:border-[#1B5E20] focus:ring-4 focus:ring-[#1B5E20]/5 transition-all outline-none"
+                                    placeholder="08123456789"
+                                    className="w-full bg-white border border-gray-200 rounded-lg sm:rounded-2xl py-2 sm:py-4 pl-10 sm:pl-12 pr-4 text-[10px] sm:text-sm font-bold text-black focus:border-[#1B5E20] focus:ring-2 focus:ring-[#1B5E20]/5 transition-all outline-none"
                                 />
                             </div>
                         </div>
 
                         <div>
-                            <label className="block text-[10px] sm:text-xs font-black text-gray-900 uppercase tracking-widest mb-2 px-1">Jenis Kelamin</label>
-                            <div className="flex space-x-4">
-                                <label className="flex items-center space-x-2 p-3 border rounded-xl cursor-pointer hover:bg-gray-50 flex-1">
+                            <label className="block text-[7px] sm:text-xs font-black text-gray-900 uppercase tracking-widest mb-1 sm:mb-2 px-1">Jenis Kelamin</label>
+                            <div className="flex space-x-2 sm:space-x-4">
+                                <label className="flex items-center space-x-1.5 px-3 py-1.5 sm:p-3 border rounded-lg sm:rounded-xl cursor-pointer hover:bg-gray-50 flex-1">
                                     <input
                                         type="radio"
                                         name="gender"
                                         value="LAKI_LAKI"
                                         checked={formData.gender === 'LAKI_LAKI'}
                                         onChange={handleChange}
-                                        className="text-[#1B5E20] focus:ring-[#1B5E20]"
+                                        className="w-3 h-3 sm:w-4 sm:h-4 text-[#1B5E20] focus:ring-[#1B5E20]"
                                     />
-                                    <span className="text-sm font-bold text-gray-700">Laki-laki</span>
+                                    <span className="text-[9px] sm:text-sm font-bold text-gray-700">Pria</span>
                                 </label>
-                                <label className="flex items-center space-x-2 p-3 border rounded-xl cursor-pointer hover:bg-gray-50 flex-1">
+                                <label className="flex items-center space-x-1.5 px-3 py-1.5 sm:p-3 border rounded-lg sm:rounded-xl cursor-pointer hover:bg-gray-50 flex-1">
                                     <input
                                         type="radio"
                                         name="gender"
                                         value="PEREMPUAN"
                                         checked={formData.gender === 'PEREMPUAN'}
                                         onChange={handleChange}
-                                        className="text-[#1B5E20] focus:ring-[#1B5E20]"
+                                        className="w-3 h-3 sm:w-4 sm:h-4 text-[#1B5E20] focus:ring-[#1B5E20]"
                                     />
-                                    <span className="text-sm font-bold text-gray-700">Perempuan</span>
+                                    <span className="text-[9px] sm:text-sm font-bold text-gray-700">Wanita</span>
                                 </label>
                             </div>
                         </div>
 
                         <div>
-                            <label className="block text-[10px] sm:text-xs font-black text-gray-900 uppercase tracking-widest mb-2 px-1">Tanggal Lahir</label>
+                            <label className="block text-[7px] sm:text-xs font-black text-gray-900 uppercase tracking-widest mb-1 sm:mb-2 px-1">Tanggal Lahir</label>
                             <input
                                 type="date"
                                 name="dateOfBirth"
                                 value={formData.dateOfBirth}
                                 onChange={handleChange}
-                                className="w-full bg-white border border-gray-300 rounded-2xl py-4 px-4 text-sm font-black text-black focus:border-[#1B5E20] focus:ring-4 focus:ring-[#1B5E20]/5 transition-all outline-none"
+                                className="w-full bg-white border border-gray-200 rounded-lg sm:rounded-2xl py-1.5 sm:py-4 px-3 text-[10px] sm:text-sm font-bold text-black focus:border-[#1B5E20] focus:ring-2 focus:ring-[#1B5E20]/5 transition-all outline-none"
                             />
                         </div>
 
                         {/* Address Book Section */}
                         <div>
                             <div className="flex items-center justify-between mb-2">
-                                <label className="block text-[10px] sm:text-xs font-black text-gray-900 uppercase tracking-widest px-1">Daftar Alamat</label>
+                                <label className="block text-[7px] sm:text-xs font-black text-gray-900 uppercase tracking-widest px-1">Daftar Alamat</label>
                                 <button
                                     onClick={() => setIsAddressModalOpen(true)}
-                                    className="text-[10px] font-bold text-[#1B5E20] hover:underline"
+                                    className="text-[8px] sm:text-[10px] font-bold text-[#1B5E20] hover:underline uppercase"
                                 >
-                                    + Tambah Alamat
+                                    + Tambah
                                 </button>
                             </div>
-                            <div className="space-y-3">
+                            <div className="space-y-2">
                                 {addresses.map((addr) => (
-                                    <div key={addr.id} className="p-4 border border-gray-200 rounded-2xl bg-gray-50/50 hover:bg-white hover:border-[#1B5E20] transition-colors relative group">
+                                    <div key={addr.id} className="p-2.5 border border-gray-100 rounded-xl bg-gray-50/50 hover:bg-white hover:border-[#1B5E20] transition-colors relative">
                                         <div className="flex justify-between items-start">
-                                            <div className="flex-1">
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <span className="text-xs font-black text-gray-900">{addr.label}</span>
-                                                    {addr.isMain && <span className="px-2 py-0.5 bg-[#1B5E20]/10 text-[#1B5E20] text-[9px] font-bold rounded-full uppercase">Utama</span>}
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center gap-1 mb-0.5">
+                                                    <span className="text-[8px] sm:text-xs font-black text-gray-900 truncate">{addr.label}</span>
+                                                    {addr.isMain && <span className="px-1 py-0.5 bg-[#1B5E20]/10 text-[#1B5E20] text-[6px] sm:text-[9px] font-bold rounded-full uppercase ml-1">Utama</span>}
                                                 </div>
-                                                <p className="text-sm font-bold text-gray-800">{addr.receiverName}</p>
-                                                <p className="text-xs text-gray-600 font-medium">{addr.phone}</p>
-                                                <p className="text-xs text-gray-500 mt-1">{addr.street}, {addr.city}, {addr.province}, {addr.postalCode}</p>
+                                                <p className="text-[9px] sm:text-sm font-bold text-gray-800 leading-tight">{addr.receiverName}</p>
+                                                <p className="text-[7.5px] sm:text-xs text-gray-500 font-medium leading-none mt-0.5">{addr.phone}</p>
+                                                <p className="text-[7.5px] sm:text-xs text-gray-400 mt-1 line-clamp-2 leading-relaxed">{addr.street}, {addr.city}, {addr.province}, {addr.postalCode}</p>
                                             </div>
-                                            <button onClick={() => handleDeleteAddress(addr.id)} className="text-red-500 hover:text-red-700 p-1">
-                                                <span className="text-[10px] font-bold uppercase">Hapus</span>
+                                            <button onClick={() => handleDeleteAddress(addr.id)} className="text-red-500 hover:text-red-700 p-0.5 shrink-0 ml-1.5 mt-0.5">
+                                                <span className="text-[7px] sm:text-[10px] font-bold uppercase">Hapus</span>
                                             </button>
                                         </div>
                                     </div>
                                 ))}
                                 {addresses.length === 0 && (
-                                    <p className="text-xs text-gray-400 italic text-center py-4">Belum ada alamat tersimpan.</p>
+                                    <p className="text-[8px] sm:text-xs text-gray-400 italic text-center py-3">Belum ada alamat tersimpan.</p>
                                 )}
                             </div>
                         </div>
                     </div>
 
-                    <div className="pt-4">
+                    <div className="pt-2 sm:pt-4">
                         <button
                             onClick={handleSave}
                             disabled={isSaving}
-                            className="w-full py-4 bg-[#1B5E20] text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-lg shadow-[#1B5E20]/20 hover:bg-green-800 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center space-x-2"
+                            className="w-full py-2.5 sm:py-4 bg-[#1B5E20] text-white rounded-lg sm:rounded-2xl font-black text-[10px] sm:text-sm uppercase tracking-widest shadow-lg shadow-[#1B5E20]/20 hover:bg-green-800 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center space-x-2"
                         >
                             {isSaving ? (
                                 <>
-                                    <Loader2 className="h-5 w-5 animate-spin" />
+                                    <Loader2 className="h-3.5 w-3.5 sm:h-5 sm:w-5 animate-spin" />
                                     <span>Menyimpan...</span>
                                 </>
                             ) : (
                                 <>
-                                    <Save className="h-5 w-5" />
-                                    <span>Simpan Perubahan</span>
+                                    <Save className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
+                                    <span>Simpan Profil</span>
                                 </>
                             )}
                         </button>
@@ -416,62 +415,60 @@ export default function UserProfilePage() {
                 </div>
 
                 {/* Footer Tips */}
-                <div className="mt-8 bg-gray-900/5 border border-gray-900/10 rounded-[2rem] p-6 shadow-sm">
-                    <h3 className="text-xs font-black text-gray-900 uppercase tracking-widest mb-2 underline decoration-[#1B5E20] decoration-2 underline-offset-4">Mengapa Profil Penting?</h3>
-                    <p className="text-[11px] text-gray-900 leading-relaxed font-bold">
-                        Data yang lengkap memudahkan Merchant menghubungi Anda terkait pesanan. Pastikan nomor WhatsApp aktif untuk mendapatkan notifikasi pesanan.
+                <div className="mt-6 sm:mt-8 bg-gray-900/5 border border-gray-900/10 rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-6 shadow-sm">
+                    <h3 className="text-[9px] sm:text-xs font-black text-gray-900 uppercase tracking-widest mb-1.5 underline decoration-[#1B5E20] decoration-2 underline-offset-4">Tips Profil</h3>
+                    <p className="text-[8px] sm:text-[11px] text-gray-900 leading-relaxed font-bold">
+                        Data lengkap memudahkan Merchant menghubungi Anda. Pastikan WA aktif untuk notifikasi pesanan.
                     </p>
                 </div>
             </main>
 
-            <MerchantBottomNav />
-
             {/* Address Modal */}
             {isAddressModalOpen && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-[2rem] p-6 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
-                        <h3 className="text-lg font-black text-gray-900 mb-6 sticky top-0 bg-white">Tambah Alamat Baru</h3>
-                        <div className="space-y-4">
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl sm:rounded-[2rem] p-4 sm:p-6 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
+                        <h3 className="text-xs sm:text-lg font-black text-gray-900 mb-4 sm:mb-6 sticky top-0 bg-white">Tambah Alamat Baru</h3>
+                        <div className="space-y-2.5 sm:space-y-4">
                             <input
                                 type="text"
-                                placeholder="Label (Rumah, Kantor, dll)"
-                                className="w-full p-3 border border-gray-200 rounded-xl text-sm font-bold text-gray-900 placeholder:text-gray-400 outline-none focus:border-[#1B5E20] focus:ring-2 focus:ring-[#1B5E20]/10"
+                                placeholder="Label (Rumah, Kantor)"
+                                className="w-full p-2 sm:p-3 border border-gray-200 rounded-lg sm:rounded-xl text-[10px] sm:text-sm font-bold text-gray-900 placeholder:text-gray-400 outline-none focus:border-[#1B5E20] focus:ring-2 focus:ring-[#1B5E20]/10"
                                 value={newAddress.label}
                                 onChange={e => setNewAddress({ ...newAddress, label: e.target.value })}
                             />
                             <input
                                 type="text"
                                 placeholder="Nama Penerima"
-                                className="w-full p-3 border border-gray-200 rounded-xl text-sm font-bold text-gray-900 placeholder:text-gray-400 outline-none focus:border-[#1B5E20] focus:ring-2 focus:ring-[#1B5E20]/10"
+                                className="w-full p-2 sm:p-3 border border-gray-200 rounded-lg sm:rounded-xl text-[10px] sm:text-sm font-bold text-gray-900 placeholder:text-gray-400 outline-none focus:border-[#1B5E20] focus:ring-2 focus:ring-[#1B5E20]/10"
                                 value={newAddress.receiverName}
                                 onChange={e => setNewAddress({ ...newAddress, receiverName: e.target.value })}
                             />
                             <input
                                 type="text"
                                 placeholder="Nomor Telepon"
-                                className="w-full p-3 border border-gray-200 rounded-xl text-sm font-bold text-gray-900 placeholder:text-gray-400 outline-none focus:border-[#1B5E20] focus:ring-2 focus:ring-[#1B5E20]/10"
+                                className="w-full p-2 sm:p-3 border border-gray-200 rounded-lg sm:rounded-xl text-[10px] sm:text-sm font-bold text-gray-900 placeholder:text-gray-400 outline-none focus:border-[#1B5E20] focus:ring-2 focus:ring-[#1B5E20]/10"
                                 value={newAddress.phone}
                                 onChange={e => setNewAddress({ ...newAddress, phone: e.target.value })}
                             />
                             <textarea
-                                placeholder="Alamat Lengkap (Jalan, No. Rumah, RT/RW)"
-                                className="w-full p-3 border border-gray-200 rounded-xl text-sm font-bold text-gray-900 placeholder:text-gray-400 outline-none focus:border-[#1B5E20] focus:ring-2 focus:ring-[#1B5E20]/10 resize-none"
+                                placeholder="Alamat Lengkap"
+                                className="w-full p-2 sm:p-3 border border-gray-200 rounded-lg sm:rounded-xl text-[10px] sm:text-sm font-bold text-gray-900 placeholder:text-gray-400 outline-none focus:border-[#1B5E20] focus:ring-2 focus:ring-[#1B5E20]/10 resize-none"
                                 rows={2}
                                 value={newAddress.street}
                                 onChange={e => setNewAddress({ ...newAddress, street: e.target.value })}
                             />
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-2 sm:gap-4">
                                 <input
                                     type="text"
-                                    placeholder="Kota/Kabupaten"
-                                    className="w-full p-3 border border-gray-200 rounded-xl text-sm font-bold text-gray-900 placeholder:text-gray-400 outline-none focus:border-[#1B5E20] focus:ring-2 focus:ring-[#1B5E20]/10"
+                                    placeholder="Kota"
+                                    className="w-full p-2 sm:p-3 border border-gray-200 rounded-lg sm:rounded-xl text-[10px] sm:text-sm font-bold text-gray-900 placeholder:text-gray-400 outline-none focus:border-[#1B5E20] focus:ring-2 focus:ring-[#1B5E20]/10"
                                     value={newAddress.city}
                                     onChange={e => setNewAddress({ ...newAddress, city: e.target.value })}
                                 />
                                 <input
                                     type="text"
                                     placeholder="Provinsi"
-                                    className="w-full p-3 border border-gray-200 rounded-xl text-sm font-bold text-gray-900 placeholder:text-gray-400 outline-none focus:border-[#1B5E20] focus:ring-2 focus:ring-[#1B5E20]/10"
+                                    className="w-full p-2 sm:p-3 border border-gray-200 rounded-lg sm:rounded-xl text-[10px] sm:text-sm font-bold text-gray-900 placeholder:text-gray-400 outline-none focus:border-[#1B5E20] focus:ring-2 focus:ring-[#1B5E20]/10"
                                     value={newAddress.province}
                                     onChange={e => setNewAddress({ ...newAddress, province: e.target.value })}
                                 />
@@ -479,18 +476,18 @@ export default function UserProfilePage() {
                             <input
                                 type="text"
                                 placeholder="Kode Pos"
-                                className="w-full p-3 border border-gray-200 rounded-xl text-sm font-bold text-gray-900 placeholder:text-gray-400 outline-none focus:border-[#1B5E20] focus:ring-2 focus:ring-[#1B5E20]/10"
+                                className="w-full p-2 sm:p-3 border border-gray-200 rounded-lg sm:rounded-xl text-[10px] sm:text-sm font-bold text-gray-900 placeholder:text-gray-400 outline-none focus:border-[#1B5E20] focus:ring-2 focus:ring-[#1B5E20]/10"
                                 value={newAddress.postalCode}
                                 onChange={e => setNewAddress({ ...newAddress, postalCode: e.target.value })}
                             />
-                            <label className="flex items-center space-x-2 cursor-pointer p-2 hover:bg-gray-50 rounded-xl">
-                                <input type="checkbox" checked={newAddress.isMain} onChange={e => setNewAddress({ ...newAddress, isMain: e.target.checked })} className="w-4 h-4 accent-[#1B5E20] rounded border-gray-300" />
-                                <span className="text-sm font-bold text-gray-700">Jadikan Alamat Utama</span>
+                            <label className="flex items-center space-x-2 cursor-pointer p-1.5 hover:bg-gray-50 rounded-lg">
+                                <input type="checkbox" checked={newAddress.isMain} onChange={e => setNewAddress({ ...newAddress, isMain: e.target.checked })} className="w-3 h-3 sm:w-4 sm:h-4 accent-[#1B5E20] rounded border-gray-300" />
+                                <span className="text-[10px] sm:text-sm font-bold text-gray-700">Utama</span>
                             </label>
                         </div>
-                        <div className="flex gap-3 mt-8">
-                            <button onClick={() => setIsAddressModalOpen(false)} className="flex-1 py-3 text-sm font-bold text-gray-500 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors">Batal</button>
-                            <button onClick={handleAddAddress} className="flex-1 py-3 text-sm font-bold text-white bg-[#1B5E20] rounded-xl hover:bg-green-800 transition-colors shadow-lg shadow-[#1B5E20]/20">Simpan</button>
+                        <div className="flex gap-2 sm:gap-3 mt-6 sm:mt-8">
+                            <button onClick={() => setIsAddressModalOpen(false)} className="flex-1 py-2 sm:py-3 text-[10px] sm:text-sm font-bold text-gray-500 bg-gray-100 rounded-lg sm:rounded-xl hover:bg-gray-200 transition-colors uppercase">Batal</button>
+                            <button onClick={handleAddAddress} className="flex-1 py-2 sm:py-3 text-[10px] sm:text-sm font-bold text-white bg-[#1B5E20] rounded-lg sm:rounded-xl hover:bg-green-800 transition-colors shadow-lg shadow-[#1B5E20]/20 uppercase">Simpan</button>
                         </div>
                     </div>
                 </div>

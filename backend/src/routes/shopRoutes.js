@@ -331,7 +331,8 @@ router.get('/:slug', async (req, res) => {
                     include: {
                         images: true,
                         unit: true
-                    }
+                    },
+                    orderBy: { isActive: 'asc' }
                 }
             }
         });

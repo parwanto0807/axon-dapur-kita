@@ -37,6 +37,7 @@ import { Toaster } from 'react-hot-toast';
 import { Toaster as SonnerToaster } from 'sonner';
 
 import PWARegistry from "@/components/pwa/PWARegistry";
+import BuyerBottomNav from "@/components/layouts/BuyerBottomNav";
 
 export default function RootLayout({
   children,
@@ -57,7 +58,10 @@ export default function RootLayout({
           <NavbarWithRouteGuard />
           <Toaster position="top-center" reverseOrder={false} />
           <SonnerToaster position="top-center" richColors />
-          {children}
+          <div className="pb-20 lg:pb-0">
+            {children}
+          </div>
+          <BuyerBottomNav />
         </Providers>
       </body>
     </html>

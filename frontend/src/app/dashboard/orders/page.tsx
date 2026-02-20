@@ -179,52 +179,52 @@ export default function OrdersPage() {
                 </div>
             </div>
 
-            <main className="max-w-5xl mx-auto px-4 py-8">
+            <main className="max-w-5xl mx-auto px-2 sm:px-4 py-3 sm:py-8">
                 {/* Stats / Quick Info */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+                <div className="grid grid-cols-4 gap-1.5 sm:gap-4 mb-4 sm:mb-8">
                     <button
                         onClick={() => setFilter('all')}
                         className={clsx(
-                            "p-4 rounded-2xl border transition-all text-left",
+                            "p-2 sm:p-4 rounded-xl sm:rounded-2xl border transition-all text-left",
                             filter === 'all' ? "bg-[#1B5E20] text-white border-[#1B5E20] shadow-lg shadow-[#1B5E20]/20" : "bg-white text-gray-600 border-gray-100 hover:border-gray-200 shadow-sm"
                         )}
                     >
-                        <Package className={clsx("h-5 w-5 mb-2", filter === 'all' ? "text-green-200" : "text-[#1B5E20]")} />
-                        <p className="text-[8px] sm:text-[10px] font-bold uppercase tracking-wider opacity-80">Semua</p>
-                        <p className="text-base sm:text-xl font-black">{orders.length}</p>
+                        <Package className={clsx("h-3.5 w-3.5 sm:h-5 sm:w-5 mb-1 sm:mb-2", filter === 'all' ? "text-green-200" : "text-[#1B5E20]")} />
+                        <p className="text-[6px] sm:text-[10px] font-bold uppercase tracking-wider opacity-80 leading-none mb-0.5">Semua</p>
+                        <p className="text-xs sm:text-xl font-black leading-none">{orders.length}</p>
                     </button>
 
                     <button
                         onClick={() => setFilter('pending')}
                         className={clsx(
-                            "p-4 rounded-2xl border transition-all text-left",
+                            "p-2 sm:p-4 rounded-xl sm:rounded-2xl border transition-all text-left",
                             filter === 'pending' ? "bg-yellow-500 text-white border-yellow-500 shadow-lg shadow-yellow-500/20" : "bg-white text-gray-600 border-gray-100 hover:border-gray-200 shadow-sm"
                         )}
                     >
-                        <CreditCard className={clsx("h-5 w-5 mb-2", filter === 'pending' ? "text-yellow-100" : "text-yellow-500")} />
-                        <p className="text-[8px] sm:text-[10px] font-bold uppercase tracking-wider opacity-80">Menunggu</p>
-                        <p className="text-base sm:text-xl font-black">{orders.filter(o => o.paymentStatus === 'pending').length}</p>
+                        <CreditCard className={clsx("h-3.5 w-3.5 sm:h-5 sm:w-5 mb-1 sm:mb-2", filter === 'pending' ? "text-yellow-100" : "text-yellow-500")} />
+                        <p className="text-[6px] sm:text-[10px] font-bold uppercase tracking-wider opacity-80 leading-none mb-0.5">Bayar</p>
+                        <p className="text-xs sm:text-xl font-black leading-none">{orders.filter(o => o.paymentStatus === 'pending').length}</p>
                     </button>
 
                     <button
                         onClick={() => setFilter('paid')}
                         className={clsx(
-                            "p-4 rounded-2xl border transition-all text-left",
+                            "p-2 sm:p-4 rounded-xl sm:rounded-2xl border transition-all text-left",
                             filter === 'paid' ? "bg-green-600 text-white border-green-600 shadow-lg shadow-green-600/20" : "bg-white text-gray-600 border-gray-100 hover:border-gray-200 shadow-sm"
                         )}
                     >
-                        <CheckCircle className={clsx("h-5 w-5 mb-2", filter === 'paid' ? "text-green-100" : "text-green-600")} />
-                        <p className="text-[8px] sm:text-[10px] font-bold uppercase tracking-wider opacity-80">Berhasil</p>
-                        <p className="text-base sm:text-xl font-black">{orders.filter(o => o.paymentStatus === 'paid').length}</p>
+                        <CheckCircle className={clsx("h-3.5 w-3.5 sm:h-5 sm:w-5 mb-1 sm:mb-2", filter === 'paid' ? "text-green-100" : "text-green-600")} />
+                        <p className="text-[6px] sm:text-[10px] font-bold uppercase tracking-wider opacity-80 leading-none mb-0.5">Lunas</p>
+                        <p className="text-xs sm:text-xl font-black leading-none">{orders.filter(o => o.paymentStatus === 'paid').length}</p>
                     </button>
 
                     <button
-                        className="p-4 rounded-2xl border bg-white text-gray-400 border-gray-100 shadow-sm cursor-not-allowed opacity-60"
+                        className="p-2 sm:p-4 rounded-xl sm:rounded-2xl border bg-white text-gray-400 border-gray-100 shadow-sm cursor-not-allowed opacity-60 flex flex-col justify-start"
                         disabled
                     >
-                        <Truck className="h-5 w-5 mb-2" />
-                        <p className="text-[8px] sm:text-[10px] font-bold uppercase tracking-wider">Dikirim</p>
-                        <p className="text-base sm:text-xl font-black">0</p>
+                        <Truck className="h-3.5 w-3.5 sm:h-5 sm:w-5 mb-1 sm:mb-2" />
+                        <p className="text-[6px] sm:text-[10px] font-bold uppercase tracking-wider leading-none mb-0.5">Dikirim</p>
+                        <p className="text-xs sm:text-xl font-black leading-none">0</p>
                     </button>
                 </div>
 
@@ -242,45 +242,45 @@ export default function OrdersPage() {
                             const StatusIcon = status.icon;
 
                             return (
-                                <div key={order.id} className="bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all overflow-hidden group">
-                                    <div className="p-5 sm:p-6">
+                                <div key={order.id} className="bg-white rounded-2xl sm:rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all overflow-hidden group">
+                                    <div className="py-2.5 px-3.5 sm:p-6">
                                         {/* Order Meta Info */}
-                                        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-                                            <div className="flex items-center space-x-4">
-                                                <div className="h-10 w-10 sm:h-12 sm:w-12 bg-gray-100 rounded-xl flex items-center justify-center text-gray-400 group-hover:bg-[#1B5E20]/10 group-hover:text-[#1B5E20] transition-colors">
-                                                    <ShoppingBag className="h-5 w-5 sm:h-6 sm:w-6" />
+                                        <div className="flex items-center justify-between gap-2 mb-2 sm:mb-6">
+                                            <div className="flex items-center space-x-2.5 sm:space-x-4">
+                                                <div className="h-8 w-8 sm:h-12 sm:w-12 bg-gray-50 rounded-lg sm:rounded-xl flex items-center justify-center text-gray-400 group-hover:bg-[#1B5E20]/10 group-hover:text-[#1B5E20] transition-colors shrink-0">
+                                                    <ShoppingBag className="h-4 w-4 sm:h-6 sm:w-6" />
                                                 </div>
-                                                <div>
-                                                    <div className="flex items-center space-x-2">
-                                                        <span className="text-[7px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest">Order ID</span>
-                                                        <span className="text-[8px] sm:text-xs font-black text-gray-900 px-1.5 py-0.5 bg-gray-100 rounded-lg">#{order.id.slice(-8).toUpperCase()}</span>
+                                                <div className="min-w-0">
+                                                    <div className="flex items-center space-x-1.5 leading-none">
+                                                        <span className="text-[6px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest hidden xs:inline">Order ID</span>
+                                                        <span className="text-[7px] sm:text-xs font-black text-gray-900 bg-gray-100 px-1 py-0.5 rounded-md">#{order.id.slice(-6).toUpperCase()}</span>
                                                     </div>
-                                                    <div className="flex items-center space-x-2.5 mt-0.5 text-[7px] sm:text-xs text-gray-500 font-medium">
-                                                        <span className="flex items-center"><Calendar className="h-2 w-2 sm:h-3 sm:w-3 mr-0.5" /> {formatShortDate(order.createdAt)}</span>
-                                                        <span className="h-1 w-1 bg-gray-300 rounded-full"></span>
-                                                        <span className="flex items-center"><Store className="h-2 w-2 sm:h-3 sm:w-3 mr-0.5" /> {order.shop.name}</span>
+                                                    <div className="flex items-center space-x-2 mt-0.5 text-[6px] sm:text-xs text-gray-500 font-medium leading-none">
+                                                        <span className="flex items-center truncate max-w-[80px] sm:max-w-none"><Store className="h-2 w-2 sm:h-3 sm:w-3 mr-0.5" /> {order.shop.name}</span>
+                                                        <span className="h-0.5 w-0.5 bg-gray-300 rounded-full"></span>
+                                                        <span className="flex items-center whitespace-nowrap"><Calendar className="h-2 w-2 sm:h-3 sm:w-3 mr-0.5" /> {formatShortDate(order.createdAt)}</span>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div className={clsx(
-                                                "flex items-center space-x-1.5 px-2.5 py-1 rounded-lg border text-[8px] sm:text-xs font-bold transition-all",
+                                                "flex items-center space-x-1 px-1 sm:px-2.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg border text-[6px] sm:text-xs font-black transition-all whitespace-nowrap",
                                                 status.bg,
                                                 status.text,
                                                 status.border
                                             )}>
-                                                <StatusIcon className="h-2.5 w-2.5 sm:h-4 sm:w-4" />
+                                                <StatusIcon className="h-2 w-2 sm:h-4 sm:w-4" />
                                                 <span>{status.label}</span>
                                             </div>
                                         </div>
 
                                         {/* Products Preview */}
-                                        <div className="space-y-4 mb-6">
+                                        <div className="space-y-2 mb-3 sm:mb-6">
                                             {order.items.slice(0, 1).map((item) => {
                                                 const productImage = item.product.images?.[0]?.url;
                                                 return (
-                                                    <div key={item.id} className="flex items-center space-x-3 sm:space-x-4">
-                                                        <div className="h-14 w-14 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden shrink-0">
+                                                    <div key={item.id} className="flex items-center space-x-2.5 sm:space-x-4">
+                                                        <div className="h-10 w-10 sm:h-14 sm:w-14 rounded-lg sm:rounded-xl bg-gray-50 border border-gray-100 overflow-hidden shrink-0">
                                                             {productImage ? (
                                                                 <img
                                                                     src={getImageUrl(productImage)}
@@ -289,34 +289,34 @@ export default function OrdersPage() {
                                                                 />
                                                             ) : (
                                                                 <div className="h-full w-full flex items-center justify-center text-gray-300">
-                                                                    <Package className="h-5 w-5" />
+                                                                    <Package className="h-4 w-4 sm:h-5 sm:w-5" />
                                                                 </div>
                                                             )}
                                                         </div>
                                                         <div className="flex-1 min-w-0">
-                                                            <h4 className="font-bold text-gray-900 truncate text-[9px] sm:text-base">{item.product.name}</h4>
-                                                            <p className="text-[8px] sm:text-xs text-gray-500 mt-0.5">{item.quantity} x {formatPrice(item.price)}</p>
+                                                            <h4 className="font-bold text-gray-900 truncate text-[9px] sm:text-base leading-tight">{item.product.name}</h4>
+                                                            <p className="text-[7px] sm:text-xs text-gray-500 mt-0.5 leading-none">{item.quantity} x {formatPrice(item.price)}</p>
                                                         </div>
                                                     </div>
                                                 );
                                             })}
                                             {order.items.length > 1 && (
-                                                <p className="text-[9px] text-gray-400 font-medium pl-16 md:pl-20">+ {order.items.length - 1} produk lainnya</p>
+                                                <p className="text-[7px] sm:text-[9px] text-gray-400 font-medium pl-12.5 sm:pl-18">+ {order.items.length - 1} produk lainnya</p>
                                             )}
                                         </div>
 
                                         {/* Total & Action */}
-                                        <div className="flex items-center justify-between pt-5 border-t border-gray-50">
+                                        <div className="flex items-center justify-between pt-2 sm:pt-5 border-t border-gray-50">
                                             <div>
-                                                <p className="text-[7px] sm:text-xs text-gray-400 font-bold uppercase tracking-widest">Total Belanja</p>
-                                                <p className="text-sm sm:text-lg font-black text-[#1B5E20]">{formatPrice(order.totalAmount)}</p>
+                                                <p className="text-[5px] sm:text-xs text-gray-400 font-bold uppercase tracking-widest leading-none mb-0.5">Total Belanja</p>
+                                                <p className="text-[11px] sm:text-lg font-black text-[#1B5E20] leading-none">{formatPrice(order.totalAmount)}</p>
                                             </div>
                                             <Link
                                                 href={`/dashboard/orders/${order.id}`}
-                                                className="flex items-center space-x-1.5 px-3.5 sm:px-6 py-2 sm:py-2.5 bg-gray-900 text-white text-[8px] sm:text-xs font-bold rounded-xl hover:bg-gray-800 transition-all active:scale-95"
+                                                className="flex items-center space-x-1 px-2.5 sm:px-6 py-1.5 sm:py-2.5 bg-gray-900 text-white text-[7px] sm:text-xs font-bold rounded-lg sm:rounded-xl hover:bg-gray-800 transition-all active:scale-95"
                                             >
-                                                <span>Detail Pesanan</span>
-                                                <ChevronRight className="h-2.5 w-2.5 sm:h-4 sm:w-4" />
+                                                <span>Detail</span>
+                                                <ChevronRight className="h-2 w-2 sm:h-4 sm:w-4" />
                                             </Link>
                                         </div>
                                     </div>

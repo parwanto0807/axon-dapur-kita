@@ -176,14 +176,7 @@ export default function ProductPage() {
                         <div className="bg-white md:rounded-[2.5rem] p-4 sm:p-10 md:shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/50 relative">
 
                             {/* In-content Navigation Buttons (Mobile) */}
-                            <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-20 md:hidden">
-                                <button
-                                    onClick={() => router.back()}
-                                    className="px-3 py-1.5 bg-white/95 backdrop-blur-sm shadow-sm rounded-xl flex items-center space-x-1.5 text-[#1B5E20] font-bold text-[10px] active:scale-95 transition-all border border-green-50"
-                                >
-                                    <ArrowLeft className="h-3.5 w-3.5" />
-                                    <span>Kembali</span>
-                                </button>
+                            <div className="absolute top-4 right-4 flex items-center z-20 md:hidden">
                                 <button
                                     onClick={handleShare}
                                     className="px-3 py-1.5 bg-white/95 backdrop-blur-sm shadow-sm rounded-xl flex items-center space-x-1.5 text-gray-600 font-bold text-[10px] active:scale-95 transition-all border border-gray-50"
@@ -367,6 +360,12 @@ export default function ProductPage() {
                                     className="flex-1 md:flex-none md:w-44 py-1.5 sm:py-3 bg-[#1B5E20] text-white text-[9px] sm:text-base font-bold rounded-lg hover:bg-green-800 active:bg-green-900 shadow-sm transition"
                                 >
                                     Beli Langsung
+                                </button>
+                                <button
+                                    onClick={() => router.back()}
+                                    className="md:hidden px-3 py-1.5 border border-gray-200 text-gray-500 text-[9px] font-bold rounded-lg active:scale-95 transition-all"
+                                >
+                                    Kembali
                                 </button>
                             </>
                         ) : (

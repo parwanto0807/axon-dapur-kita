@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { formatPrice } from '@/utils/format';
 import { getImageUrl } from '@/utils/image';
 import ShareDialog from '@/components/ui/ShareDialog';
+import { clsx } from 'clsx';
 
 interface Product {
     id: string;
@@ -16,6 +17,7 @@ interface Product {
     images: { url: string }[];
     stock: number;
     unit: any;
+    isActive: boolean;
 }
 
 interface Shop {
@@ -47,6 +49,7 @@ export default function ShopPage() {
         url: '',
         title: ''
     });
+    const [activeTab, setActiveTab] = useState<'HOME' | 'PRODUCTS' | 'REVIEWS'>('HOME');
 
     const openShareDialog = () => {
         if (!shop) return;
@@ -171,9 +174,33 @@ export default function ShopPage() {
                 {/* Tabs / Nav */}
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-2">
                     <div className="flex border-b border-gray-100">
-                        <button className="px-4 py-3 border-b-2 border-[#1B5E20] text-[#1B5E20] font-bold text-[11px] sm:text-sm">Beranda</button>
-                        <button className="px-4 py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-[11px] sm:text-sm">Produk</button>
-                        <button className="px-4 py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-[11px] sm:text-sm">Ulasan</button>
+                        <button
+                            onClick={() => setActiveTab('PRODUCTS')}
+                            className={clsx(
+                                "px-4 py-3 border-b-2 font-bold text-[11px] sm:text-sm transition-colors",
+                                activeTab === 'PRODUCTS' ? "border-[#1B5E20] text-[#1B5E20]" : "border-transparent text-gray-500 hover:text-gray-700"
+                            )}
+                        >
+                            Produk
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('REVIEWS')}
+                            className={clsx(
+                                "px-4 py-3 border-b-2 font-bold text-[11px] sm:text-sm transition-colors",
+                                activeTab === 'REVIEWS' ? "border-[#1B5E20] text-[#1B5E20]" : "border-transparent text-gray-500 hover:text-gray-700"
+                            )}
+                        >
+                            Ulasan
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('HOME')}
+                            className={clsx(
+                                "px-4 py-3 border-b-2 font-bold text-[11px] sm:text-sm transition-colors",
+                                activeTab === 'HOME' ? "border-[#1B5E20] text-[#1B5E20]" : "border-transparent text-gray-500 hover:text-gray-700"
+                            )}
+                        >
+                            Beranda
+                        </button>
                     </div>
                 </div>
             </div>
@@ -183,52 +210,143 @@ export default function ShopPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Left: Main Content (Products) */}
                     <div className="lg:col-span-2 space-y-8">
-                        {shop.description && (
-                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                                <h3 className="font-bold text-gray-900 mb-2 text-xs sm:text-base">Tentang Toko</h3>
-                                <p className="text-gray-600 text-[10px] sm:text-sm leading-relaxed">{shop.description}</p>
+                        {activeTab === 'HOME' && (
+                            <>
+                                {shop.description && (
+                                    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                                        <h3 className="font-bold text-gray-900 mb-2 text-xs sm:text-base">Tentang Toko</h3>
+                                        <p className="text-gray-600 text-[10px] sm:text-sm leading-relaxed">{shop.description}</p>
+                                    </div>
+                                )}
+
+                                <div>
+                                    <h2 className="font-bold text-xl text-gray-900 mb-4">Produk Unggulan</h2>
+                                    {shop.products && shop.products.length > 0 ? (
+                                        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                                            {shop.products.filter(p => p.isActive).slice(0, 6).map((product) => (
+                                                <div
+                                                    key={product.id}
+                                                    onClick={() => router.push(`/product/${product.id}`)}
+                                                    className="group rounded-xl border bg-white overflow-hidden shadow-sm hover:shadow-md transition cursor-pointer flex flex-col"
+                                                >
+                                                    <div className="h-40 sm:h-48 bg-gray-100 relative">
+                                                        {product.images?.[0]?.url ? (
+                                                            <img
+                                                                src={getImageUrl(product.images[0].url) || ''}
+                                                                alt={product.name}
+                                                                className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                                                            />
+                                                        ) : (
+                                                            <div className="w-full h-full flex items-center justify-center text-gray-300">
+                                                                <Store className="h-8 w-8" />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div className="p-4 flex flex-col flex-1">
+                                                        <h4 className="font-bold text-gray-900 line-clamp-2 mb-1 text-[10px] sm:text-base">
+                                                            {product.name}
+                                                        </h4>
+                                                        <p className="text-[#1B5E20] font-bold text-[11px] sm:text-[15px] mb-2">
+                                                            {formatPrice(product.price)}
+                                                        </p>
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); /* Add to cart logic if needed */ }}
+                                                            className="mt-auto w-full py-2 bg-green-50 text-[#1B5E20] font-bold text-[10px] sm:text-sm rounded-lg hover:bg-green-100 transition"
+                                                        >
+                                                            + Keranjang
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="text-center py-10 bg-white rounded-xl border border-dashed border-gray-200">
+                                            <p className="text-gray-500">Belum ada produk di etalase ini.</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </>
+                        )}
+
+                        {activeTab === 'PRODUCTS' && (
+                            <div className="space-y-1">
+                                <h2 className="font-bold text-sm text-gray-900 mb-2 uppercase tracking-tight">Daftar Semua Produk</h2>
+                                {shop.products && shop.products.length > 0 ? (
+                                    <div className="flex flex-col gap-1.5">
+                                        {shop.products.map((product) => (
+                                            <div
+                                                key={product.id}
+                                                onClick={() => router.push(`/product/${product.id}`)}
+                                                className={clsx(
+                                                    "bg-white border border-gray-100 rounded-lg flex items-center px-2 py-1 h-11 sm:h-14 hover:border-green-600 transition-all cursor-pointer group relative",
+                                                    !product.isActive && "bg-gray-50/80"
+                                                )}
+                                            >
+                                                <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-md bg-gray-100 overflow-hidden shrink-0 border border-gray-50">
+                                                    {product.images?.[0]?.url ? (
+                                                        <img
+                                                            src={getImageUrl(product.images[0].url) || ''}
+                                                            alt={product.name}
+                                                            className="w-full h-full object-cover group-hover:scale-110 transition duration-300"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center text-gray-300">
+                                                            <Store className="h-4 w-4" />
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                <div className="flex-1 min-w-0 mx-2 flex items-center justify-between">
+                                                    <div className="flex flex-col flex-1 min-w-0 mr-2">
+                                                        <h4 className={clsx(
+                                                            "font-black text-gray-900 truncate uppercase tracking-tight leading-none mb-0.5",
+                                                            product.isActive ? "text-[8px] sm:text-xs" : "text-[8px] sm:text-xs text-gray-400"
+                                                        )}>
+                                                            {product.name}
+                                                        </h4>
+                                                        <p className="text-[7.5px] sm:text-[10px] font-bold text-[#1B5E20] leading-none">
+                                                            {formatPrice(product.price)}
+                                                        </p>
+                                                    </div>
+
+                                                    <div className="flex items-center space-x-2 shrink-0">
+                                                        {product.isActive ? (
+                                                            <span className="text-[6px] sm:text-[8px] font-black uppercase text-green-600 border border-green-200 px-1 rounded bg-green-50 tracking-tighter">Aktif</span>
+                                                        ) : (
+                                                            <span className="text-[6px] sm:text-[8px] font-black uppercase text-gray-400 border border-gray-200 px-1 rounded bg-gray-50 tracking-tighter">Non-Aktif</span>
+                                                        )}
+                                                        <button
+                                                            disabled={!product.isActive}
+                                                            onClick={(e) => { e.stopPropagation(); }}
+                                                            className={clsx(
+                                                                "hidden sm:flex px-2 py-1 rounded text-[10px] font-black uppercase transition shrink-0",
+                                                                product.isActive
+                                                                    ? "bg-green-50 text-[#1B5E20] hover:bg-green-600 hover:text-white"
+                                                                    : "bg-gray-100 text-gray-300 cursor-not-allowed"
+                                                            )}
+                                                        >
+                                                            {product.isActive ? 'Detail' : 'Habis'}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="text-center py-10 bg-white rounded-xl border border-dashed border-gray-200">
+                                        <p className="text-gray-500 text-[10px] uppercase font-black tracking-widest">Belum ada produk</p>
+                                    </div>
+                                )}
                             </div>
                         )}
 
-                        <div>
-                            <h2 className="font-bold text-xl text-gray-900 mb-4">Etalase Produk</h2>
-                            {shop.products && shop.products.length > 0 ? (
-                                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-                                    {shop.products.map((product) => (
-                                        <div key={product.id} className="group rounded-xl border bg-white overflow-hidden shadow-sm hover:shadow-md transition flex flex-col">
-                                            <div className="h-40 sm:h-48 bg-gray-100 relative">
-                                                {product.images?.[0]?.url ? (
-                                                    <img
-                                                        src={getImageUrl(product.images[0].url) || ''}
-                                                        alt={product.name}
-                                                        className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                                                    />
-                                                ) : (
-                                                    <div className="w-full h-full flex items-center justify-center text-gray-300">
-                                                        <Store className="h-8 w-8" />
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <div className="p-4 flex flex-col flex-1">
-                                                <h4 className="font-bold text-gray-900 line-clamp-2 mb-1 text-[10px] sm:text-base">
-                                                    {product.name}
-                                                </h4>
-                                                <p className="text-[#1B5E20] font-bold text-[11px] sm:text-[15px] mb-2">
-                                                    {formatPrice(product.price)}
-                                                </p>
-                                                <button className="mt-auto w-full py-2 bg-green-50 text-[#1B5E20] font-bold text-[10px] sm:text-sm rounded-lg hover:bg-green-100 transition">
-                                                    + Keranjang
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="text-center py-10 bg-white rounded-xl border border-dashed border-gray-200">
-                                    <p className="text-gray-500">Belum ada produk di etalase ini.</p>
-                                </div>
-                            )}
-                        </div>
+                        {activeTab === 'REVIEWS' && (
+                            <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-gray-200">
+                                <Star className="h-10 w-10 text-gray-200 mx-auto mb-3" />
+                                <h3 className="font-bold text-gray-900">Belum Ada Ulasan</h3>
+                                <p className="text-gray-500 text-sm mt-1">Toko ini belum memiliki ulasan dari pembeli.</p>
+                            </div>
+                        )}
                     </div>
 
                     {/* Right: Info Sidebar */}
