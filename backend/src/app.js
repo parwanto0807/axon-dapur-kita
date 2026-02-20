@@ -39,6 +39,11 @@ app.use(morgan('dev'));
 app.use(express.static('public')); // Serve static files
 app.use('/uploads', express.static('uploads')); // Serve uploads
 
+// Fix for production proxy: also serve static files under /api
+app.use('/api/products', express.static('public/products'));
+app.use('/api/merchant', express.static('public/merchant'));
+app.use('/api/uploads', express.static('uploads'));
+
 // Session Configuration
 export const sessionMiddleware = session({
     secret: process.env.SESSION_SECRET || 'secret',
