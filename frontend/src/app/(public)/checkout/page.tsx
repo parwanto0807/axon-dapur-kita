@@ -243,15 +243,15 @@ export default function CheckoutPage() {
     if (step === 1) {
         return (
             <div className="min-h-screen bg-gray-50 pb-24 font-[family-name:var(--font-poppins)]">
-                <div className="max-w-3xl mx-auto px-4 py-8">
-                    <button onClick={() => router.back()} className="flex items-center text-gray-500 font-bold mb-6 hover:text-gray-900 transition-colors">
-                        <ArrowLeft className="h-5 w-5 mr-2" />
+                <div className="max-w-3xl mx-auto px-4 py-6 md:py-8">
+                    <button onClick={() => router.back()} className="flex items-center text-[10px] sm:text-base text-gray-500 font-bold mb-4 md:mb-6 hover:text-gray-900 transition-colors">
+                        <ArrowLeft className="h-4 w-4 mr-1.5" />
                         Kembali ke Keranjang
                     </button>
 
-                    <div className="bg-white rounded-[2.5rem] p-8 shadow-xl border border-gray-100">
-                        <div className="flex items-center justify-between mb-8">
-                            <h1 className="text-2xl font-black text-gray-900">Alamat Pengiriman</h1>
+                    <div className="bg-white rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 shadow-xl border border-gray-100">
+                        <div className="flex items-center justify-between mb-6 md:mb-8">
+                            <h1 className="text-base md:text-2xl font-black text-gray-900">Alamat Pengiriman</h1>
                             <div className="flex items-center space-x-1">
                                 <div className="h-2 w-8 bg-[#1B5E20] rounded-full"></div>
                                 <div className="h-2 w-2 bg-gray-200 rounded-full"></div>
@@ -264,41 +264,41 @@ export default function CheckoutPage() {
                             <div className="mb-6">
                                 <button
                                     onClick={() => setIsAddressModalOpen(true)}
-                                    className="w-full py-3 border-2 border-[#1B5E20] text-[#1B5E20] rounded-2xl font-bold hover:bg-green-50 transition flex items-center justify-center space-x-2"
+                                    className="w-full py-2.5 md:py-3 border-2 border-[#1B5E20] text-[#1B5E20] rounded-2xl font-bold text-[11px] md:text-base hover:bg-green-50 transition flex items-center justify-center space-x-2"
                                 >
-                                    <MapPin className="h-5 w-5" />
+                                    <MapPin className="h-4 w-4 md:h-5 md:w-5" />
                                     <span>Pilih dari Daftar Alamat</span>
                                 </button>
                             </div>
                         )}
 
-                        <div className="space-y-6">
+                        <div className="space-y-4 md:space-y-6">
                             <div>
-                                <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Nama Penerima</label>
+                                <label className="block text-[8px] md:text-xs font-black text-gray-400 uppercase tracking-widest mb-1.5 md:mb-2">Nama Penerima</label>
                                 <input
                                     type="text"
                                     placeholder="Contoh: Budi Santoso"
-                                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 px-6 font-bold text-gray-900 focus:ring-4 focus:ring-green-500/10 focus:border-[#1B5E20] transition-all"
+                                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3 md:py-4 px-4 md:px-6 font-bold text-sm md:text-base text-gray-900 focus:ring-4 focus:ring-green-500/10 focus:border-[#1B5E20] transition-all"
                                     value={shippingData.receiverName}
                                     onChange={(e) => setShippingData({ ...shippingData, receiverName: e.target.value })}
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Nomor WhatsApp</label>
+                                <label className="block text-[8px] md:text-xs font-black text-gray-400 uppercase tracking-widest mb-1.5 md:mb-2">Nomor WhatsApp</label>
                                 <input
                                     type="tel"
                                     placeholder="Contoh: 081234567890"
-                                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 px-6 font-bold text-gray-900 focus:ring-4 focus:ring-green-500/10 focus:border-[#1B5E20] transition-all"
+                                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3 md:py-4 px-4 md:px-6 font-bold text-sm md:text-base text-gray-900 focus:ring-4 focus:ring-green-500/10 focus:border-[#1B5E20] transition-all"
                                     value={shippingData.phone}
                                     onChange={(e) => setShippingData({ ...shippingData, phone: e.target.value })}
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Alamat Lengkap (Rt/Rw, No Rumah)</label>
+                                <label className="block text-[8px] md:text-xs font-black text-gray-400 uppercase tracking-widest mb-1.5 md:mb-2">Alamat Lengkap (Rt/Rw, No Rumah)</label>
                                 <textarea
                                     rows={3}
                                     placeholder="Contoh: Jl. Sudirman No. 123, RT 01/RW 02"
-                                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 px-6 font-bold text-gray-900 focus:ring-4 focus:ring-green-500/10 focus:border-[#1B5E20] transition-all"
+                                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3 md:py-4 px-4 md:px-6 font-bold text-sm md:text-base text-gray-900 focus:ring-4 focus:ring-green-500/10 focus:border-[#1B5E20] transition-all"
                                     value={shippingData.address}
                                     onChange={(e) => setShippingData({ ...shippingData, address: e.target.value })}
                                 />
@@ -308,10 +308,10 @@ export default function CheckoutPage() {
                         <button
                             disabled={!shippingData.receiverName || !shippingData.phone || !shippingData.address}
                             onClick={() => setStep(2)}
-                            className="w-full mt-10 py-5 bg-[#1B5E20] text-white rounded-2xl font-black text-lg shadow-xl shadow-green-100 hover:bg-green-800 transition active:scale-95 disabled:bg-gray-200 disabled:shadow-none flex items-center justify-center space-x-2"
+                            className="w-full mt-8 md:mt-10 py-4 md:py-5 bg-[#1B5E20] text-white rounded-2xl font-black text-sm md:text-lg shadow-xl shadow-green-100 hover:bg-green-800 transition active:scale-95 disabled:bg-gray-200 disabled:shadow-none flex items-center justify-center space-x-2"
                         >
                             <span>Lanjut ke Pembayaran</span>
-                            <ArrowRight className="h-6 w-6" />
+                            <ArrowRight className="h-4 w-4 md:h-6 md:w-6" />
                         </button>
                     </div>
                 </div>
@@ -319,36 +319,36 @@ export default function CheckoutPage() {
                 {/* Address Selection Modal */}
                 {isAddressModalOpen && (
                     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                        <div className="bg-white rounded-[2rem] p-6 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
-                            <div className="flex items-center justify-between mb-6">
-                                <h3 className="text-lg font-black text-gray-900">Pilih Alamat</h3>
-                                <button onClick={() => setIsAddressModalOpen(false)} className="text-gray-500 hover:text-gray-900 font-bold">Tutup</button>
+                        <div className="bg-white rounded-[2rem] p-5 md:p-6 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
+                            <div className="flex items-center justify-between mb-4 md:mb-6">
+                                <h3 className="text-sm md:text-lg font-black text-gray-900">Pilih Alamat</h3>
+                                <button onClick={() => setIsAddressModalOpen(false)} className="text-[10px] md:text-sm text-gray-500 hover:text-gray-900 font-bold">Tutup</button>
                             </div>
                             <div className="space-y-3">
                                 {addresses.map((addr) => (
                                     <button
                                         key={addr.id}
                                         onClick={() => handleSelectAddress(addr)}
-                                        className={`w-full text-left p-4 border-2 rounded-2xl transition-all group relative ${selectedAddressId === addr.id
+                                        className={`w-full text-left p-3 md:p-4 border-2 rounded-2xl transition-all group relative ${selectedAddressId === addr.id
                                             ? 'border-[#1B5E20] bg-green-50/50'
                                             : 'border-gray-100 bg-gray-50 hover:bg-white hover:border-gray-200'
                                             }`}
                                     >
                                         <div className="flex items-center justify-between mb-1">
                                             <div className="flex items-center gap-2">
-                                                <span className="text-xs font-black text-gray-900">{addr.label}</span>
-                                                {addr.isMain && <span className="px-2 py-0.5 bg-[#1B5E20]/10 text-[#1B5E20] text-[9px] font-bold rounded-full uppercase">Utama</span>}
+                                                <span className="text-[9px] md:text-xs font-black text-gray-900">{addr.label}</span>
+                                                {addr.isMain && <span className="px-2 py-0.5 bg-[#1B5E20]/10 text-[#1B5E20] text-[8px] md:text-[9px] font-bold rounded-full uppercase">Utama</span>}
                                             </div>
-                                            {selectedAddressId === addr.id && <CheckCircle2 className="h-4 w-4 text-[#1B5E20]" />}
+                                            {selectedAddressId === addr.id && <CheckCircle2 className="h-3.5 w-3.5 md:h-4 md:w-4 text-[#1B5E20]" />}
                                         </div>
-                                        <p className="text-sm font-bold text-gray-800">{addr.receiverName}</p>
-                                        <p className="text-xs text-gray-600 font-medium">{addr.phone}</p>
-                                        <p className="text-xs text-gray-500 mt-1 leading-tight">{addr.street}, {addr.city}, {addr.province}, {addr.postalCode}</p>
+                                        <p className="text-[10px] md:text-sm font-bold text-gray-800">{addr.receiverName}</p>
+                                        <p className="text-[9px] md:text-xs text-gray-600 font-medium">{addr.phone}</p>
+                                        <p className="text-[9px] md:text-xs text-gray-500 mt-1 leading-tight">{addr.street}, {addr.city}, {addr.province}, {addr.postalCode}</p>
                                     </button>
                                 ))}
                             </div>
-                            <div className="mt-6 pt-4 border-t">
-                                <Link href="/dashboard/profile" className="block text-center text-sm font-bold text-[#1B5E20] hover:underline">
+                            <div className="mt-5 pt-4 border-t">
+                                <Link href="/dashboard/profile" className="block text-center text-[11px] md:text-sm font-bold text-[#1B5E20] hover:underline">
                                     + Kelola / Tambah Alamat Baru
                                 </Link>
                             </div>
@@ -363,15 +363,15 @@ export default function CheckoutPage() {
     if (step === 2) {
         return (
             <div className="min-h-screen bg-gray-50 pb-24 font-[family-name:var(--font-poppins)]">
-                <div className="max-w-3xl mx-auto px-4 py-8">
-                    <button onClick={() => setStep(1)} className="flex items-center text-gray-500 font-bold mb-6 hover:text-gray-900 transition-colors">
-                        <ArrowLeft className="h-5 w-5 mr-2" />
+                <div className="max-w-3xl mx-auto px-4 py-6 md:py-8">
+                    <button onClick={() => setStep(1)} className="flex items-center text-[10px] sm:text-base text-gray-500 font-bold mb-4 md:mb-6 hover:text-gray-900 transition-colors">
+                        <ArrowLeft className="h-4 w-4 mr-1.5" />
                         Kembali ke Alamat
                     </button>
 
-                    <div className="bg-white rounded-[2.5rem] p-8 shadow-xl border border-gray-100">
-                        <div className="flex items-center justify-between mb-8">
-                            <h1 className="text-2xl font-black text-gray-900">Pilih Pembayaran</h1>
+                    <div className="bg-white rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 shadow-xl border border-gray-100">
+                        <div className="flex items-center justify-between mb-6 md:mb-8">
+                            <h1 className="text-base md:text-2xl font-black text-gray-900">Pilih Pembayaran</h1>
                             <div className="flex items-center space-x-1">
                                 <div className="h-2 w-2 bg-[#1B5E20] rounded-full"></div>
                                 <div className="h-2 w-8 bg-[#1B5E20] rounded-full"></div>
@@ -379,67 +379,66 @@ export default function CheckoutPage() {
                             </div>
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="space-y-3 md:space-y-4">
                             {isLoadingPaymentMethods ? (
                                 <div className="p-8 text-center text-gray-500">
-                                    <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2 text-[#1B5E20]" />
-                                    <p className="text-sm font-medium">Memuat metode pembayaran...</p>
+                                    <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2 text-[#1B5E20]" />
+                                    <p className="text-[10px] md:text-sm font-medium">Memuat metode pembayaran...</p>
                                 </div>
                             ) : availablePaymentMethods.length === 0 ? (
-                                <div className="p-6 bg-red-50 rounded-3xl border border-red-100 text-center">
-                                    <p className="text-red-800 font-bold mb-1">Tidak ada metode pembayaran yang tersedia</p>
-                                    <p className="text-red-600 text-sm">Toko-toko yang Anda pilih tidak memiliki metode pembayaran yang sama. Silakan split order Anda.</p>
+                                <div className="p-5 md:p-6 bg-red-50 rounded-2xl border border-red-100 text-center">
+                                    <p className="text-red-800 text-xs md:text-base font-bold mb-1">Tidak ada metode pembayaran yang tersedia</p>
+                                    <p className="text-red-600 text-[10px] md:text-sm">Toko-toko yang Anda pilih tidak memiliki metode pembayaran yang sama.</p>
                                 </div>
                             ) : (
                                 <>
                                     {availablePaymentMethods.includes('bank_transfer') && (
                                         <button
                                             onClick={() => setPaymentMethod('bank_transfer')}
-                                            className={`w-full flex items-center justify-between p-6 rounded-3xl border-2 transition-all ${paymentMethod === 'bank_transfer' ? 'border-[#1B5E20] bg-green-50' : 'border-gray-50 hover:border-gray-200 bg-gray-50'}`}
+                                            className={`w-full flex items-center justify-between p-4 md:p-6 rounded-2xl md:rounded-3xl border-2 transition-all ${paymentMethod === 'bank_transfer' ? 'border-[#1B5E20] bg-green-50' : 'border-gray-50 hover:border-gray-200 bg-gray-50'}`}
                                         >
-                                            <div className="flex items-center space-x-4">
-                                                <div className={`p-3 rounded-xl ${paymentMethod === 'bank_transfer' ? 'bg-[#1B5E20] text-white' : 'bg-white text-gray-400'}`}>
-                                                    <CreditCard className="h-6 w-6" />
+                                            <div className="flex items-center space-x-3 md:space-x-4">
+                                                <div className={`p-2.5 md:p-3 rounded-xl ${paymentMethod === 'bank_transfer' ? 'bg-[#1B5E20] text-white' : 'bg-white text-gray-400'}`}>
+                                                    <CreditCard className="h-5 w-5 md:h-6 md:w-6" />
                                                 </div>
                                                 <div className="text-left">
-                                                    <p className="font-bold text-gray-900">Transfer Bank (Manual)</p>
-                                                    <p className="text-xs text-gray-500 font-medium">Verifikasi otomatis (Soon)</p>
+                                                    <p className="text-xs md:text-base font-bold text-gray-900">Transfer Bank (Manual)</p>
+                                                    <p className="text-[9px] md:text-xs text-gray-500 font-medium">Verifikasi otomatis (Soon)</p>
                                                 </div>
                                             </div>
-                                            {paymentMethod === 'bank_transfer' && <CheckCircle2 className="h-6 w-6 text-[#1B5E20]" />}
+                                            {paymentMethod === 'bank_transfer' && <CheckCircle2 className="h-4 w-4 md:h-6 md:w-6 text-[#1B5E20]" />}
                                         </button>
                                     )}
 
                                     {availablePaymentMethods.includes('cod') && (
                                         <button
                                             onClick={() => setPaymentMethod('cod')}
-                                            className={`w-full flex items-center justify-between p-6 rounded-3xl border-2 transition-all ${paymentMethod === 'cod' ? 'border-[#1B5E20] bg-green-50' : 'border-gray-50 hover:border-gray-200 bg-gray-50'}`}
+                                            className={`w-full flex items-center justify-between p-4 md:p-6 rounded-2xl md:rounded-3xl border-2 transition-all ${paymentMethod === 'cod' ? 'border-[#1B5E20] bg-green-50' : 'border-gray-50 hover:border-gray-200 bg-gray-50'}`}
                                         >
-                                            <div className="flex items-center space-x-4">
-                                                <div className={`p-3 rounded-xl ${paymentMethod === 'cod' ? 'bg-[#1B5E20] text-white' : 'bg-white text-gray-400'}`}>
-                                                    <Truck className="h-6 w-6" />
+                                            <div className="flex items-center space-x-3 md:space-x-4">
+                                                <div className={`p-2.5 md:p-3 rounded-xl ${paymentMethod === 'cod' ? 'bg-[#1B5E20] text-white' : 'bg-white text-gray-400'}`}>
+                                                    <Truck className="h-5 w-5 md:h-6 md:w-6" />
                                                 </div>
                                                 <div className="text-left">
-                                                    <p className="font-bold text-gray-900">Bayar di Tempat (COD)</p>
-                                                    <p className="text-xs text-gray-500 font-medium">Bayar tunai saat kurir tiba</p>
+                                                    <p className="text-xs md:text-base font-bold text-gray-900">Bayar di Tempat (COD)</p>
+                                                    <p className="text-[9px] md:text-xs text-gray-500 font-medium">Bayar tunai saat kurir tiba</p>
                                                 </div>
                                             </div>
-                                            {paymentMethod === 'cod' && <CheckCircle2 className="h-6 w-6 text-[#1B5E20]" />}
+                                            {paymentMethod === 'cod' && <CheckCircle2 className="h-4 w-4 md:h-6 md:w-6 text-[#1B5E20]" />}
                                         </button>
                                     )}
 
-                                    {/* E-Wallet Placeholder - can be enabled if backend sends 'e_wallet' */}
                                     <button
                                         disabled
-                                        className="w-full flex items-center justify-between p-6 rounded-3xl border-2 border-gray-50 bg-gray-50 opacity-60 cursor-not-allowed"
+                                        className="w-full flex items-center justify-between p-4 md:p-6 rounded-2xl md:rounded-3xl border-2 border-gray-50 bg-gray-50 opacity-60 cursor-not-allowed"
                                     >
-                                        <div className="flex items-center space-x-4">
-                                            <div className="p-3 bg-white text-gray-300 rounded-xl">
-                                                <ShieldCheck className="h-6 w-6" />
+                                        <div className="flex items-center space-x-3 md:space-x-4">
+                                            <div className="p-2.5 md:p-3 bg-white text-gray-300 rounded-xl">
+                                                <ShieldCheck className="h-5 w-5 md:h-6 md:w-6" />
                                             </div>
                                             <div className="text-left">
-                                                <p className="font-bold text-gray-900">E-Wallet (OVO, Dana, QRIS)</p>
-                                                <p className="text-[10px] bg-yellow-100 text-yellow-700 font-black px-2 py-0.5 rounded inline-block mt-1">COMING SOON</p>
+                                                <p className="text-xs md:text-base font-bold text-gray-900">E-Wallet (OVO, Dana, QRIS)</p>
+                                                <p className="text-[8px] md:text-[10px] bg-yellow-100 text-yellow-700 font-black px-2 py-0.5 rounded inline-block mt-1">COMING SOON</p>
                                             </div>
                                         </div>
                                     </button>
@@ -449,10 +448,10 @@ export default function CheckoutPage() {
 
                         <button
                             onClick={() => setStep(3)}
-                            className="w-full mt-10 py-5 bg-[#1B5E20] text-white rounded-2xl font-black text-lg shadow-xl shadow-green-100 hover:bg-green-800 transition active:scale-95 flex items-center justify-center space-x-2"
+                            className="w-full mt-8 md:mt-10 py-4 md:py-5 bg-[#1B5E20] text-white rounded-2xl font-black text-sm md:text-lg shadow-xl shadow-green-100 hover:bg-green-800 transition active:scale-95 flex items-center justify-center space-x-2"
                         >
                             <span>Review Pesanan</span>
-                            <ArrowRight className="h-6 w-6" />
+                            <ArrowRight className="h-4 w-4 md:h-6 md:w-6" />
                         </button>
                     </div>
                 </div>
@@ -464,15 +463,15 @@ export default function CheckoutPage() {
     if (step === 3) {
         return (
             <div className="min-h-screen bg-gray-50 pb-24 font-[family-name:var(--font-poppins)]">
-                <div className="max-w-3xl mx-auto px-4 py-8">
-                    <button onClick={() => setStep(2)} className="flex items-center text-gray-500 font-bold mb-6 hover:text-gray-900 transition-colors">
-                        <ArrowLeft className="h-5 w-5 mr-2" />
+                <div className="max-w-3xl mx-auto px-4 py-6 md:py-8">
+                    <button onClick={() => setStep(2)} className="flex items-center text-[10px] sm:text-base text-gray-500 font-bold mb-4 md:mb-6 hover:text-gray-900 transition-colors">
+                        <ArrowLeft className="h-4 w-4 mr-1.5" />
                         Kembali ke Pembayaran
                     </button>
 
-                    <div className="bg-white rounded-[2.5rem] p-8 shadow-xl border border-gray-100">
-                        <div className="flex items-center justify-between mb-8">
-                            <h1 className="text-2xl font-black text-gray-900">Review Akhir</h1>
+                    <div className="bg-white rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 shadow-xl border border-gray-100">
+                        <div className="flex items-center justify-between mb-6 md:mb-8">
+                            <h1 className="text-base md:text-2xl font-black text-gray-900">Review Akhir</h1>
                             <div className="flex items-center space-x-1">
                                 <div className="h-2 w-2 bg-[#1B5E20] rounded-full"></div>
                                 <div className="h-2 w-2 bg-[#1B5E20] rounded-full"></div>
@@ -480,40 +479,40 @@ export default function CheckoutPage() {
                             </div>
                         </div>
 
-                        <div className="space-y-6">
-                            <div className="bg-gray-50 p-6 rounded-3xl">
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Tujuan Pengiriman</p>
-                                <p className="font-black text-gray-900">{shippingData.receiverName}</p>
-                                <p className="text-sm font-bold text-gray-500 mt-1">{shippingData.phone}</p>
-                                <p className="text-sm text-gray-500 mt-2 leading-relaxed">{shippingData.address}</p>
+                        <div className="space-y-4 md:space-y-6">
+                            <div className="bg-gray-50 p-4 md:p-6 rounded-2xl md:rounded-3xl">
+                                <p className="text-[8px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 md:mb-3">Tujuan Pengiriman</p>
+                                <p className="text-[11px] md:text-base font-black text-gray-900">{shippingData.receiverName}</p>
+                                <p className="text-[9px] md:text-sm font-bold text-gray-500 mt-0.5 md:mt-1">{shippingData.phone}</p>
+                                <p className="text-[10px] md:text-sm text-gray-500 mt-1.5 md:mt-2 leading-relaxed">{shippingData.address}</p>
                             </div>
 
-                            <div className="bg-gray-50 p-6 rounded-3xl">
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Metode Pembayaran</p>
-                                <div className="flex items-center space-x-3">
+                            <div className="bg-gray-50 p-4 md:p-6 rounded-2xl md:rounded-3xl">
+                                <p className="text-[8px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 md:mb-3">Metode Pembayaran</p>
+                                <div className="flex items-center space-x-2 md:space-x-3">
                                     {paymentMethod === 'bank_transfer' ? (
                                         <>
-                                            <CreditCard className="h-5 w-5 text-[#1B5E20]" />
-                                            <span className="font-bold text-gray-900">Transfer Bank (Manual)</span>
+                                            <CreditCard className="h-3.5 w-3.5 md:h-5 md:w-5 text-[#1B5E20]" />
+                                            <span className="text-[10px] md:text-base font-bold text-gray-900">Transfer Bank (Manual)</span>
                                         </>
                                     ) : paymentMethod === 'cod' ? (
                                         <>
-                                            <Truck className="h-5 w-5 text-[#1B5E20]" />
-                                            <span className="font-bold text-gray-900">Bayar di Tempat (COD)</span>
+                                            <Truck className="h-3.5 w-3.5 md:h-5 md:w-5 text-[#1B5E20]" />
+                                            <span className="text-[10px] md:text-base font-bold text-gray-900">Bayar di Tempat (COD)</span>
                                         </>
                                     ) : (
-                                        <span className="font-bold text-gray-900 capitalize">{paymentMethod.replace('_', ' ')}</span>
+                                        <span className="text-[10px] md:text-base font-bold text-gray-900 capitalize">{paymentMethod.replace('_', ' ')}</span>
                                     )}
                                 </div>
                             </div>
 
                             <div>
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Item Pesanan</p>
-                                <div className="space-y-3">
+                                <p className="text-[8px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 md:mb-4">Item Pesanan</p>
+                                <div className="space-y-2 md:space-y-3">
                                     {items.map((item) => (
-                                        <div key={item.productId} className="flex justify-between items-center text-sm">
+                                        <div key={item.productId} className="flex justify-between items-center text-[9px] md:text-sm">
                                             <span className="text-gray-600 font-medium">
-                                                <span className="font-black text-[#1B5E20] mr-2">{item.quantity}x</span>
+                                                <span className="font-black text-[#1B5E20] mr-1.5 md:mr-2">{item.quantity}x</span>
                                                 {item.name}
                                             </span>
                                             <span className="font-black text-gray-900">{formatPrice(item.price * item.quantity)}</span>
@@ -522,10 +521,10 @@ export default function CheckoutPage() {
                                 </div>
                             </div>
 
-                            <div className="pt-6 border-t border-dashed border-gray-200">
+                            <div className="pt-4 md:pt-6 border-t border-dashed border-gray-200">
                                 <div className="flex justify-between items-end">
-                                    <span className="font-bold text-gray-400">Total Pembayaran</span>
-                                    <span className="text-2xl font-black text-[#1B5E20]">{formatPrice(totalPrice)}</span>
+                                    <span className="text-[10px] md:text-base font-bold text-gray-400">Total Pembayaran</span>
+                                    <span className="text-lg md:text-2xl font-black text-[#1B5E20]">{formatPrice(totalPrice)}</span>
                                 </div>
                             </div>
                         </div>
@@ -533,12 +532,12 @@ export default function CheckoutPage() {
                         <button
                             disabled={isSubmitting}
                             onClick={handleCreateOrder}
-                            className="w-full mt-10 py-5 bg-[#1B5E20] text-white rounded-2xl font-black text-lg shadow-xl shadow-green-100 hover:bg-green-800 transition active:scale-95 disabled:opacity-50 flex items-center justify-center space-x-2"
+                            className="w-full mt-8 md:mt-10 py-4 md:py-5 bg-[#1B5E20] text-white rounded-2xl font-black text-sm md:text-lg shadow-xl shadow-green-100 hover:bg-green-800 transition active:scale-95 disabled:opacity-50 flex items-center justify-center space-x-2"
                         >
-                            {isSubmitting ? <Loader2 className="h-6 w-6 animate-spin" /> : (
+                            {isSubmitting ? <Loader2 className="h-5 w-5 md:h-6 md:w-6 animate-spin" /> : (
                                 <>
                                     <span>{paymentMethod === 'cod' ? 'Konfirmasi Pesanan' : 'Konfirmasi & Bayar'}</span>
-                                    <CheckCircle2 className="h-6 w-6" />
+                                    <CheckCircle2 className="h-5 w-5 md:h-6 md:w-6" />
                                 </>
                             )}
                         </button>
@@ -557,21 +556,21 @@ export default function CheckoutPage() {
 
         return (
             <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4 font-[family-name:var(--font-poppins)]">
-                <div className="max-w-md w-full bg-white rounded-[3rem] p-10 shadow-2xl border border-gray-100 text-center relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-2 bg-[#1B5E20]"></div>
+                <div className="max-w-md w-full bg-white rounded-[2.5rem] md:rounded-[3rem] p-8 md:p-10 shadow-2xl border border-gray-100 text-center relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-1.5 md:h-2 bg-[#1B5E20]"></div>
 
-                    <div className="h-24 w-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <div className="h-20 w-20 md:h-24 md:w-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-5 md:mb-6">
                         {paymentMethod === 'cod' ? (
-                            <Truck className="h-12 w-12 text-[#1B5E20]" />
+                            <Truck className="h-10 w-10 md:h-12 md:w-12 text-[#1B5E20]" />
                         ) : (
-                            <CheckCircle2 className="h-12 w-12 text-[#1B5E20]" />
+                            <CheckCircle2 className="h-10 w-10 md:h-12 md:w-12 text-[#1B5E20]" />
                         )}
                     </div>
 
-                    <h1 className="text-2xl font-black text-gray-900 mb-2">
+                    <h1 className="text-xl md:text-2xl font-black text-gray-900 mb-2">
                         {paymentMethod === 'cod' ? 'Pesanan Berhasil!' : 'Pesanan Dibuat!'}
                     </h1>
-                    <p className="text-gray-500 font-medium mb-8">
+                    <p className="text-xs md:text-sm text-gray-500 font-medium mb-6 md:mb-8">
                         {orders.length > 1
                             ? `Berhasil membuat ${orders.length} pesanan terpisah.`
                             : paymentMethod === 'cod'
@@ -579,17 +578,17 @@ export default function CheckoutPage() {
                                 : 'Silakan selesaikan pembayaran untuk memproses pesanan Anda.'}
                     </p>
 
-                    <div className="bg-gray-50 p-6 rounded-3xl text-left mb-8 space-y-4">
+                    <div className="bg-gray-50 p-5 md:p-6 rounded-2xl md:rounded-3xl text-left mb-6 md:mb-8 space-y-3 md:space-y-4">
                         {paymentMethod === 'bank_transfer' && (
                             <div>
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Rekening Tujuan</p>
-                                <div className="p-4 bg-white rounded-2xl border border-gray-100 flex items-center justify-between">
+                                <p className="text-[8px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Rekening Tujuan</p>
+                                <div className="p-3.5 md:p-4 bg-white rounded-xl md:rounded-2xl border border-gray-100 flex items-center justify-between">
                                     <div>
-                                        <p className="font-black text-gray-900">BCA - 8620 1234 56</p>
-                                        <p className="text-xs text-gray-500 font-bold uppercase">A.N PT AXON DIGITAL INDO</p>
+                                        <p className="text-xs md:text-base font-black text-gray-900">BCA - 8620 1234 56</p>
+                                        <p className="text-[9px] md:text-xs text-gray-500 font-bold uppercase">A.N PT AXON DIGITAL INDO</p>
                                     </div>
-                                    <button className="p-2 text-gray-400 hover:text-[#1B5E20] transition-colors">
-                                        <Copy className="h-5 w-5" />
+                                    <button className="p-1.5 text-gray-400 hover:text-[#1B5E20] transition-colors">
+                                        <Copy className="h-4 w-4 md:h-5 md:w-5" />
                                     </button>
                                 </div>
                             </div>
@@ -597,37 +596,37 @@ export default function CheckoutPage() {
 
                         {paymentMethod === 'cod' && (
                             <div>
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Instruksi Pembayaran</p>
-                                <div className="p-4 bg-white rounded-2xl border border-gray-100">
-                                    <p className="font-bold text-gray-900 leading-relaxed text-sm">
-                                        Siapkan uang tunai sejumlah <span className="text-[#1B5E20] text-lg">{formatPrice(totalAmount)}</span> saat kurir tiba di lokasi Anda.
+                                <p className="text-[8px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 md:mb-2">Instruksi Pembayaran</p>
+                                <div className="p-3.5 md:p-4 bg-white rounded-xl md:rounded-2xl border border-gray-100">
+                                    <p className="font-bold text-gray-900 leading-relaxed text-[11px] md:text-sm">
+                                        Siapkan tunai <span className="text-[#1B5E20] text-sm md:text-lg">{formatPrice(totalAmount)}</span> saat kurir tiba.
                                     </p>
                                 </div>
                             </div>
                         )}
 
                         <div>
-                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Nominal</p>
-                            <p className="text-2xl font-black text-[#1B5E20]">{formatPrice(totalAmount)}</p>
+                            <p className="text-[8px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-0.5 md:mb-1">Total Nominal</p>
+                            <p className="text-lg md:text-2xl font-black text-[#1B5E20]">{formatPrice(totalAmount)}</p>
                         </div>
                     </div>
 
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                         <Link
                             href="/dashboard/orders"
-                            className="block w-full py-4 bg-[#1B5E20] text-white rounded-2xl font-black hover:bg-green-800 transition shadow-lg shadow-green-100"
+                            className="block w-full py-3.5 md:py-4 bg-[#1B5E20] text-white rounded-2xl font-black text-xs md:text-base hover:bg-green-800 transition shadow-lg shadow-green-100"
                         >
                             Lihat Daftar Pesanan
                         </Link>
                         <button
                             onClick={() => router.push('/')}
-                            className="block w-full py-4 bg-gray-50 text-gray-500 rounded-2xl font-bold hover:bg-gray-100 transition border border-gray-100"
+                            className="block w-full py-3.5 md:py-4 bg-gray-50 text-gray-500 rounded-2xl font-bold text-xs md:text-base hover:bg-gray-100 transition border border-gray-100"
                         >
                             Kembali ke Beranda
                         </button>
                     </div>
 
-                    <div className="mt-8 text-[9px] text-gray-400 font-bold uppercase tracking-widest space-y-1">
+                    <div className="mt-6 md:mt-8 text-[7px] md:text-[9px] text-gray-400 font-bold uppercase tracking-widest space-y-0.5 md:space-y-1">
                         {orderIds.map((id: string) => (
                             <p key={id}>ORDER ID: {id}</p>
                         ))}
