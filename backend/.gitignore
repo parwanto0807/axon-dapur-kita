@@ -81,3 +81,5 @@ test_*.js
 debug_*.js
 temp/
 tmp/
+# Firebase
+firebase-service-account.json
