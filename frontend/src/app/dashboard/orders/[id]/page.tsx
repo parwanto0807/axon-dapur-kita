@@ -45,7 +45,7 @@ export default function OrderDetailsPage() {
     const fetchOrderDetails = async () => {
         setIsLoading(true);
         try {
-            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
             const response = await axios.get(`${apiBaseUrl}/orders/${id}`, { withCredentials: true });
             setOrder(response.data);
         } catch (err: any) {

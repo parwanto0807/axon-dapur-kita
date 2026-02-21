@@ -82,7 +82,7 @@ function RegistrationContent() {
     };
 
     const handleGoogleLogin = () => {
-        const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+        const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
         // Redirect to Google Auth
         // After login, Google callback should redirect back here? 
         // Ideally, we need to store the 'intended' destination or plan in localStorage before redirecting

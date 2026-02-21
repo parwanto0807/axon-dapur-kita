@@ -42,7 +42,7 @@ export default function MerchantLayout({ children }: { children: React.ReactNode
     }
 
     return (
-        <div className="flex min-h-screen bg-gray-50">
+        <div className="flex min-h-screen bg-[#F0F4EF]">
             <MerchantSidebar
                 isOpen={isSidebarOpen}
                 onClose={() => setIsSidebarOpen(false)}
@@ -51,7 +51,7 @@ export default function MerchantLayout({ children }: { children: React.ReactNode
             <div className="flex-1 flex flex-col min-w-0 min-h-screen transition-all duration-300">
                 <MerchantNavbar onMenuClick={() => setIsSidebarOpen(true)} />
 
-                <main className="flex-1 px-[2px] pt-4 pb-20 sm:p-6 overflow-y-auto">
+                <main className="flex-1 px-2 pt-4 pb-20 sm:p-6 overflow-y-auto bg-gradient-to-br from-[#F0F4EF] via-[#F8FAF7] to-[#E8F1E5]">
                     {children}
                 </main>
             </div>

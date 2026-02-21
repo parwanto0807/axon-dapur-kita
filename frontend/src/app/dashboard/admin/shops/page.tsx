@@ -32,7 +32,7 @@ export default function AdminShopsPage() {
     const [statusFilter, setStatusFilter] = useState('ALL');
     const [actionLoading, setActionLoading] = useState<string | null>(null);
 
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
 
     const fetchShops = async () => {
         setIsLoading(true);

@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/authStore";
 import HeroSlider from "@/components/features/HeroSlider";
 import ShareDialog from "@/components/ui/ShareDialog";
 import {
@@ -14,6 +16,9 @@ import axios from "axios";
 import clsx from 'clsx';
 import { formatPrice } from "@/utils/format";
 import { getImageUrl } from "@/utils/image";
+import { ProductSkeleton, CategorySkeleton, ShopSkeleton } from "@/components/ui/Skeleton";
+import WishlistButton from "@/components/ui/WishlistButton";
+import FilterBar, { FilterState } from "@/components/features/FilterBar";
 
 interface Shop {
   id: string;
@@ -83,6 +88,17 @@ export default function Home() {
     url: '',
     title: ''
   });
+  const [filters, setFilters] = useState<FilterState>({ sortBy: 'price_low' });
+
+  const { isLoggedIn, isLoading } = useAuthStore();
+  const router = useRouter();
+
+  // Redirect authenticated users to dashboard
+  useEffect(() => {
+    if (!isLoading && isLoggedIn) {
+      router.replace('/dashboard');
+    }
+  }, [isLoggedIn, isLoading, router]);
 
   const openShareDialog = (product: Product) => {
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
@@ -135,6 +151,16 @@ export default function Home() {
     fetchProducts();
   }, [selectedCategory]);
 
+  const filteredProducts = products.filter(product => {
+    if (filters.minPrice && product.price < filters.minPrice) return false;
+    if (filters.maxPrice && product.price > filters.maxPrice) return false;
+    return true;
+  }).sort((a, b) => {
+    if (filters.sortBy === 'price_low') return a.price - b.price;
+    if (filters.sortBy === 'price_high') return b.price - a.price;
+    return 0;
+  });
+
   return (
     <div className="min-h-screen bg-white">
 
@@ -151,7 +177,7 @@ export default function Home() {
         {/* Categories Section - Modern Horizontal Scroll */}
         <section>
           <div className="flex items-center justify-between mb-3 sm:mb-6">
-            <h2 className="text-[11px] sm:text-2xl font-black text-gray-900 tracking-tight flex items-center">
+            <h2 className="text-sm sm:text-2xl font-black text-gray-900 tracking-tight flex items-center">
               <Grid className="mr-1.5 sm:mr-2 h-4 w-4 sm:h-6 sm:w-6 text-[#1B5E20]" />
               Kategori Pilihan
             </h2>
@@ -181,17 +207,14 @@ export default function Home() {
                   <Grid className="h-4 w-4 sm:h-8 sm:w-8" />
                 </div>
                 <span className={clsx(
-                  "text-[8px] sm:text-xs font-bold text-center",
+                  "text-[10px] sm:text-xs font-bold text-center",
                   selectedCategory === 'all' ? "text-[#1B5E20]" : "text-gray-600"
                 )}>Semua</span>
               </button>
 
               {loading ? (
-                [1, 2, 3, 4, 5, 6].map(i => (
-                  <div key={i} className="flex flex-col items-center flex-shrink-0 space-y-1.5 sm:space-y-3">
-                    <div className="w-10 h-10 sm:w-20 sm:h-20 rounded-full bg-gray-100 animate-pulse" />
-                    <div className="h-2 w-10 sm:h-3 sm:w-16 bg-gray-100 rounded animate-pulse" />
-                  </div>
+                [1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+                  <CategorySkeleton key={i} />
                 ))
               ) : (
                 categories.slice(0, 10).map((cat) => {
@@ -214,7 +237,7 @@ export default function Home() {
                         <Icon className={clsx("h-4 w-4 sm:h-8 sm:w-8 transition-colors", isSelected ? style.color : style.color)} />
                       </div>
                       <span className={clsx(
-                        "text-[8px] sm:text-xs font-bold text-center max-w-[40px] sm:max-w-[80px] leading-tight",
+                        "text-[10px] sm:text-xs font-bold text-center max-w-[50px] sm:max-w-[80px] leading-tight",
                         isSelected ? "text-gray-900" : "text-gray-500"
                       )}>{cat.name}</span>
                     </button>
@@ -228,7 +251,7 @@ export default function Home() {
         {/* Featured Shops / Toko Terdekat */}
         <section>
           <div className="flex items-center justify-between mb-2 sm:mb-6">
-            <h2 className="text-[11px] sm:text-2xl font-black text-gray-900 tracking-tight flex items-center">
+            <h2 className="text-sm sm:text-2xl font-black text-gray-900 tracking-tight flex items-center">
               <Store className="mr-1.5 sm:mr-2 h-4 w-4 sm:h-6 sm:w-6 text-[#1B5E20]" />
               Toko Pilihan
             </h2>
@@ -237,7 +260,7 @@ export default function Home() {
           {loading ? (
             <div className="grid gap-2 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {[1, 2, 3].map((n) => (
-                <div key={n} className="h-12 sm:h-28 bg-gray-100 rounded-2xl animate-pulse"></div>
+                <ShopSkeleton key={n} />
               ))}
             </div>
           ) : (
@@ -261,11 +284,11 @@ export default function Home() {
                         )}
                       </div>
                       <div className="flex-1 min-w-0 relative z-10">
-                        <h3 className="font-bold text-[9px] sm:text-base text-gray-900 group-hover:text-[#1B5E20] transition-colors truncate">
+                        <h3 className="font-bold text-[10px] sm:text-base text-gray-900 group-hover:text-[#1B5E20] transition-colors truncate">
                           {shop.name}
                         </h3>
-                        <p className="text-[8px] sm:text-xs text-gray-500 truncate flex items-center mt-0.5">
-                          <MapPin className="h-2 w-2 sm:h-3 sm:w-3 mr-0.5 shrink-0" />
+                        <p className="text-[10px] sm:text-xs text-gray-500 truncate flex items-center mt-0.5">
+                          <MapPin className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 shrink-0" />
                           {shop.address || 'Lokasi tidak tersedia'}
                         </p>
                       </div>
@@ -285,19 +308,26 @@ export default function Home() {
         <section>
           <div className="flex items-center space-x-1.5 sm:space-x-2 mb-3 sm:mb-6">
             <TrendingUp className="h-4 w-4 sm:h-6 sm:w-6 text-[#1B5E20]" />
-            <h2 className="text-[11px] sm:text-2xl font-black text-gray-900 tracking-tight">Rekomendasi Produk</h2>
+            <h2 className="text-sm sm:text-2xl font-black text-gray-900 tracking-tight">Rekomendasi Produk</h2>
+          </div>
+
+          <div className="mb-6 -mx-4 sm:mx-0">
+            <FilterBar
+              categories={categories}
+              onFilterChange={(newFilters) => setFilters(newFilters)}
+            />
           </div>
 
           {loading || productsLoading ? (
             <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-              {[1, 2, 3, 4, 5].map((n) => (
-                <div key={n} className="h-48 sm:h-72 bg-gray-100 rounded-2xl sm:rounded-3xl animate-pulse"></div>
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+                <ProductSkeleton key={n} />
               ))}
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-              {products.length > 0 ? (
-                products.map((product) => (
+              {filteredProducts.length > 0 ? (
+                filteredProducts.map((product) => (
                   <div key={product.id} className="group bg-white rounded-2xl sm:rounded-3xl overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 border border-gray-200 hover:border-transparent flex flex-col h-full relative">
 
                     <div className="relative">
@@ -321,14 +351,27 @@ export default function Home() {
                       </Link>
 
                       {/* Quick Action Buttons (Overlay) */}
-                      <div className="absolute top-2 right-2 flex flex-col space-y-1 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0 z-10">
+                      <div className="absolute top-2 right-2 flex flex-col space-y-1 z-10">
+                        <WishlistButton
+                          product={{
+                            id: product.id,
+                            name: product.name,
+                            price: product.price,
+                            image: product.image,
+                            shop: {
+                              id: product.shop.slug, // Using slug as ID for simplicity in public view
+                              name: product.shop.name
+                            }
+                          }}
+                          className="shadow-md"
+                        />
                         <button
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
                             openShareDialog(product);
                           }}
-                          className="h-8 w-8 bg-white rounded-full shadow-md flex items-center justify-center text-gray-600 hover:text-[#1B5E20] hover:bg-gray-50 transition-colors"
+                          className="h-8 w-8 bg-white/90 backdrop-blur-md rounded-full shadow-md flex items-center justify-center text-gray-600 hover:text-[#1B5E20] hover:bg-white transition-all opacity-0 group-hover:opacity-100"
                           title="Bagikan"
                         >
                           <Share2 className="h-4 w-4" />
@@ -339,13 +382,13 @@ export default function Home() {
                     <Link href={`/product/${product.id}`} className="block flex-1 flex flex-col">
                       {/* Content */}
                       <div className="p-2.5 sm:p-4 flex flex-col flex-1">
-                        <div className="text-[8px] sm:text-[10px] text-gray-500 font-medium uppercase tracking-wider mb-0.5 sm:mb-1 truncate flex items-center">
-                          <Store className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 sm:mr-1" />
+                        <div className="text-[10px] sm:text-[10px] text-gray-500 font-medium uppercase tracking-wider mb-0.5 sm:mb-1 truncate flex items-center">
+                          <Store className="h-3 w-3 sm:h-3 sm:w-3 mr-1 sm:mr-1" />
                           {product.shop.name}
                         </div>
                         {product.shop.address && (
-                          <div className="text-[8px] sm:text-[10px] text-gray-400 flex items-center mb-1 sm:mb-2 truncate">
-                            <MapPin className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 sm:mr-1" />
+                          <div className="text-[10px] sm:text-[10px] text-gray-400 flex items-center mb-1 sm:mb-2 truncate">
+                            <MapPin className="h-3 w-3 sm:h-3 sm:w-3 mr-1 sm:mr-1" />
                             {product.shop.address}
                           </div>
                         )}
@@ -355,8 +398,8 @@ export default function Home() {
 
                         <div className="mt-auto flex items-end justify-between">
                           <div>
-                            <p className="text-[8px] sm:text-[10px] text-gray-500 line-through">{formatPrice(product.price * 1.1)}</p>
-                            <p className="text-[11px] sm:text-lg font-black text-[#1B5E20]">
+                            <p className="text-[10px] sm:text-[10px] text-gray-500 line-through">{formatPrice(product.price * 1.1)}</p>
+                            <p className="text-sm sm:text-lg font-black text-[#1B5E20]">
                               {formatPrice(product.price)}
                             </p>
                           </div>
@@ -394,10 +437,10 @@ export default function Home() {
           <div className="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-3xl max-h-[85vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-white z-10">
               <div>
-                <h3 className="text-[11px] sm:text-xl font-black text-gray-900 flex items-center gap-2">
+                <h3 className="text-sm sm:text-xl font-black text-gray-900 flex items-center gap-2">
                   Jelajahi Kategori
                 </h3>
-                <p className="text-[9px] sm:text-sm text-gray-500">Temukan semua kebutuhan dapurmu disini</p>
+                <p className="text-[11px] sm:text-sm text-gray-500">Temukan semua kebutuhan dapurmu disini</p>
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
@@ -474,6 +517,6 @@ export default function Home() {
         url={shareData.url}
         title={shareData.title}
       />
-    </div>
+    </div >
   );
 }

@@ -118,6 +118,8 @@ export const createOrder = async (req, res) => {
                         netAmount,
                         paymentMethod,
                         paymentStatus: 'pending',
+                        deliveryStatus: 'pending',
+                        status: 'pending',
                         shippingAddress: shippingAddress || {},
                         notes,
                         items: {
@@ -340,6 +342,15 @@ export const updateOrderStatus = async (req, res) => {
         const updateData = {};
         if (paymentStatus) updateData.paymentStatus = paymentStatus;
         if (deliveryStatus) updateData.deliveryStatus = deliveryStatus;
+        
+        // Logical mapping to main status
+        if (paymentStatus === 'paid' && deliveryStatus === 'delivered') {
+            updateData.status = 'completed';
+        } else if (paymentStatus === 'failed') {
+            updateData.status = 'cancelled';
+        } else if (deliveryStatus === 'shipped') {
+            updateData.status = 'processing';
+        }
 
         const updatedOrder = await prisma.order.update({
             where: { id },
@@ -475,7 +486,8 @@ export const receiveOrder = async (req, res) => {
             where: { id },
             data: { 
                 deliveryStatus: 'delivered',
-                status: 'completed', // If you have a main status field
+                paymentStatus: 'paid', // Mark as paid if received (safety)
+                status: 'completed',
                 updatedAt: new Date()
             },
             include: { shop: true }

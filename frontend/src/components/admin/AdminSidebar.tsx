@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LayoutDashboard, Store, Users, Settings, LogOut, ChevronRight, ShieldCheck } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
+import { useState } from 'react';
+import LogoutModal from '../auth/LogoutModal';
 
 interface AdminSidebarProps {
     isOpen: boolean;
@@ -13,6 +15,7 @@ interface AdminSidebarProps {
 export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
     const pathname = usePathname();
     const { user, logout } = useAuthStore();
+    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
     const navigation = [
         { name: 'Dashboard', href: '/dashboard/admin', icon: LayoutDashboard },
@@ -87,7 +90,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
                 {/* Footer Actions */}
                 <div className="p-4 border-t border-gray-100">
                     <button
-                        onClick={() => logout()}
+                        onClick={() => setIsLogoutModalOpen(true)}
                         className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
                     >
                         <LogOut className="h-5 w-5" />
@@ -95,6 +98,10 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
                     </button>
                 </div>
             </div>
+            <LogoutModal
+                isOpen={isLogoutModalOpen}
+                onClose={() => setIsLogoutModalOpen(false)}
+            />
         </aside>
     );
 }

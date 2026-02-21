@@ -22,7 +22,7 @@ export default function StatCard({ title, value, icon: Icon, trend, trendUp, des
                 </div>
                 {trend && (
                     <div className={clsx(
-                        "flex items-center text-[8px] sm:text-xs font-black uppercase tracking-widest px-2 py-1 rounded-full",
+                        "flex items-center text-[10px] sm:text-xs font-black uppercase tracking-widest px-2 py-1 rounded-full",
                         trendUp === false ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'
                     )}>
                         {trend}
@@ -30,10 +30,10 @@ export default function StatCard({ title, value, icon: Icon, trend, trendUp, des
                 )}
             </div>
             <div>
-                <p className="text-gray-400 text-[8px] sm:text-sm font-black uppercase tracking-widest">{title}</p>
+                <p className="text-gray-400 text-[10px] sm:text-sm font-black uppercase tracking-widest">{title}</p>
                 <h3 className="text-sm sm:text-2xl font-black text-gray-900 mt-1">{value}</h3>
                 {description && (
-                    <p className="text-[7px] sm:text-xs text-gray-400 font-medium mt-2">{description}</p>
+                    <p className="text-[10px] sm:text-xs text-gray-400 font-medium mt-2">{description}</p>
                 )}
             </div>
         </div>

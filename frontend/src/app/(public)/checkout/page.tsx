@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { formatPrice } from '@/utils/format';
 
-const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
 
 export default function CheckoutPage() {
     const { items, totalPrice, clearCart } = useCart();

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useAuthStore } from "@/store/authStore";
 import { useRouter } from 'next/navigation';
-import { Store, ShoppingBag, TrendingUp, Package, Plus, Eye, Settings, ChevronRight, Bell, CheckCircle, Truck, Clock, XCircle } from 'lucide-react';
+import { Store, ShoppingBag, TrendingUp, Package, Plus, Eye, Settings, ChevronRight, Bell, CheckCircle, Truck, Clock, XCircle, X } from 'lucide-react';
 import Link from 'next/link';
 import StatCard from '@/components/merchant/StatCard';
 import MerchantBottomNav from '@/components/merchant/MerchantBottomNav';
@@ -41,17 +41,25 @@ function NewOrderToast({ order, onClose }: { order: RealtimeOrder; onClose: () =
     }, [onClose]);
 
     return (
-        <div className="fixed top-4 right-4 z-[100] bg-white rounded-2xl shadow-2xl border border-green-100 p-4 flex items-start space-x-3 max-w-sm animate-in slide-in-from-top-2 duration-300">
-            <div className="h-10 w-10 rounded-xl bg-green-50 border border-green-100 flex items-center justify-center shrink-0">
-                <Bell className="h-5 w-5 text-green-600" />
+        <div className="fixed top-2 sm:top-4 left-2 right-2 sm:left-auto sm:right-4 z-[100] bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-green-100 p-3 sm:p-4 flex items-center space-x-3 max-w-sm animate-in slide-in-from-top-4 duration-500 ring-1 ring-black/5">
+            <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-gradient-to-br from-green-50 to-green-100 border border-green-200 flex items-center justify-center shrink-0 shadow-sm animate-pulse">
+                <Bell className="h-4 w-4 sm:h-5 sm:w-5 text-[#1B5E20]" />
             </div>
             <div className="flex-1 min-w-0">
-                <p className="text-sm font-black text-gray-900">Pesanan Baru! 🎉</p>
-                <p className="text-xs text-gray-500 mt-0.5">
-                    {order.user.name} · {formatPrice(order.totalAmount)} · {order.itemCount} item
+                <div className="flex items-center gap-1.5">
+                    <p className="text-[11px] sm:text-sm font-black text-gray-900 uppercase tracking-tight">Pesanan Baru! 🎉</p>
+                    <span className="flex h-1.5 w-1.5 rounded-full bg-green-500 animate-ping" />
+                </div>
+                <p className="text-[10px] sm:text-xs text-gray-500 font-medium mt-0.5 mt-0.5 line-clamp-1">
+                    {order.user.name} · <span className="text-[#1B5E20] font-bold">{formatPrice(order.totalAmount)}</span>
                 </p>
             </div>
-            <button onClick={onClose} className="text-gray-300 hover:text-gray-500 text-lg leading-none">×</button>
+            <button
+                onClick={onClose}
+                className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-900 transition-colors"
+            >
+                <X className="h-4 w-4" />
+            </button>
         </div>
     );
 }
@@ -65,13 +73,7 @@ export default function MerchantDashboardPage() {
     const [newOrderNotification, setNewOrderNotification] = useState<RealtimeOrder | null>(null);
     const [unreadCount, setUnreadCount] = useState(0);
     const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
-    const [notifPermission, setNotifPermission] = useState<string>('unknown');
 
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            setNotifPermission(Notification.permission);
-        }
-    }, []);
 
     // ── Handle incoming real-time order ──────────────────────────────────────
     const handleNewOrder = useCallback((order: RealtimeOrder) => {
@@ -107,7 +109,7 @@ export default function MerchantDashboardPage() {
 
     const fetchStats = async () => {
         try {
-            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
             const response = await axios.get(`${apiBaseUrl}/shops/stats`, { withCredentials: true });
             setStats(response.data);
             // Extract shopId from stats response if available
@@ -121,20 +123,10 @@ export default function MerchantDashboardPage() {
         }
     };
 
-    const handleTestFCM = async () => {
-        try {
-            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const response = await axios.post(`${apiBaseUrl}/notifications/test-fcm`, {}, { withCredentials: true });
-            toast.success(response.data.message || 'Notifikasi percobaan dikirim!');
-        } catch (error: any) {
-            const message = error.response?.data?.message || 'Gagal mengirim notifikasi percobaan';
-            toast.error(message);
-        }
-    };
 
     const updateStatus = async (orderId: string, newStatus: string) => {
         try {
-            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
             await axios.patch(`${apiBaseUrl}/orders/${orderId}/status`,
                 { paymentStatus: newStatus },
                 { withCredentials: true }
@@ -232,7 +224,7 @@ export default function MerchantDashboardPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 font-[family-name:var(--font-poppins)] p-4 sm:p-8 pb-24 lg:pb-8">
+        <div className="min-h-screen font-[family-name:var(--font-poppins)] p-2 sm:p-6 pb-24 lg:pb-8">
             {/* Toast Notification */}
             {newOrderNotification && <NewOrderToast order={newOrderNotification} onClose={() => setNewOrderNotification(null)} />}
 
@@ -251,24 +243,8 @@ export default function MerchantDashboardPage() {
                             <ConnectionStatusBadge status={connectionStatus} lastSync={lastSync} reconnectCount={reconnectCount} />
                         </div>
                         <p className="text-gray-400 text-[8px] sm:text-sm font-medium">Ringkasan aktivitas tokomu hari ini.</p>
-                        <div className="flex items-center gap-2 mt-1">
-                            <span className={clsx(
-                                "text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider",
-                                notifPermission === 'granted' ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
-                            )}>
-                                Notif: {notifPermission}
-                            </span>
-                        </div>
                     </div>
                     <div className="mt-4 sm:mt-0 flex space-x-2 sm:space-x-3 w-full sm:w-auto">
-                        <button
-                            onClick={handleTestFCM}
-                            className="flex-1 sm:flex-none flex items-center justify-center space-x-1.5 sm:space-x-2 bg-orange-50 text-orange-600 px-3 py-2 sm:px-4 sm:py-2 rounded-2xl border border-orange-100 hover:bg-orange-100 transition-colors"
-                            title="Tes Notifikasi Push"
-                        >
-                            <Bell className="h-3 w-3 sm:h-4 sm:w-4" />
-                            <span className="font-bold text-[8px] sm:text-sm">Tes Notif</span>
-                        </button>
                         <Link href="/dashboard/merchant/profile" className="flex-1 sm:flex-none flex items-center justify-center space-x-1.5 sm:space-x-2 bg-white text-gray-700 px-3 py-2 sm:px-4 sm:py-2 rounded-2xl border border-gray-100 hover:bg-gray-50 transition-colors">
                             <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
                             <span className="font-bold text-[8px] sm:text-sm">Pengaturan</span>

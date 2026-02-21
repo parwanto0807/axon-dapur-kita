@@ -56,7 +56,7 @@ export default function UserProfilePage() {
 
     const fetchAddresses = async () => {
         try {
-            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
             const response = await axios.get(`${apiBaseUrl}/addresses`, { withCredentials: true });
             setAddresses(response.data);
         } catch (err) {
@@ -66,7 +66,7 @@ export default function UserProfilePage() {
 
     const fetchProfile = async () => {
         try {
-            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
             const response = await axios.get(`${apiBaseUrl}/users/me`, { withCredentials: true });
 
             if (response.data) {
@@ -81,7 +81,7 @@ export default function UserProfilePage() {
                 });
 
                 if (response.data.image) {
-                    const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000';
+                    const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5003';
                     const image = response.data.image;
                     if (image.startsWith('http')) {
                         setPreviewUrl(image);
@@ -119,7 +119,7 @@ export default function UserProfilePage() {
 
     const handleAddAddress = async () => {
         try {
-            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
             await axios.post(`${apiBaseUrl}/addresses`, newAddress, { withCredentials: true });
             fetchAddresses();
             setIsAddressModalOpen(false);
@@ -144,7 +144,7 @@ export default function UserProfilePage() {
     const handleDeleteAddress = async (id: string) => {
         if (!confirm('Apakah Anda yakin ingin menghapus alamat ini?')) return;
         try {
-            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
             await axios.delete(`${apiBaseUrl}/addresses/${id}`, { withCredentials: true });
             fetchAddresses();
             setSuccess('Alamat berhasil dihapus!');
@@ -161,7 +161,7 @@ export default function UserProfilePage() {
         setSuccess('');
 
         try {
-            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
             const data = new FormData();
             data.append('name', formData.name);
             data.append('whatsapp', formData.whatsapp);
@@ -184,7 +184,7 @@ export default function UserProfilePage() {
             setSuccess('Profil berhasil diperbarui!');
 
             if (response.data.image) {
-                const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000';
+                const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5003';
                 const image = response.data.image;
                 if (image.startsWith('http')) {
                     setPreviewUrl(image);

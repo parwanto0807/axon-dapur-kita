@@ -61,7 +61,7 @@ export default function MerchantProfilePage() {
 
     const fetchShopData = async () => {
         try {
-            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
             const response = await axios.get(`${apiBaseUrl}/shops/me`, { withCredentials: true });
 
             if (response.data) {
@@ -78,7 +78,7 @@ export default function MerchantProfilePage() {
                     paymentMethods: response.data.paymentMethods || []
                 });
                 if (response.data.logo) {
-                    const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000';
+                    const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5003';
                     setPreviewUrl(`${backendUrl}${response.data.logo}`);
                 }
             }
@@ -120,7 +120,7 @@ export default function MerchantProfilePage() {
                 addressdetails: '1'
             });
 
-            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
             const response = await axios.get(`${apiBaseUrl}/shops/geocode?${params.toString()}`, { withCredentials: true });
             const data = response.data;
 
@@ -208,7 +208,7 @@ export default function MerchantProfilePage() {
         setSuccess('');
 
         try {
-            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
 
             const data = new FormData();
             data.append('name', formData.name);
@@ -233,7 +233,7 @@ export default function MerchantProfilePage() {
             toast.success('Profil toko berhasil diperbarui!');
 
             if (response.data.logo) {
-                const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000';
+                const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5003';
                 setPreviewUrl(`${backendUrl}${response.data.logo}`);
                 setLogoFile(null);
             }
@@ -251,17 +251,17 @@ export default function MerchantProfilePage() {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+            <div className="min-h-screen flex items-center justify-center">
                 <Loader2 className="h-8 w-8 text-[#1B5E20] animate-spin" />
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 font-[family-name:var(--font-poppins)]">
+        <div className="min-h-screen font-[family-name:var(--font-poppins)]">
             {/* Header */}
             <div className="bg-white border-b sticky top-0 z-50">
-                <div className="w-full max-w-full px-4 h-14 sm:h-16 flex items-center justify-between">
+                <div className="w-full max-w-full px-2 h-14 sm:h-16 flex items-center justify-between">
                     <div className="flex items-center space-x-3 sm:space-x-4">
                         <button
                             onClick={() => router.back()}
@@ -286,7 +286,7 @@ export default function MerchantProfilePage() {
                 </div>
             </div>
 
-            <main className="w-full max-w-full px-4 py-8">
+            <main className="w-full max-w-full px-2 py-8 sm:px-6">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
                     {/* Left Sidebar - Preview/Tips */}
@@ -341,7 +341,7 @@ export default function MerchantProfilePage() {
                     {/* Right Content - Form */}
                     <div className="lg:col-span-9">
                         <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden mb-20 lg:mb-0">
-                            <div className="p-5 sm:p-8">
+                            <div className="p-4 sm:p-8">
 
                                 {error && (
                                     <div className="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 rounded-xl text-sm">

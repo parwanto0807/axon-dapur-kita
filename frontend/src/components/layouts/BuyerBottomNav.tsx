@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, MapPin, Receipt, User, Store, ShieldCheck } from 'lucide-react';
+import { Home, MapPin, Receipt, User, Store, ShieldCheck, Heart } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useAuthStore } from '@/store/authStore';
 
@@ -27,6 +27,7 @@ export default function BuyerBottomNav() {
     const navItems = [
         { label: 'Akun', icon: User, href: '/dashboard/profile' },
         { label: 'Terdekat', icon: MapPin, href: '/nearby' },
+        { label: 'Wishlist', icon: Heart, href: '/dashboard/wishlist' },
         { label: 'Transaksi', icon: Receipt, href: '/dashboard/orders' },
     ];
 
@@ -38,11 +39,11 @@ export default function BuyerBottomNav() {
     }
 
     // Always put Home at the far right
-    navItems.push({ label: 'Home', icon: Home, href: isLoggedIn ? '/dashboard' : '/' });
+    navItems.push({ label: 'Beranda', icon: Home, href: isLoggedIn ? '/dashboard' : '/' });
 
     return (
         <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden">
-            <div className="bg-white/90 backdrop-blur-xl border-t border-gray-200/50 shadow-[0_-8px_30px_rgb(0,0,0,0.08)] rounded-t-lg flex items-center justify-around h-14 px-2">
+            <div className="bg-white/90 backdrop-blur-xl border-t border-gray-200/50 shadow-[0_-8px_30px_rgb(0,0,0,0.08)] rounded-t-lg flex items-center justify-around h-16 px-2">
                 {navItems.map((item) => {
                     const isActive = pathname === item.href;
                     const Icon = item.icon;
@@ -64,7 +65,7 @@ export default function BuyerBottomNav() {
                                 isActive && "scale-110"
                             )} />
                             <span className={clsx(
-                                "text-[9px] font-black uppercase tracking-tight",
+                                "text-[10px] font-black uppercase tracking-tight",
                                 isActive ? "opacity-100" : "opacity-80"
                             )}>
                                 {item.label}

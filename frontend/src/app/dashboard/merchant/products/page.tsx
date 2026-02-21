@@ -11,6 +11,7 @@ import ShareDialog from '@/components/ui/ShareDialog';
 import { clsx } from 'clsx';
 import { formatPrice } from '@/utils/format';
 import { toast } from 'react-hot-toast';
+import { getImageUrl } from '@/utils/image';
 
 interface Product {
     id: string;
@@ -48,7 +49,7 @@ export default function ProductsPage() {
     const handleToggleTrackStock = async (productId: string, currentValue: boolean) => {
         setIsUpdating(productId);
         try {
-            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
             await axios.put(`${apiBaseUrl}/products/${productId}`, {
                 trackStock: !currentValue
             }, { withCredentials: true });
@@ -75,14 +76,14 @@ export default function ProductsPage() {
 
     const fetchProducts = async () => {
         try {
-            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
             const response = await axios.get(`${apiBaseUrl}/products/my-products`, { withCredentials: true });
             setProducts(response.data);
         } catch (error) {
             console.error('Error fetching products:', error);
             // Fallback to all products if my-products fails (dev environment consistency)
             try {
-                const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+                const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
                 const response = await axios.get(`${apiBaseUrl}/products`, { withCredentials: true });
                 setProducts(response.data);
             } catch (err) {
@@ -96,7 +97,7 @@ export default function ProductsPage() {
     const handleDelete = async (id: string) => {
         if (confirm('Apakah anda yakin ingin menghapus produk ini?')) {
             try {
-                const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+                const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
                 await axios.delete(`${apiBaseUrl}/products/${id}`, { withCredentials: true });
                 setProducts(prev => prev.filter(p => p.id !== id));
                 toast.success('Produk berhasil dihapus');
@@ -125,7 +126,7 @@ export default function ProductsPage() {
     );
 
     return (
-        <div className="min-h-screen bg-gray-50 font-[family-name:var(--font-poppins)] pt-3 pb-24 sm:p-8 lg:pb-8">
+        <div className="min-h-screen font-[family-name:var(--font-poppins)] p-2 pb-24 sm:p-6 lg:pb-8">
             <div className="w-full max-w-full">
 
                 {/* Header */}
@@ -187,11 +188,11 @@ export default function ProductsPage() {
                                             <td className="px-6 py-4">
                                                 <div
                                                     className="h-14 w-14 bg-white rounded-xl overflow-hidden border border-gray-100 relative cursor-pointer shadow-sm transition-all"
-                                                    onClick={() => setSelectedImage(product.image ? `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '')}${product.image}` : null)}
+                                                    onClick={() => setSelectedImage(getImageUrl(product.image))}
                                                 >
                                                     {product.image ? (
                                                         <Image
-                                                            src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '')}${product.image}`}
+                                                            src={getImageUrl(product.image)}
                                                             alt={product.name}
                                                             fill
                                                             className="object-cover"
@@ -288,11 +289,11 @@ export default function ProductsPage() {
                                         <div className="p-3 flex items-start space-x-3">
                                             <div
                                                 className="h-20 w-20 rounded-2xl bg-gray-50 border border-gray-100 overflow-hidden shrink-0 relative shadow-inner"
-                                                onClick={() => setSelectedImage(product.image ? `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '')}${product.image}` : null)}
+                                                onClick={() => setSelectedImage(getImageUrl(product.image))}
                                             >
                                                 {product.image ? (
                                                     <Image
-                                                        src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '')}${product.image}`}
+                                                        src={getImageUrl(product.image)}
                                                         alt={product.name}
                                                         fill
                                                         className="object-cover"

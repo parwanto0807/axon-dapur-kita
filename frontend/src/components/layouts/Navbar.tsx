@@ -11,6 +11,7 @@ import { useBuyerSocket } from '@/hooks/useBuyerSocket';
 import { formatPrice, formatDate, formatShortDate } from '@/utils/format';
 import { getImageUrl } from '@/utils/image';
 import axios from 'axios';
+import LogoutModal from '../auth/LogoutModal';
 
 interface Notification {
     id: string;
@@ -124,8 +125,8 @@ export default function Navbar() {
     const fetchRecentOrders = async () => {
         setIsOrdersLoading(true);
         try {
-            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const response = await axios.get(`${apiBaseUrl}/orders/my?limit=3`, { withCredentials: true });
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
+            const response = await axios.get(`${apiBaseUrl}/orders/my-orders?limit=3`, { withCredentials: true });
             setRecentOrders(response.data);
         } catch (error) {
             console.error('Error fetching recent orders for navbar:', error);
@@ -142,7 +143,7 @@ export default function Navbar() {
                     <div className="bg-[#1B5E20] p-2 rounded-xl group-hover:rotate-12 transition-transform duration-300">
                         <Store className="h-6 w-6 text-white" />
                     </div>
-                    <Link href="/" className="flex flex-col">
+                    <Link href={isLoggedIn ? "/dashboard" : "/"} className="flex flex-col">
                         <span className="text-xl font-extrabold text-[#1B5E20] tracking-tight leading-none">
                             Axon
                         </span>
@@ -182,7 +183,7 @@ export default function Navbar() {
                                         </div>
                                         <div className="mb-4">
                                             <p className="text-sm font-bold text-gray-900">Toko Anda Aktif</p>
-                                            <p className="text-[10px] text-gray-500 mt-1">Kelola penjualan dan produk Anda</p>
+                                            <p className="text-xs text-gray-500 mt-1">Kelola penjualan dan produk Anda</p>
                                         </div>
                                         <div className="space-y-2">
                                             <Link
@@ -260,7 +261,7 @@ export default function Navbar() {
                                 >
                                     <ShoppingBag className="h-5 w-5 sm:h-6 sm:w-6 group-hover:scale-110 transition-transform" />
                                     {mounted && cartItemsCount > 0 && (
-                                        <span className="absolute -top-0.5 -right-0.5 h-3.5 sm:h-4 w-3.5 sm:w-4 bg-red-500 text-white text-[8px] sm:text-[9px] font-bold flex items-center justify-center rounded-full border border-white shadow-sm">
+                                        <span className="absolute -top-0.5 -right-0.5 h-3.5 sm:h-4 w-3.5 sm:w-4 bg-red-500 text-white text-[10px] sm:text-[9px] font-bold flex items-center justify-center rounded-full border border-white shadow-sm">
                                             {cartItemsCount}
                                         </span>
                                     )}
@@ -299,7 +300,7 @@ export default function Navbar() {
                                                         </div>
                                                         <div className="flex-1 min-w-0">
                                                             <p className="text-xs sm:text-sm font-bold text-gray-900 truncate">{item.name}</p>
-                                                            <p className="text-[10px] sm:text-[11px] text-[#1B5E20] font-bold mt-0.5">
+                                                            <p className="text-xs sm:text-[11px] text-[#1B5E20] font-bold mt-0.5">
                                                                 {item.quantity} x {formatPrice(item.price)}
                                                             </p>
                                                         </div>
@@ -318,7 +319,7 @@ export default function Navbar() {
                                                 <Link
                                                     href="/cart"
                                                     onClick={() => setIsCartOpen(false)}
-                                                    className="block w-full py-3 sm:py-3.5 bg-[#1B5E20] text-white text-center text-[10px] sm:text-xs font-bold rounded-2xl hover:bg-green-800 transition-all shadow-lg shadow-green-100 active:scale-95"
+                                                    className="block w-full py-3 sm:py-3.5 bg-[#1B5E20] text-white text-center text-xs sm:text-xs font-bold rounded-2xl hover:bg-green-800 transition-all shadow-lg shadow-green-100 active:scale-95"
                                                 >
                                                     Lihat Keranjang Belanja
                                                 </Link>
@@ -332,7 +333,7 @@ export default function Navbar() {
                                             <p className="text-xs sm:text-sm font-bold text-gray-900 mb-1">
                                                 Keranjangmu kosong
                                             </p>
-                                            <p className="text-[10px] sm:text-[11px] text-gray-500 mb-4 sm:mb-6 leading-relaxed">
+                                            <p className="text-xs sm:text-[11px] text-gray-500 mb-4 sm:mb-6 leading-relaxed">
                                                 Yuk, penuhi dapurmu with bahan-bahan terbaik hari ini!
                                             </p>
                                             <Link
@@ -354,7 +355,7 @@ export default function Navbar() {
                                 >
                                     <Bell className="h-5 w-5 sm:h-6 sm:w-6" />
                                     {mounted && unreadCount > 0 && (
-                                        <span className="absolute -top-0.5 -right-0.5 h-4 w-4 bg-red-500 text-white text-[9px] font-black flex items-center justify-center rounded-full border border-white shadow-sm">
+                                        <span className="absolute -top-0.5 -right-0.5 h-4 w-4 bg-red-500 text-white text-[10px] font-black flex items-center justify-center rounded-full border border-white shadow-sm">
                                             {unreadCount > 9 ? '9+' : unreadCount}
                                         </span>
                                     )}
@@ -372,13 +373,13 @@ export default function Navbar() {
                                                 <Bell className="h-4 w-4 mr-2 text-[#1B5E20]" />
                                                 Notifikasi
                                                 {unreadCount > 0 && (
-                                                    <span className="ml-2 px-1.5 py-0.5 bg-red-500 text-white text-[9px] font-black rounded-full">{unreadCount}</span>
+                                                    <span className="ml-2 px-1.5 py-0.5 bg-red-500 text-white text-[10px] font-black rounded-full">{unreadCount}</span>
                                                 )}
                                             </h3>
                                             {unreadCount > 0 && (
                                                 <button
                                                     onClick={markAllAsRead}
-                                                    className="text-[10px] font-bold text-[#1B5E20] hover:underline"
+                                                    className="text-xs font-bold text-[#1B5E20] hover:underline"
                                                 >
                                                     Tandai semua dibaca
                                                 </button>
@@ -411,7 +412,7 @@ export default function Navbar() {
                                                             <p className={clsx("text-xs font-bold truncate", notif.isRead ? "text-gray-600" : "text-gray-900")}>
                                                                 {notif.title}
                                                             </p>
-                                                            <p className="text-[11px] text-gray-500 mt-0.5 leading-relaxed line-clamp-2">{notif.body}</p>
+                                                            <p className="text-xs text-gray-500 mt-0.5 leading-relaxed line-clamp-2">{notif.body}</p>
                                                             <p className="text-[10px] text-gray-400 mt-1 font-medium">
                                                                 {formatDate(notif.createdAt)}
                                                             </p>
@@ -468,7 +469,7 @@ export default function Navbar() {
                                             {isOrdersLoading ? (
                                                 <div className="p-8 text-center">
                                                     <div className="h-8 w-8 border-2 border-gray-200 border-t-[#1B5E20] rounded-full animate-spin mx-auto mb-2"></div>
-                                                    <p className="text-[10px] text-gray-500 font-medium">Memuat pesanan...</p>
+                                                    <p className="text-xs text-gray-500 font-medium">Memuat pesanan...</p>
                                                 </div>
                                             ) : recentOrders.length > 0 ? (
                                                 recentOrders.map((order) => (
@@ -480,7 +481,7 @@ export default function Navbar() {
                                                             <div className="flex items-center justify-between">
                                                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest truncate mr-2">#{order.id.slice(-6).toUpperCase()}</p>
                                                                 <span className={clsx(
-                                                                    "text-[9px] font-black px-1.5 py-0.5 rounded uppercase",
+                                                                    "text-[10px] font-black px-1.5 py-0.5 rounded uppercase",
                                                                     order.paymentStatus === 'paid' ? "bg-green-100 text-green-700" :
                                                                         order.paymentStatus === 'pending' ? "bg-yellow-100 text-yellow-700" :
                                                                             "bg-gray-100 text-gray-700"
@@ -508,7 +509,7 @@ export default function Navbar() {
                                         <div className="p-4 border-t border-gray-100 bg-white">
                                             <Link
                                                 href="/dashboard/orders"
-                                                className="block w-full py-3 bg-gray-900 text-white text-center text-[11px] font-bold rounded-2xl hover:bg-gray-800 transition-all active:scale-95 shadow-lg shadow-gray-200"
+                                                className="block w-full py-3 bg-gray-900 text-white text-center text-xs font-bold rounded-2xl hover:bg-gray-800 transition-all active:scale-95 shadow-lg shadow-gray-200"
                                             >
                                                 Tampilkan Semua Pesanan
                                             </Link>
@@ -541,7 +542,7 @@ export default function Navbar() {
                                     ></div>
                                     <div className="fixed md:absolute top-[56px] md:top-full right-2 md:right-0 left-auto translate-x-0 mt-0 md:mt-2 w-[calc(100vw-32px)] max-w-[280px] origin-top-right rounded-2xl bg-white shadow-2xl ring-1 ring-black/5 z-50 overflow-hidden transform transition-all animate-in fade-in slide-in-from-top-2 duration-200">
                                         <div className="p-4 bg-gray-50/50 border-b border-gray-100">
-                                            <p className="text-[10px] font-bold text-[#1B5E20] uppercase tracking-widest">Selamat Datang</p>
+                                            <p className="text-xs font-bold text-[#1B5E20] uppercase tracking-widest">Selamat Datang</p>
                                             <p className="text-sm font-bold text-gray-900 mt-1">Belum Masuk Akun</p>
                                         </div>
                                         <div className="py-2 px-1">
@@ -593,7 +594,7 @@ export default function Navbar() {
                                 <div className="h-7 w-7 sm:h-9 sm:w-9 rounded-xl border-2 border-gray-100 overflow-hidden group-hover:border-[#1B5E20]/30 transition-all shadow-sm">
                                     {user?.image ? (
                                         <img
-                                            src={user.image.startsWith('http') ? user.image : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'}${user.image.startsWith('/') ? '' : '/'}${user.image}`}
+                                            src={user.image.startsWith('http') ? user.image : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5003'}${user.image.startsWith('/') ? '' : '/'}${user.image}`}
                                             alt={user.name}
                                             referrerPolicy="no-referrer"
                                             className="h-full w-full object-cover"
@@ -618,7 +619,7 @@ export default function Navbar() {
                                         {/* User Info Header */}
                                         <div className="p-4 bg-gray-50/50 border-b border-gray-100">
                                             <p className="text-sm font-bold text-gray-900 truncate">{user?.name || 'User'}</p>
-                                            <p className="text-[10px] font-medium text-gray-500 truncate mt-0.5">{user?.email || 'user@email.com'}</p>
+                                            <p className="text-xs font-medium text-gray-500 truncate mt-0.5">{user?.email || 'user@email.com'}</p>
                                         </div>
 
                                         <div className="py-2">
@@ -707,42 +708,10 @@ export default function Navbar() {
                 </div>
             </div >
 
-            {/* Logout Confirmation Modal */}
-            {
-                isLogoutModalOpen && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
-                        <div className="bg-white w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl border border-gray-100 transform transition-all animate-in zoom-in-95 duration-200">
-                            <div className="flex flex-col items-center text-center">
-                                <div className="h-20 w-20 bg-red-50 rounded-3xl flex items-center justify-center mb-6 border border-red-100">
-                                    <LogOut className="h-10 w-10 text-red-500" />
-                                </div>
-                                <h3 className="text-xl font-black text-gray-900 leading-tight">Keluar Akun?</h3>
-                                <p className="mt-3 text-sm text-gray-500 font-medium leading-relaxed">
-                                    Apakah Anda yakin akan logout dari <span className="font-bold text-[#1B5E20]">Axon DapurKita</span>?
-                                </p>
-                            </div>
-
-                            <div className="mt-8 space-y-3">
-                                <button
-                                    onClick={() => {
-                                        logout();
-                                        window.location.href = `${apiBaseUrl}/auth/logout`;
-                                    }}
-                                    className="w-full py-4 bg-red-500 text-white rounded-2xl font-bold hover:bg-red-600 transition-all shadow-lg shadow-red-200 active:scale-95"
-                                >
-                                    Lanjutkan
-                                </button>
-                                <button
-                                    onClick={() => setIsLogoutModalOpen(false)}
-                                    className="w-full py-4 bg-gray-50 text-gray-400 rounded-2xl font-bold hover:bg-gray-100 transition-all border border-gray-100 active:scale-95"
-                                >
-                                    Batal
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )
-            }
+            <LogoutModal
+                isOpen={isLogoutModalOpen}
+                onClose={() => setIsLogoutModalOpen(false)}
+            />
         </nav >
     );
 }

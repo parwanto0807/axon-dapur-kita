@@ -7,6 +7,8 @@ import { clsx } from 'clsx';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { getImageUrl } from '@/utils/image';
+import WishlistButton from '@/components/ui/WishlistButton';
+import FilterBar, { FilterState } from '@/components/features/FilterBar';
 
 // Dynamically import Leaflet components to avoid SSR errors
 const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { ssr: false });
@@ -43,6 +45,8 @@ export default function NearbyPage() {
     const [error, setError] = useState<string | null>(null);
     const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
     const [mounted, setMounted] = useState(false);
+    const [categories, setCategories] = useState<any[]>([]);
+    const [filters, setFilters] = useState<FilterState>({ sortBy: 'distance' });
 
     // Leaflet icons need to be initialized client-side
     const [L, setL] = useState<any>(null);
@@ -61,6 +65,18 @@ export default function NearbyPage() {
                 shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
             });
         });
+
+        // Fetch categories for filtering
+        const fetchCategories = async () => {
+            try {
+                const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
+                const response = await axios.get(`${apiBaseUrl}/categories`);
+                setCategories(response.data);
+            } catch (err) {
+                console.error("Failed to fetch categories", err);
+            }
+        };
+        fetchCategories();
     }, []);
 
     const formatPrice = (price: number) => {
@@ -112,6 +128,24 @@ export default function NearbyPage() {
             { enableHighAccuracy: true }
         );
     };
+
+    const filteredProducts = products.filter(product => {
+        // Price filter
+        if (filters.minPrice && product.price < filters.minPrice) return false;
+        if (filters.maxPrice && product.price > filters.maxPrice) return false;
+
+        // Category filter
+        // Note: NearbyProduct needs to include category info if we want to filter by it.
+        // For now, if category is selected, we filter by shop or product name containing category name (fallback)
+        // or just skip if the data model doesn't support it yet.
+
+        return true;
+    }).sort((a, b) => {
+        if (filters.sortBy === 'price_low') return a.price - b.price;
+        if (filters.sortBy === 'price_high') return b.price - a.price;
+        if (filters.sortBy === 'distance') return a.distance - b.distance;
+        return 0;
+    });
 
     if (!mounted) return null;
 
@@ -266,7 +300,7 @@ export default function NearbyPage() {
                             <input
                                 type="range"
                                 min="1"
-                                max="5"
+                                max="6"
                                 step="0.5"
                                 value={radius}
                                 onChange={(e) => setRadius(parseFloat(e.target.value))}
@@ -276,9 +310,9 @@ export default function NearbyPage() {
                             <div className="flex justify-between text-[8px] font-black text-gray-300 uppercase letter-spacing-widest">
                                 <span>1 km</span>
                                 <div className="flex space-x-1">
-                                    {[1, 2, 3, 4, 5].map(i => <span key={i} className={clsx("w-0.5 h-1 rounded-full", radius >= i ? "bg-[#1B5E20]" : "bg-gray-200")} />)}
+                                    {[1, 2, 3, 4, 5, 6].map(i => <span key={i} className={clsx("w-0.5 h-1 rounded-full", radius >= i ? "bg-[#1B5E20]" : "bg-gray-200")} />)}
                                 </div>
-                                <span>5 km</span>
+                                <span>6 km</span>
                             </div>
                         </div>
 
@@ -314,61 +348,90 @@ export default function NearbyPage() {
                     )}
                 </div>
 
+                {/* Filter Bar Integration */}
+                {!isScanning && products.length > 0 && (
+                    <div className="mt-6">
+                        <FilterBar
+                            categories={categories}
+                            onFilterChange={(newFilters) => setFilters(newFilters)}
+                        />
+                    </div>
+                )}
+
                 {/* Results List */}
                 <div className="px-4 pt-8 space-y-4">
                     <div className="flex items-center justify-between border-b border-gray-100 pb-2">
                         <h2 className="text-[11px] font-black text-gray-900 uppercase tracking-widest flex items-center space-x-2">
                             <span>Hasil Pencarian</span>
-                            {!isScanning && products.length > 0 && (
-                                <span className="bg-[#1B5E20] text-white px-2 py-0.5 rounded-md text-[9px]">{products.length}</span>
+                            {!isScanning && filteredProducts.length > 0 && (
+                                <span className="bg-[#1B5E20] text-white px-2 py-0.5 rounded-md text-[9px]">{filteredProducts.length}</span>
                             )}
                         </h2>
-                        {!isScanning && products.length > 0 && (
+                        {!isScanning && filteredProducts.length > 0 && (
                             <div className="flex items-center space-x-1">
                                 <Layers className="h-3 w-3 text-gray-400" />
-                                <span className="text-[9px] font-bold text-gray-400 uppercase">Sort Jarak</span>
+                                <span className="text-[9px] font-bold text-gray-400 uppercase">
+                                    {filters.sortBy === 'distance' ? 'Sort Jarak' : filters.sortBy === 'price_low' ? 'Harga Rendah' : 'Harga Tinggi'}
+                                </span>
                             </div>
                         )}
                     </div>
 
-                    {!isScanning && products.length > 0 ? (
+                    {!isScanning && filteredProducts.length > 0 ? (
                         <div className="grid grid-cols-1 gap-2.5 pb-20">
-                            {products.map((product) => (
-                                <Link
-                                    key={product.id}
-                                    href={`/product/${product.id}`}
-                                    className="bg-white border border-gray-100 rounded-2xl p-2.5 flex items-center space-x-4 hover:border-[#1B5E20] transition-all group shadow-sm active:scale-[0.98]"
-                                >
-                                    <div className="w-16 h-16 rounded-xl bg-gray-50 overflow-hidden shrink-0 border border-gray-100 relative">
-                                        {product.image ? (
-                                            <img
-                                                src={getImageUrl(product.image) || ''}
-                                                alt={product.name}
-                                                className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-gray-300">
-                                                <Store className="h-6 w-6" />
+                            {filteredProducts.map((product) => (
+                                <div className="bg-white border border-gray-100 rounded-2xl p-2.5 flex items-center space-x-4 hover:border-[#1B5E20] transition-all group shadow-sm active:scale-[0.98]">
+                                    <Link
+                                        href={`/product/${product.id}`}
+                                        className="flex items-center space-x-4 flex-1 min-w-0"
+                                    >
+                                        <div className="w-16 h-16 rounded-xl bg-gray-50 overflow-hidden shrink-0 border border-gray-100 relative">
+                                            {product.image ? (
+                                                <img
+                                                    src={getImageUrl(product.image) || ''}
+                                                    alt={product.name}
+                                                    className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center text-gray-300">
+                                                    <Store className="h-6 w-6" />
+                                                </div>
+                                            )}
+                                            <div className="absolute top-1 left-1 bg-white/90 backdrop-blur-sm px-1.5 py-0.5 rounded-lg border border-gray-100">
+                                                <span className="text-[8px] font-black text-[#1B5E20] leading-none uppercase">{product.distance.toFixed(1)} km</span>
                                             </div>
-                                        )}
-                                        <div className="absolute top-1 left-1 bg-white/90 backdrop-blur-sm px-1.5 py-0.5 rounded-lg border border-gray-100">
-                                            <span className="text-[8px] font-black text-[#1B5E20] leading-none uppercase">{product.distance.toFixed(1)} km</span>
                                         </div>
-                                    </div>
-                                    <div className="flex-1 min-w-0 pr-2">
-                                        <div className="flex items-center space-x-1.5 mb-1">
-                                            <Store className="h-2.5 w-2.5 text-gray-400" />
-                                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-wider truncate">{product.shop.name}</span>
+                                        <div className="flex-1 min-w-0 pr-2">
+                                            <div className="flex items-center space-x-1.5 mb-1">
+                                                <Store className="h-2.5 w-2.5 text-gray-400" />
+                                                <span className="text-[9px] font-black text-gray-400 uppercase tracking-wider truncate">{product.shop.name}</span>
+                                            </div>
+                                            <h4 className="font-black text-xs text-gray-900 uppercase tracking-tighter truncate mb-1.5 group-hover:text-[#1B5E20] transition-colors">{product.name}</h4>
+                                            <div className="flex items-baseline space-x-1">
+                                                <span className="text-[10px] font-black text-[#1B5E20]">{formatPrice(product.price)}</span>
+                                            </div>
                                         </div>
-                                        <h4 className="font-black text-xs text-gray-900 uppercase tracking-tighter truncate mb-1.5 group-hover:text-[#1B5E20] transition-colors">{product.name}</h4>
-                                        <div className="flex items-baseline space-x-1">
-                                            <span className="text-[10px] font-black text-[#1B5E20]">{formatPrice(product.price)}</span>
-                                        </div>
+                                    </Link>
+                                    <div className="flex items-center space-x-2">
+                                        <WishlistButton
+                                            product={{
+                                                id: product.id,
+                                                name: product.name,
+                                                price: product.price,
+                                                image: product.image,
+                                                shop: {
+                                                    id: product.shop.slug,
+                                                    name: product.shop.name
+                                                }
+                                            }}
+                                            className="h-8 w-8"
+                                            iconClassName="h-4 w-4"
+                                        />
+                                        <Link href={`/product/${product.id}`} className="bg-gray-50 p-2 rounded-xl group-hover:bg-[#1B5E20]/10 transition-colors">
+                                            <ChevronRight className="h-4 w-4 text-gray-300 group-hover:text-[#1B5E20] transition-colors" />
+                                        </Link>
                                     </div>
-                                    <div className="bg-gray-50 p-2 rounded-xl group-hover:bg-[#1B5E20]/10 transition-colors">
-                                        <ChevronRight className="h-4 w-4 text-gray-300 group-hover:text-[#1B5E20] transition-colors" />
-                                    </div>
-                                </Link>
+                                </div>
                             ))}
                         </div>
                     ) : !isScanning && !error && location && (

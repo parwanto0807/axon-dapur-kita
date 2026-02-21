@@ -6,6 +6,7 @@ import { LayoutDashboard, ShoppingBag, Package, Settings, Store, Menu, X, LogOut
 import { useState } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import Image from 'next/image';
+import LogoutModal from '../auth/LogoutModal';
 
 interface MerchantSidebarProps {
     isOpen: boolean;
@@ -15,6 +16,7 @@ interface MerchantSidebarProps {
 export default function MerchantSidebar({ isOpen, onClose }: MerchantSidebarProps) {
     const pathname = usePathname();
     const { user, logout } = useAuthStore();
+    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
 
     const navigation = [
@@ -55,7 +57,7 @@ export default function MerchantSidebar({ isOpen, onClose }: MerchantSidebarProp
                             <div className="h-10 w-10 rounded-full bg-gray-200 overflow-hidden border border-gray-300 shrink-0">
                                 {user?.image ? (
                                     <img
-                                        src={user.image.startsWith('http') ? user.image : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'}${user.image.startsWith('/') ? '' : '/'}${user.image}`}
+                                        src={user.image.startsWith('http') ? user.image : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5003'}${user.image.startsWith('/') ? '' : '/'}${user.image}`}
                                         alt={user.name || 'Merchant'}
                                         className="h-full w-full object-cover"
                                     />
@@ -103,13 +105,13 @@ export default function MerchantSidebar({ isOpen, onClose }: MerchantSidebarProp
                     <div className="p-4 border-t border-gray-100">
                         <Link
                             href="/dashboard"
-                            className="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors mb-2"
+                            className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
                         >
                             <Store className="h-5 w-5 text-gray-400" />
                             <span>Lihat Marketplace</span>
                         </Link>
                         <button
-                            onClick={() => logout()}
+                            onClick={() => setIsLogoutModalOpen(true)}
                             className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
                         >
                             <LogOut className="h-5 w-5" />
@@ -118,6 +120,10 @@ export default function MerchantSidebar({ isOpen, onClose }: MerchantSidebarProp
                     </div>
                 </div>
             </aside >
+            <LogoutModal
+                isOpen={isLogoutModalOpen}
+                onClose={() => setIsLogoutModalOpen(false)}
+            />
         </>
     );
 }

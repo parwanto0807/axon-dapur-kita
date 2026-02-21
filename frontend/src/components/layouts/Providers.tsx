@@ -3,6 +3,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
 import AuthSync from '../auth/AuthSync';
+import RouteGuard from '../auth/RouteGuard';
 import FirebaseProvider from '../pwa/FirebaseProvider';
 
 export default function Providers({ children }: { children: React.ReactNode }) {
@@ -11,9 +12,11 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     return (
         <QueryClientProvider client={queryClient}>
             <AuthSync>
-                <FirebaseProvider>
-                    {children}
-                </FirebaseProvider>
+                <RouteGuard>
+                    <FirebaseProvider>
+                        {children}
+                    </FirebaseProvider>
+                </RouteGuard>
             </AuthSync>
         </QueryClientProvider>
     );

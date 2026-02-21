@@ -4,15 +4,20 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
 import {
-    Store, MapPin, Star, Heart, Share2, ShoppingCart,
+    Store, MapPin, Star, Share2, ShoppingCart,
     ArrowLeft, Minus, Plus, ShieldCheck, Truck
 } from 'lucide-react';
+import WishlistButton from '@/components/ui/WishlistButton';
 import Image from 'next/image';
 import { useCartStore } from '@/store/cartStore';
 import { useAuthStore } from '@/store/authStore';
 import clsx from 'clsx';
 import { formatPrice } from '@/utils/format';
 import { getImageUrl } from '@/utils/image';
+import { Skeleton } from '@/components/ui/Skeleton';
+import StarRating from '@/components/ui/StarRating';
+import ReviewList from '@/components/features/ReviewList';
+import { toast } from 'sonner';
 
 
 interface Product {
@@ -49,10 +54,14 @@ export default function ProductPage() {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [quantity, setQuantity] = useState(1);
 
+    const [reviews, setReviews] = useState<any[]>([]);
+    const [stats, setStats] = useState<any>({ averageRating: 0, totalReviews: 0 });
+    const [reviewsLoading, setReviewsLoading] = useState(true);
+
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+                const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
                 const response = await axios.get(`${apiBaseUrl}/products/${id}`);
                 setProduct(response.data);
 
@@ -71,8 +80,25 @@ export default function ProductPage() {
 
         if (id) {
             fetchProduct();
+            fetchReviews();
         }
     }, [id]);
+
+    const fetchReviews = async () => {
+        try {
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
+            const res = await axios.get(`${apiBaseUrl}/reviews/product/${id}`);
+            setReviews(res.data.reviews);
+            setStats({
+                averageRating: res.data.averageRating,
+                totalReviews: res.data.totalReviews
+            });
+        } catch (e) {
+            console.error('Failed to fetch reviews', e);
+        } finally {
+            setReviewsLoading(false);
+        }
+    };
 
     const handleQuantityChange = (type: 'inc' | 'dec') => {
         if (type === 'inc' && product && quantity < product.stock) {
@@ -110,7 +136,12 @@ export default function ProductPage() {
             unit: product.unit?.name || 'pcs'
         });
 
-        alert(`Berhasil menambahkan ${quantity} ${product.name} ke keranjang!`);
+        toast.success(`Berhasil menambahkan ${quantity} ${product.name} ke keranjang!`, {
+            action: {
+                label: 'Lihat Keranjang',
+                onClick: () => router.push('/cart')
+            }
+        });
     };
 
     const handleBuyNow = () => {
@@ -136,12 +167,19 @@ export default function ProductPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-white flex items-center justify-center">
-                <div className="animate-pulse flex flex-col items-center">
-                    <div className="h-48 w-48 bg-gray-200 rounded-xl mb-4"></div>
-                    <div className="h-4 w-64 bg-gray-200 rounded mb-2"></div>
-                    <div className="h-4 w-32 bg-gray-200 rounded"></div>
-                </div>
+            <div className="min-h-screen bg-white">
+                <main className="max-w-7xl mx-auto px-4 md:px-6 py-8">
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+                        <div className="md:col-span-5">
+                            <Skeleton className="aspect-square w-full rounded-[2.5rem]" />
+                        </div>
+                        <div className="md:col-span-7 space-y-6">
+                            <Skeleton className="h-32 w-full rounded-[2rem]" />
+                            <Skeleton className="h-24 w-full rounded-2xl" />
+                            <Skeleton className="h-48 w-full rounded-2xl" />
+                        </div>
+                    </div>
+                </main>
             </div>
         );
     }
@@ -172,8 +210,8 @@ export default function ProductPage() {
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
 
                     {/* Left: Images */}
-                    <div className="md:col-span-5 flex flex-col pt-2 md:pt-0">
-                        <div className="bg-white md:rounded-[2.5rem] p-4 sm:p-10 md:shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/50 relative">
+                    <div className="md:col-span-6 lg:col-span-5 flex flex-col pt-2 md:pt-0">
+                        <div className="bg-white md:rounded-[2.5rem] p-4 sm:p-6 lg:p-10 md:shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/50 relative">
 
                             {/* In-content Navigation Buttons (Mobile) */}
                             <div className="absolute top-4 right-4 flex items-center z-20 md:hidden">
@@ -185,7 +223,7 @@ export default function ProductPage() {
                                     <span>Bagikan</span>
                                 </button>
                             </div>
-                            <div className="relative w-[65%] mx-auto group">
+                            <div className="relative w-[65%] md:w-[85%] lg:w-[65%] mx-auto group">
                                 {selectedImage ? (
                                     <img
                                         src={getImageUrl(selectedImage) || ''}
@@ -229,26 +267,26 @@ export default function ProductPage() {
                     </div>
 
                     {/* Right: Product Info */}
-                    <div className="md:col-span-7 space-y-6 px-4 md:px-0">
+                    <div className="md:col-span-6 lg:col-span-7 space-y-6 px-4 md:px-0">
                         {/* Generic Info */}
                         <div className="bg-white p-6 rounded-[2rem] border border-gray-100/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] mt-2 md:mt-0">
                             <div className="flex items-center justify-between">
                                 <span className="px-2 py-0.5 bg-green-50 text-[#1B5E20] text-[8px] sm:text-[10px] font-bold rounded-full uppercase tracking-widest">
                                     {product.category?.name || 'Produk'}
                                 </span>
-                                <div className="flex items-center space-x-1 text-amber-500">
-                                    <Star className="h-3 w-3 sm:h-4 sm:w-4 fill-current" />
-                                    <span className="text-[10px] sm:text-sm font-bold text-gray-900">4.8</span>
-                                    <span className="text-[9px] sm:text-xs text-gray-400 font-medium">(24)</span>
-                                </div>
+                                <StarRating
+                                    rating={stats.averageRating || 0}
+                                    count={stats.totalReviews}
+                                    showLabel
+                                />
                             </div>
 
-                            <h1 className="mt-2 text-sm md:text-3xl font-black text-gray-900 leading-tight">
+                            <h1 className="mt-2 text-sm md:text-2xl lg:text-3xl font-black text-gray-900 leading-tight">
                                 {product.name}
                             </h1>
 
                             <div className="mt-2 flex items-baseline space-x-2">
-                                <p className="text-base md:text-4xl font-black text-[#1B5E20]">
+                                <p className="text-base md:text-3xl lg:text-4xl font-black text-[#1B5E20]">
                                     {formatPrice(product.price)}
                                 </p>
                                 {product.unit && <span className="text-[9px] md:text-base text-gray-400 font-bold uppercase tracking-wider">/ {product.unit.name}</span>}
@@ -304,6 +342,23 @@ export default function ProductPage() {
                                 {product.description || 'Tidak ada deskripsi.'}
                             </div>
                         </div>
+
+                        {/* Reviews Section */}
+                        <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+                            <div className="flex items-center justify-between mb-6">
+                                <h3 className="text-[9px] md:text-base font-black text-gray-900 uppercase tracking-tight">Ulasan Pembeli</h3>
+                                {stats.totalReviews > 0 && (
+                                    <div className="text-right">
+                                        <div className="flex items-center justify-end space-x-1">
+                                            <span className="text-lg font-black text-gray-900">{stats.averageRating.toFixed(1)}</span>
+                                            <span className="text-xs text-gray-400 font-bold">/ 5.0</span>
+                                        </div>
+                                        <p className="text-[10px] text-gray-400 font-medium">{stats.totalReviews} Ulasan</p>
+                                    </div>
+                                )}
+                            </div>
+                            <ReviewList reviews={reviews} isLoading={reviewsLoading} />
+                        </div>
                     </div>
                 </div>
             </main>
@@ -355,6 +410,19 @@ export default function ProductPage() {
                                     <ShoppingCart className="h-3 w-3 sm:h-5 sm:w-5" />
                                     <span>Keranjang</span>
                                 </button>
+                                <WishlistButton
+                                    product={{
+                                        id: product.id,
+                                        name: product.name,
+                                        price: product.price,
+                                        image: product.images[0]?.url || null,
+                                        shop: {
+                                            id: product.shop.slug,
+                                            name: product.shop.name
+                                        }
+                                    }}
+                                    className="h-9 w-9 sm:h-[48px] sm:w-[48px] border border-gray-200"
+                                />
                                 <button
                                     onClick={handleBuyNow}
                                     className="flex-1 md:flex-none md:w-44 py-1.5 sm:py-3 bg-[#1B5E20] text-white text-[9px] sm:text-base font-bold rounded-lg hover:bg-green-800 active:bg-green-900 shadow-sm transition"
@@ -363,7 +431,7 @@ export default function ProductPage() {
                                 </button>
                                 <button
                                     onClick={() => router.back()}
-                                    className="md:hidden px-3 py-1.5 border border-gray-200 text-gray-500 text-[9px] font-bold rounded-lg active:scale-95 transition-all"
+                                    className="lg:hidden px-3 py-1.5 sm:py-3 border border-gray-200 text-gray-500 text-[9px] sm:text-base font-bold rounded-lg active:scale-95 transition-all"
                                 >
                                     Kembali
                                 </button>

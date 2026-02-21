@@ -32,6 +32,7 @@ model User {
     updatedAt     DateTime       @updatedAt
     orders        Order[]
     notifications Notification[]
+    reviews       Review[]
 }
 
 model Address {
@@ -127,9 +128,31 @@ model Product {
     createdAt  DateTime    @default(now())
     updatedAt  DateTime    @updatedAt
     orderItems OrderItem[]
+    reviews    Review[]
 
     // Custom unique constraint if needed, but user asked for @unique on slug
     @@unique([shopId, slug]) // Composite might be safer for "my-product" in different shops
+}
+
+model Review {
+    id      String   @id @default(cuid())
+    rating  Int      @default(5)
+    comment String?  @db.Text
+    images  String[] @default([])
+
+    userId String
+    user   User   @relation(fields: [userId], references: [id])
+
+    productId String
+    product   Product @relation(fields: [productId], references: [id])
+
+    orderId String? // Link to specific order
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([productId])
+    @@index([userId])
 }
 
 model StockLog {
@@ -179,6 +202,8 @@ model Order {
     totalAmount     Decimal     @db.Decimal(20, 2)
     paymentMethod   String // bank_transfer, e_wallet, etc
     paymentStatus   String      @default("pending") // pending, paid, failed, expired
+    deliveryStatus  String      @default("pending") // pending, processing, shipped, delivered
+    status          String      @default("pending") // Overall status: pending, processing, completed, cancelled
     shippingAddress Json? // Simpan sebagai JSON untuk fleksibilitas
     notes           String?
 

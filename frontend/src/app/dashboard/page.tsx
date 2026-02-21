@@ -112,7 +112,7 @@ export default function DashboardPage() {
     // Initial Load - Robust Data Fetching
     useEffect(() => {
         const fetchData = async () => {
-            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
 
             // 1. Fetch Shops
             try {
@@ -141,7 +141,7 @@ export default function DashboardPage() {
         const fetchProducts = async () => {
             setProductsLoading(true);
             try {
-                const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+                const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
                 const response = await axios.get(`${apiBaseUrl}/products/public`, {
                     params: { category: selectedCategory }
                 });

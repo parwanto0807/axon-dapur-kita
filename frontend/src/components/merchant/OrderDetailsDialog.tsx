@@ -26,7 +26,7 @@ export default function OrderDetailsDialog({ orderId, isOpen, onClose, onStatusU
     const fetchOrderDetails = async () => {
         setIsLoading(true);
         try {
-            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
             const response = await axios.get(`${apiBaseUrl}/orders/${orderId}`, { withCredentials: true });
             setOrder(response.data);
         } catch (error) {
@@ -84,14 +84,14 @@ export default function OrderDetailsDialog({ orderId, isOpen, onClose, onStatusU
                                                 <Truck className="h-3 w-3 sm:h-5 sm:w-5" />}
                                     </div>
                                     <div className="min-w-0">
-                                        <p className="text-[8px] sm:text-[10px] uppercase font-bold tracking-widest opacity-70 truncate">Status</p>
-                                        <p className="font-black text-[10px] sm:text-lg truncate">{order.paymentStatus.toUpperCase()}</p>
+                                        <p className="text-[10px] sm:text-[10px] uppercase font-bold tracking-widest opacity-70 truncate">Status</p>
+                                        <p className="font-black text-xs sm:text-lg truncate">{order.paymentStatus.toUpperCase()}</p>
                                     </div>
                                 </div>
                                 <div className="p-2 sm:p-4 bg-gray-50 rounded-xl sm:rounded-2xl border border-gray-100 flex items-center justify-between">
                                     <div className="min-w-0">
-                                        <p className="text-[8px] sm:text-[10px] uppercase font-bold text-gray-400 tracking-widest truncate">Order ID</p>
-                                        <p className="font-black text-[10px] sm:text-base text-gray-900 truncate">#{order.id.slice(-8).toUpperCase()}</p>
+                                        <p className="text-[10px] sm:text-[10px] uppercase font-bold text-gray-400 tracking-widest truncate">Order ID</p>
+                                        <p className="font-black text-xs sm:text-base text-gray-900 truncate">#{order.id.slice(-8).toUpperCase()}</p>
                                     </div>
                                     <button onClick={() => handleCopy(order.id)} className="p-1.5 sm:p-2 bg-white rounded-lg sm:rounded-xl border border-gray-200 hover:border-[#1B5E20] text-gray-400 hover:text-[#1B5E20] transition-all shrink-0">
                                         {copied ? <Check className="h-3 w-3 sm:h-4 sm:w-4" /> : <Copy className="h-3 w-3 sm:h-4 sm:w-4" />}
@@ -107,10 +107,10 @@ export default function OrderDetailsDialog({ orderId, isOpen, onClose, onStatusU
                                         Informasi Pembeli
                                     </h3>
                                     <div className="bg-gray-50 p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-gray-100 space-y-0.5 sm:space-y-1">
-                                        <p className="font-bold text-gray-900 text-[10px] sm:text-base truncate">{order.user?.name || 'Guest User'}</p>
-                                        <p className="text-[9px] sm:text-sm text-gray-500 truncate">{order.user?.email || '-'}</p>
+                                        <p className="font-bold text-gray-900 text-xs sm:text-base truncate">{order.user?.name || 'Guest User'}</p>
+                                        <p className="text-[10px] sm:text-sm text-gray-500 truncate">{order.user?.email || '-'}</p>
                                         {order.user?.whatsapp && (
-                                            <a href={`https://wa.me/${order.user.whatsapp}`} target="_blank" rel="noreferrer" className="text-[9px] sm:text-sm text-[#1B5E20] font-bold hover:underline flex items-center mt-1 sm:mt-2">
+                                            <a href={`https://wa.me/${order.user.whatsapp}`} target="_blank" rel="noreferrer" className="text-[10px] sm:text-sm text-[#1B5E20] font-bold hover:underline flex items-center mt-1 sm:mt-2">
                                                 <MessageCircle className="h-3 w-3 mr-1" />
                                                 Hubungi via WhatsApp
                                             </a>
@@ -122,7 +122,7 @@ export default function OrderDetailsDialog({ orderId, isOpen, onClose, onStatusU
                                         <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-[#1B5E20]" />
                                         Alamat Pengiriman
                                     </h3>
-                                    <div className="bg-gray-50 p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-gray-100 text-[9px] sm:text-sm text-gray-600 leading-relaxed">
+                                    <div className="bg-gray-50 p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-gray-100 text-[10px] sm:text-sm text-gray-600 leading-relaxed">
                                         <p className="font-bold text-gray-900 mb-0.5 sm:mb-1 truncate">{order.shippingAddress?.receiverName || order.user?.name || 'Guest'}</p>
                                         <p className="truncate">{order.shippingAddress?.street}, {order.shippingAddress?.city}</p>
                                         <p>{order.shippingAddress?.province}, {order.shippingAddress?.postalCode}</p>
@@ -138,7 +138,7 @@ export default function OrderDetailsDialog({ orderId, isOpen, onClose, onStatusU
                                         <Package className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-[#1B5E20]" />
                                         Rincian Produk
                                     </h3>
-                                    <span className="text-[9px] sm:text-xs font-bold text-gray-400">{order.items?.length || 0} Barang</span>
+                                    <span className="text-[10px] sm:text-xs font-bold text-gray-400">{order.items?.length || 0} Barang</span>
                                 </div>
                                 <div className="divide-y divide-gray-50">
                                     {order.items?.map((item: any) => (
@@ -146,7 +146,7 @@ export default function OrderDetailsDialog({ orderId, isOpen, onClose, onStatusU
                                             <div className="h-10 w-10 sm:h-16 sm:w-16 bg-gray-50 rounded-lg sm:rounded-xl border border-gray-100 flex-shrink-0 overflow-hidden">
                                                 {item.product?.images?.[0]?.url ? (
                                                     <img
-                                                        src={item.product.images[0].url.startsWith('http') ? item.product.images[0].url : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'}${item.product.images[0].url.startsWith('/') ? '' : '/'}${item.product.images[0].url}`}
+                                                        src={item.product.images[0].url.startsWith('http') ? item.product.images[0].url : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5003'}${item.product.images[0].url.startsWith('/') ? '' : '/'}${item.product.images[0].url}`}
                                                         alt={item.product?.name || 'Product'}
                                                         className="h-full w-full object-cover"
                                                     />
@@ -157,11 +157,11 @@ export default function OrderDetailsDialog({ orderId, isOpen, onClose, onStatusU
                                                 )}
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <h4 className="font-bold text-gray-900 text-[10px] sm:text-sm truncate leading-tight">{item.product?.name || 'Unknown Product'}</h4>
-                                                <p className="text-[9px] sm:text-xs text-gray-500 mt-0.5">{item.quantity} x {formatPrice(item.price)}</p>
+                                                <h4 className="font-bold text-gray-900 text-xs sm:text-sm truncate leading-tight">{item.product?.name || 'Unknown Product'}</h4>
+                                                <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5">{item.quantity} x {formatPrice(item.price)}</p>
                                             </div>
                                             <div className="text-right">
-                                                <p className="font-bold text-gray-900 text-[10px] sm:text-sm">{formatPrice(item.subtotal)}</p>
+                                                <p className="font-bold text-gray-900 text-xs sm:text-sm">{formatPrice(item.subtotal)}</p>
                                             </div>
                                         </div>
                                     ))}
@@ -171,7 +171,7 @@ export default function OrderDetailsDialog({ orderId, isOpen, onClose, onStatusU
                                         <span className="text-[10px] sm:text-sm font-bold text-gray-500">Total Pesanan</span>
                                         <span className="text-sm sm:text-xl font-black text-[#1B5E20]">{formatPrice(order.totalAmount)}</span>
                                     </div>
-                                    <div className="mt-1 sm:mt-2 text-[9px] sm:text-xs text-gray-400 text-right">
+                                    <div className="mt-1 sm:mt-2 text-[10px] sm:text-xs text-gray-400 text-right">
                                         Metode: <span className="font-bold uppercase text-gray-600">{order.paymentMethod}</span>
                                     </div>
                                 </div>

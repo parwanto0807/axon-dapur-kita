@@ -3,12 +3,14 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
-import { MapPin, Clock, Star, Phone, Share2, Info, Store } from 'lucide-react';
+import { MapPin, Clock, Star, Phone, Share2, Info, Store, ShoppingBag } from 'lucide-react';
 import Image from 'next/image';
 import { formatPrice } from '@/utils/format';
 import { getImageUrl } from '@/utils/image';
 import ShareDialog from '@/components/ui/ShareDialog';
 import { clsx } from 'clsx';
+import StarRating from '@/components/ui/StarRating';
+import ReviewList from '@/components/features/ReviewList';
 
 interface Product {
     id: string;
@@ -21,7 +23,7 @@ interface Product {
 }
 
 interface Shop {
-    id: number;
+    id: string;
     name: string;
     slug: string;
     description: string;
@@ -49,7 +51,10 @@ export default function ShopPage() {
         url: '',
         title: ''
     });
-    const [activeTab, setActiveTab] = useState<'HOME' | 'PRODUCTS' | 'REVIEWS'>('HOME');
+    const [activeTab, setActiveTab] = useState<'HOME' | 'PRODUCTS' | 'REVIEWS'>('PRODUCTS');
+    const [shopStats, setShopStats] = useState<any>({ averageRating: 0, totalReviews: 0, totalCompletedOrders: 0 });
+    const [shopReviews, setShopReviews] = useState<any[]>([]);
+    const [reviewsLoading, setReviewsLoading] = useState(false);
 
     const openShareDialog = () => {
         if (!shop) return;
@@ -64,7 +69,7 @@ export default function ShopPage() {
     useEffect(() => {
         const fetchShop = async () => {
             try {
-                const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+                const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
                 const response = await axios.get(`${apiBaseUrl}/shops/${slug}`);
                 setShop(response.data);
             } catch (err: any) {
@@ -79,6 +84,45 @@ export default function ShopPage() {
             fetchShop();
         }
     }, [slug]);
+
+    useEffect(() => {
+        if (shop?.id) {
+            fetchShopStats();
+        }
+    }, [shop?.id]);
+
+    useEffect(() => {
+        if (shop?.id && activeTab === 'REVIEWS') {
+            fetchShopReviews();
+        }
+    }, [shop?.id, activeTab]);
+
+    const fetchShopStats = async () => {
+        try {
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
+            const res = await axios.get(`${apiBaseUrl}/reviews/shop/${shop?.id}/stats`);
+            setShopStats(res.data);
+        } catch (e) {
+            console.error('Failed to fetch shop stats', e);
+        }
+    };
+
+    const fetchShopReviews = async () => {
+        setReviewsLoading(true);
+        try {
+            // We need a route for shop reviews, or we can just fetch all products reviews?
+            // Actually, I should add a getShopReviews endpoint to the backend.
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
+            // Placeholder: currently my backend doesn't have getShopReviews, only product reviews.
+            // I'll update the backend in a moment.
+            const res = await axios.get(`${apiBaseUrl}/reviews/shop/${shop?.id}`);
+            setShopReviews(res.data);
+        } catch (e) {
+            console.error('Failed to fetch shop reviews', e);
+        } finally {
+            setReviewsLoading(false);
+        }
+    };
 
     if (isLoading) {
         return (
@@ -142,9 +186,15 @@ export default function ShopPage() {
                                     <span>{shop.address || 'Lokasi belum diatur'}</span>
                                 </div>
                                 <div className="flex items-center">
-                                    <Star className="h-4 w-4 mr-1 text-yellow-400 fill-yellow-400" />
-                                    <span className="font-bold text-gray-900">4.8</span>
-                                    <span className="ml-1 text-gray-400">(24 ulasan)</span>
+                                    <StarRating rating={shopStats.averageRating} size={14} className="mr-1" />
+                                    <span className="font-bold text-gray-900">{shopStats.averageRating.toFixed(1)}</span>
+                                    <span className="ml-1 text-gray-400">({shopStats.totalReviews} ulasan)</span>
+                                </div>
+                                <div className="h-1 w-1 bg-gray-300 rounded-full mx-1"></div>
+                                <div className="flex items-center">
+                                    <ShoppingBag className="h-4 w-4 mr-1 text-blue-500" />
+                                    <span className="font-bold text-gray-900">{shopStats.totalCompletedOrders}</span>
+                                    <span className="ml-1 text-gray-400">produk terjual</span>
                                 </div>
                             </div>
                         </div>
@@ -341,10 +391,9 @@ export default function ShopPage() {
                         )}
 
                         {activeTab === 'REVIEWS' && (
-                            <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-gray-200">
-                                <Star className="h-10 w-10 text-gray-200 mx-auto mb-3" />
-                                <h3 className="font-bold text-gray-900">Belum Ada Ulasan</h3>
-                                <p className="text-gray-500 text-sm mt-1">Toko ini belum memiliki ulasan dari pembeli.</p>
+                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                                <h3 className="font-bold text-gray-900 mb-6 text-sm sm:text-lg">Ulasan Pembeli</h3>
+                                <ReviewList reviews={shopReviews} isLoading={reviewsLoading} />
                             </div>
                         )}
                     </div>

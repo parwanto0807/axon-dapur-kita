@@ -66,7 +66,7 @@ export default function AddProductPage() {
 
     const fetchCategories = async () => {
         try {
-            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
             const response = await axios.get(`${apiBaseUrl}/categories`);
             setCategories(response.data);
         } catch (error) {
@@ -76,7 +76,7 @@ export default function AddProductPage() {
 
     const fetchUnits = async () => {
         try {
-            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
             const response = await axios.get(`${apiBaseUrl}/units`);
             setUnits(response.data);
         } catch (error) {
@@ -175,7 +175,7 @@ export default function AddProductPage() {
                 data.append('images', file);
             });
 
-            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
             await axios.post(`${apiBaseUrl}/products`, data, {
                 withCredentials: true,
                 headers: {
@@ -201,7 +201,7 @@ export default function AddProductPage() {
     );
 
     return (
-        <div className="min-h-screen bg-gray-50 font-[family-name:var(--font-poppins)] p-4 sm:p-8 pb-24 lg:pb-8">
+        <div className="min-h-screen font-[family-name:var(--font-poppins)] p-4 sm:p-8 pb-24 lg:pb-8">
             <div className="w-full max-w-4xl mx-auto">
                 {/* Header */}
                 <div className="flex items-center mb-6 sm:mb-8">

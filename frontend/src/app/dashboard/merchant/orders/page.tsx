@@ -90,7 +90,7 @@ export default function MerchantOrdersPage() {
     const fetchOrders = async () => {
         try {
             setIsLoading(true);
-            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
             const response = await axios.get(`${apiBaseUrl}/orders/shop`, {
                 withCredentials: true,
                 headers: {
@@ -110,7 +110,7 @@ export default function MerchantOrdersPage() {
 
     const updateStatus = async (orderId: string, newStatus: string) => {
         try {
-            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
             await axios.patch(`${apiBaseUrl}/orders/${orderId}/status`,
                 { paymentStatus: newStatus },
                 { withCredentials: true }
@@ -196,10 +196,10 @@ export default function MerchantOrdersPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50/50 pb-24 lg:pb-8 font-[family-name:var(--font-poppins)]">
+        <div className="min-h-screen pb-24 lg:pb-8 font-[family-name:var(--font-poppins)]">
             {/* Header Area - More Compact */}
             <div className="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="w-full px-2 sm:px-6 lg:px-8">
                     <div className="flex flex-col py-4 gap-4">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
@@ -263,7 +263,7 @@ export default function MerchantOrdersPage() {
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="w-full px-2 sm:px-6 lg:px-8 py-6">
                 {isLoading ? (
                     <div className="flex flex-col items-center justify-center py-12">
                         <div className="h-8 w-8 border-2 border-gray-200 border-t-[#1B5E20] rounded-full animate-spin mb-3"></div>

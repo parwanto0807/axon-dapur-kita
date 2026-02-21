@@ -17,9 +17,9 @@ const isAuthenticated = (req, res, next) => {
 router.post('/', isAuthenticated, createOrder);
 
 // @desc    Get current user's order history
-// @route   GET /api/orders/my
+// @route   GET /api/orders/my-orders
 // @access  Private
-router.get('/my', isAuthenticated, getMyOrders);
+router.get('/my-orders', isAuthenticated, getMyOrders);
 
 // @desc    Get orders for merchant's shop
 // @route   GET /api/orders/shop

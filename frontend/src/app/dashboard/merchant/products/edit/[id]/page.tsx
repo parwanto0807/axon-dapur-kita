@@ -74,7 +74,7 @@ export default function EditProductPage() {
 
     const fetchProductData = async () => {
         try {
-            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
             const response = await axios.get(`${apiBaseUrl}/products/${id}`);
             const product = response.data;
 
@@ -263,14 +263,14 @@ export default function EditProductPage() {
 
     if (isFetching) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+            <div className="min-h-screen flex items-center justify-center">
                 <Loader2 className="h-8 w-8 text-[#1B5E20] animate-spin" />
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 font-[family-name:var(--font-poppins)] p-4 sm:p-8 pb-24 lg:pb-8">
+        <div className="min-h-screen font-[family-name:var(--font-poppins)] p-4 sm:p-8 pb-24 lg:pb-8">
             <div className="w-full max-w-4xl mx-auto">
                 {/* Header */}
                 <div className="flex items-center mb-6 sm:mb-8">

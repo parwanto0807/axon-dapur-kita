@@ -9,6 +9,7 @@ import axios from 'axios';
 import { clsx } from 'clsx';
 import { formatDate } from '@/utils/format';
 import { toast } from 'react-hot-toast';
+import LogoutModal from '../auth/LogoutModal';
 
 interface Notification {
     id: string;
@@ -26,9 +27,10 @@ export default function MerchantNavbar({ onMenuClick }: { onMenuClick?: () => vo
     const [isNotifOpen, setIsNotifOpen] = useState(false);
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
+    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
     const notifRef = useRef<HTMLDivElement>(null);
 
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
 
     const fetchNotifications = async () => {
         try {
@@ -74,9 +76,13 @@ export default function MerchantNavbar({ onMenuClick }: { onMenuClick?: () => vo
             // Let's assume I need to show toast here or relying on the hook if it does.
             // Actually, let's just fetch notifications.
 
-            toast.success(`Pesanan Baru dari ${order.user?.name || 'Pembeli'}! #${order.id.slice(-6).toUpperCase()}`, {
+            toast.success(`Order Baru! #${order.id.slice(-6).toUpperCase()}`, {
                 icon: '🎉',
-                duration: 5000
+                duration: 5000,
+                style: {
+                    fontSize: '11px',
+                    fontWeight: '800',
+                }
             });
         }
     });
@@ -104,14 +110,6 @@ export default function MerchantNavbar({ onMenuClick }: { onMenuClick?: () => vo
     return (
         <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-6 z-40 sticky top-0 shadow-sm">
             <div className="flex items-center space-x-4">
-                {/* Mobile Menu Button */}
-                <button
-                    onClick={onMenuClick}
-                    className="lg:hidden p-2 text-gray-500 hover:bg-gray-100 rounded-lg"
-                >
-                    <Menu className="h-6 w-6" />
-                </button>
-
                 {/* Search Bar - Optional */}
                 <div className="hidden md:flex items-center relative max-w-md w-64">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -245,6 +243,14 @@ export default function MerchantNavbar({ onMenuClick }: { onMenuClick?: () => vo
                                 </div>
                                 <div className="p-2">
                                     <Link
+                                        href="/dashboard"
+                                        className="flex items-center space-x-3 px-3 py-2 text-sm text-[#1B5E20] hover:bg-[#1B5E20]/5 rounded-lg font-bold"
+                                        onClick={() => setIsProfileOpen(false)}
+                                    >
+                                        <Store className="h-4 w-4" />
+                                        <span>Lihat Marketplace</span>
+                                    </Link>
+                                    <Link
                                         href="/dashboard/merchant/profile"
                                         className="flex items-center space-x-3 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg"
                                         onClick={() => setIsProfileOpen(false)}
@@ -253,7 +259,10 @@ export default function MerchantNavbar({ onMenuClick }: { onMenuClick?: () => vo
                                         <span>Pengaturan Toko</span>
                                     </Link>
                                     <button
-                                        onClick={() => logout()}
+                                        onClick={() => {
+                                            setIsProfileOpen(false);
+                                            setIsLogoutModalOpen(true);
+                                        }}
                                         className="w-full flex items-center space-x-3 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                     >
                                         <LogOut className="h-4 w-4" />
@@ -265,6 +274,10 @@ export default function MerchantNavbar({ onMenuClick }: { onMenuClick?: () => vo
                     )}
                 </div>
             </div>
+            <LogoutModal
+                isOpen={isLogoutModalOpen}
+                onClose={() => setIsLogoutModalOpen(false)}
+            />
         </header>
     );
 }
