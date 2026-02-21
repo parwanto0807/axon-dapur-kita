@@ -12,6 +12,7 @@ import { formatPrice, formatDate, formatShortDate } from '@/utils/format';
 import { getImageUrl } from '@/utils/image';
 import axios from 'axios';
 import LogoutModal from '../auth/LogoutModal';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Notification {
     id: string;
@@ -29,7 +30,6 @@ export default function Navbar() {
     const [isLangOpen, setIsLangOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-    const [currentLang, setCurrentLang] = useState('ID');
     const [recentOrders, setRecentOrders] = useState<any[]>([]);
     const [isOrdersLoading, setIsOrdersLoading] = useState(false);
 
@@ -51,6 +51,7 @@ export default function Navbar() {
     const cartItemsCount = useCartStore((state) => state.getTotalItems());
     const cartItems = useCartStore((state) => state.items);
     const totalPrice = useCartStore((state) => state.getTotalPrice());
+    const { lang, setLang, t } = useLanguage();
 
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
 
@@ -486,8 +487,8 @@ export default function Navbar() {
                                                                         order.paymentStatus === 'pending' ? "bg-yellow-100 text-yellow-700" :
                                                                             "bg-gray-100 text-gray-700"
                                                                 )}>
-                                                                    {order.paymentStatus === 'paid' ? 'Lunas' :
-                                                                        order.paymentStatus === 'pending' ? 'Belum Bayar' : order.paymentStatus}
+                                                                    {order.paymentStatus === 'paid' ? t('badge.paid') :
+                                                                        order.paymentStatus === 'pending' ? t('badge.pending') : order.paymentStatus}
                                                                 </span>
                                                             </div>
                                                             <p className="text-xs font-bold text-gray-900 truncate mt-0.5">{order.shop.name}</p>
@@ -511,7 +512,7 @@ export default function Navbar() {
                                                 href="/dashboard/orders"
                                                 className="block w-full py-3 bg-gray-900 text-white text-center text-xs font-bold rounded-2xl hover:bg-gray-800 transition-all active:scale-95 shadow-lg shadow-gray-200"
                                             >
-                                                Tampilkan Semua Pesanan
+                                                {t('nav.view_all_orders')}
                                             </Link>
                                         </div>
                                     </div>
@@ -542,40 +543,40 @@ export default function Navbar() {
                                     ></div>
                                     <div className="fixed md:absolute top-[56px] md:top-full right-2 md:right-0 left-auto translate-x-0 mt-0 md:mt-2 w-[calc(100vw-32px)] max-w-[280px] origin-top-right rounded-2xl bg-white shadow-2xl ring-1 ring-black/5 z-50 overflow-hidden transform transition-all animate-in fade-in slide-in-from-top-2 duration-200">
                                         <div className="p-4 bg-gray-50/50 border-b border-gray-100">
-                                            <p className="text-xs font-bold text-[#1B5E20] uppercase tracking-widest">Selamat Datang</p>
-                                            <p className="text-sm font-bold text-gray-900 mt-1">Belum Masuk Akun</p>
+                                            <p className="text-xs font-bold text-[#1B5E20] uppercase tracking-widest">{t('nav.welcome')}</p>
+                                            <p className="text-sm font-bold text-gray-900 mt-1">{t('nav.not_logged_in')}</p>
                                         </div>
                                         <div className="py-2 px-1">
                                             <Link
                                                 href="/login"
-                                                className="flex items-center space-x-3 px-4 py-3 text-sm font-bold text-[#1B5E20] bg-green-100 hover:bg-green-200 rounded-xl transition-all mb-2"
+                                                className="flex items-center space-x-3 px-4 py-3 text-sm font-bold text-white bg-[#1B5E20] hover:bg-[#154a1a] rounded-xl transition-all shadow-md shadow-[#1B5E20]/20 mb-1"
                                                 onClick={() => setIsProfileOpen(false)}
                                             >
                                                 <LogOut className="h-4 w-4 rotate-180" />
-                                                <span>Masuk</span>
+                                                <span>{t('nav.login')} / {t('nav.register')}</span>
                                             </Link>
                                             <Link
-                                                href="/register"
-                                                className="flex items-center space-x-3 px-4 py-3 text-sm font-bold text-white bg-[#1B5E20] hover:bg-[#1B5E20]/90 rounded-xl transition-all shadow-md shadow-[#1B5E20]/20 mx-1 mt-1"
+                                                href="/seller-info"
+                                                className="flex items-center space-x-3 px-4 py-3 text-sm font-bold text-orange-600 bg-orange-50 hover:bg-orange-100 rounded-xl transition-all mx-0 mt-1"
                                                 onClick={() => setIsProfileOpen(false)}
                                             >
-                                                <UserPlus className="h-4 w-4" />
-                                                <span>Daftar Akun</span>
+                                                <Store className="h-4 w-4" />
+                                                <span>{t('nav.seller_info')}</span>
                                             </Link>
                                         </div>
 
                                         <div className="border-t border-gray-100 py-3 px-1">
-                                            <p className="px-3 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Pilih Bahasa</p>
+                                            <p className="px-3 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t('nav.language')}</p>
                                             <div className="grid grid-cols-2 gap-1 px-2">
                                                 <button
-                                                    onClick={() => { setCurrentLang('ID'); setIsProfileOpen(false); }}
-                                                    className={`flex items-center justify-center px-2 py-2 rounded-xl text-xs font-bold transition-all ${currentLang === 'ID' ? 'bg-[#1B5E20] text-white shadow-md' : 'text-gray-500 hover:bg-gray-50'}`}
+                                                    onClick={() => { setLang('ID'); setIsProfileOpen(false); }}
+                                                    className={`flex items-center justify-center px-2 py-2 rounded-xl text-xs font-bold transition-all ${lang === 'ID' ? 'bg-[#1B5E20] text-white shadow-md' : 'text-gray-500 hover:bg-gray-50'}`}
                                                 >
                                                     ID
                                                 </button>
                                                 <button
-                                                    onClick={() => { setCurrentLang('EN'); setIsProfileOpen(false); }}
-                                                    className={`flex items-center justify-center px-2 py-2 rounded-xl text-xs font-bold transition-all ${currentLang === 'EN' ? 'bg-[#1B5E20] text-white shadow-md' : 'text-gray-500 hover:bg-gray-50'}`}
+                                                    onClick={() => { setLang('EN'); setIsProfileOpen(false); }}
+                                                    className={`flex items-center justify-center px-2 py-2 rounded-xl text-xs font-bold transition-all ${lang === 'EN' ? 'bg-[#1B5E20] text-white shadow-md' : 'text-gray-500 hover:bg-gray-50'}`}
                                                 >
                                                     EN
                                                 </button>
@@ -630,7 +631,7 @@ export default function Navbar() {
                                                     onClick={() => setIsProfileOpen(false)}
                                                 >
                                                     <Store className="h-4 w-4" />
-                                                    <span className="font-bold">Dashboard Admin</span>
+                                                    <span className="font-bold">{t('nav.admin_dashboard')}</span>
                                                 </Link>
                                             )}
                                             {user?.role === 'SELLER' && (
@@ -640,7 +641,7 @@ export default function Navbar() {
                                                     onClick={() => setIsProfileOpen(false)}
                                                 >
                                                     <Store className="h-4 w-4" />
-                                                    <span className="font-bold">Dashboard Toko</span>
+                                                    <span className="font-bold">{t('nav.merchant_dashboard')}</span>
                                                 </Link>
                                             )}
                                             <Link
@@ -649,7 +650,7 @@ export default function Navbar() {
                                                 onClick={() => setIsProfileOpen(false)}
                                             >
                                                 <User className="h-4 w-4" />
-                                                <span className="font-medium">Profil Saya</span>
+                                                <span className="font-medium">{t('nav.my_profile')}</span>
                                             </Link>
                                             <Link
                                                 href="/dashboard/orders"
@@ -657,7 +658,7 @@ export default function Navbar() {
                                                 onClick={() => setIsProfileOpen(false)}
                                             >
                                                 <Package className="h-4 w-4" />
-                                                <span className="font-medium">Pesanan Saya</span>
+                                                <span className="font-medium">{t('nav.my_orders')}</span>
                                             </Link>
                                             <Link
                                                 href="/dashboard/settings"
@@ -671,17 +672,17 @@ export default function Navbar() {
 
                                         {/* Language Section in Profile */}
                                         <div className="border-t border-gray-100 py-2 px-1">
-                                            <p className="px-3 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Pilih Bahasa</p>
+                                            <p className="px-3 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t('nav.language')}</p>
                                             <div className="grid grid-cols-2 gap-1 px-2">
                                                 <button
-                                                    onClick={() => setCurrentLang('ID')}
-                                                    className={`flex items-center justify-center space-x-2 px-2 py-2 rounded-xl text-xs font-bold transition-all ${currentLang === 'ID' ? 'bg-[#1B5E20] text-white shadow-md' : 'text-gray-500 hover:bg-gray-50'}`}
+                                                    onClick={() => setLang('ID')}
+                                                    className={`flex items-center justify-center space-x-2 px-2 py-2 rounded-xl text-xs font-bold transition-all ${lang === 'ID' ? 'bg-[#1B5E20] text-white shadow-md' : 'text-gray-500 hover:bg-gray-50'}`}
                                                 >
                                                     <span>ID</span>
                                                 </button>
                                                 <button
-                                                    onClick={() => setCurrentLang('EN')}
-                                                    className={`flex items-center justify-center space-x-2 px-2 py-2 rounded-xl text-xs font-bold transition-all ${currentLang === 'EN' ? 'bg-[#1B5E20] text-white shadow-md' : 'text-gray-500 hover:bg-gray-50'}`}
+                                                    onClick={() => setLang('EN')}
+                                                    className={`flex items-center justify-center space-x-2 px-2 py-2 rounded-xl text-xs font-bold transition-all ${lang === 'EN' ? 'bg-[#1B5E20] text-white shadow-md' : 'text-gray-500 hover:bg-gray-50'}`}
                                                 >
                                                     <span>EN</span>
                                                 </button>
@@ -697,7 +698,7 @@ export default function Navbar() {
                                                 className="flex w-full items-center space-x-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
                                             >
                                                 <LogOut className="h-4 w-4" />
-                                                <span className="font-bold">Keluar</span>
+                                                <span className="font-bold">{t('nav.logout')}</span>
                                             </button>
                                         </div>
                                     </div>

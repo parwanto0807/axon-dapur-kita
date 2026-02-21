@@ -75,6 +75,7 @@ import { Toaster as SonnerToaster } from 'sonner';
 
 import PWARegistry from "@/components/pwa/PWARegistry";
 import BuyerBottomNav from "@/components/layouts/BuyerBottomNav";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 
 export default function RootLayout({
   children,
@@ -91,59 +92,61 @@ export default function RootLayout({
       >
         <PWAInstallOverlay />
         <Providers>
-          <PWARegistry />
-          <NavbarWithRouteGuard />
-          <Toaster
-            position="top-center"
-            reverseOrder={false}
-            toastOptions={{
-              className: 'font-[family-name:var(--font-poppins)]',
-              style: {
-                borderRadius: '16px',
-                background: '#ffffff',
-                color: '#1a1a1a',
-                fontSize: '12px',
-                fontWeight: '600',
-                padding: '12px 16px',
-                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-                border: '1px solid rgba(0, 0, 0, 0.05)',
-                maxWidth: '90vw',
-              },
-              success: {
+          <LanguageProvider>
+            <PWARegistry />
+            <NavbarWithRouteGuard />
+            <Toaster
+              position="top-center"
+              reverseOrder={false}
+              toastOptions={{
+                className: 'font-[family-name:var(--font-poppins)]',
                 style: {
-                  background: '#F0FDF4',
-                  border: '1px solid #DCFCE7',
-                  color: '#166534',
+                  borderRadius: '16px',
+                  background: '#ffffff',
+                  color: '#1a1a1a',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  padding: '12px 16px',
+                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                  border: '1px solid rgba(0, 0, 0, 0.05)',
+                  maxWidth: '90vw',
                 },
-                iconTheme: {
-                  primary: '#166534',
-                  secondary: '#F0FDF4',
+                success: {
+                  style: {
+                    background: '#F0FDF4',
+                    border: '1px solid #DCFCE7',
+                    color: '#166534',
+                  },
+                  iconTheme: {
+                    primary: '#166534',
+                    secondary: '#F0FDF4',
+                  },
                 },
-              },
-              error: {
+                error: {
+                  style: {
+                    background: '#FEF2F2',
+                    border: '1px solid #FEE2E2',
+                    color: '#991B1B',
+                  },
+                },
+              }}
+            />
+            <SonnerToaster
+              position="top-center"
+              richColors
+              theme="light"
+              toastOptions={{
                 style: {
-                  background: '#FEF2F2',
-                  border: '1px solid #FEE2E2',
-                  color: '#991B1B',
+                  fontSize: '12px',
+                  borderRadius: '16px',
                 },
-              },
-            }}
-          />
-          <SonnerToaster
-            position="top-center"
-            richColors
-            theme="light"
-            toastOptions={{
-              style: {
-                fontSize: '12px',
-                borderRadius: '16px',
-              },
-            }}
-          />
-          <div className="pb-20 lg:pb-0">
-            {children}
-          </div>
-          <BuyerBottomNav />
+              }}
+            />
+            <div className="pb-20 lg:pb-0">
+              {children}
+            </div>
+            <BuyerBottomNav />
+          </LanguageProvider>
         </Providers>
       </body>
     </html>

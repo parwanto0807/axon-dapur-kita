@@ -24,6 +24,7 @@ import { formatPrice, formatShortDate } from '@/utils/format';
 import { getImageUrl } from '@/utils/image';
 import ReviewModal from '@/components/features/ReviewModal';
 import StarRating from '@/components/ui/StarRating';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface OrderItem {
     id: string;
@@ -62,6 +63,8 @@ export default function OrdersPage() {
     const [selectedProduct, setSelectedProduct] = useState<any>(null);
     const [currentOrderId, setCurrentOrderId] = useState<string>('');
 
+    const { t } = useLanguage();
+
     const fetchOrders = useCallback(async () => {
         try {
             const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
@@ -90,7 +93,7 @@ export default function OrdersPage() {
         if (paymentStatus === 'pending') {
             if (method === 'cod') {
                 return {
-                    label: 'Pesanan Diterima',
+                    label: t('status.pending_cod'),
                     bg: 'bg-yellow-50',
                     text: 'text-yellow-700',
                     border: 'border-yellow-200',
@@ -98,7 +101,7 @@ export default function OrdersPage() {
                 };
             }
             return {
-                label: 'Menunggu Pembayaran',
+                label: t('status.pending_transfer'),
                 bg: 'bg-yellow-50',
                 text: 'text-yellow-700',
                 border: 'border-yellow-200',
@@ -107,7 +110,7 @@ export default function OrdersPage() {
         }
         if (paymentStatus === 'paid') {
             return {
-                label: 'Pembayaran Terkonfirmasi',
+                label: t('status.paid'),
                 bg: 'bg-blue-50',
                 text: 'text-blue-700',
                 border: 'border-blue-200',
@@ -116,7 +119,7 @@ export default function OrdersPage() {
         }
         if (paymentStatus === 'processing') {
             return {
-                label: 'Sedang Diproses',
+                label: t('status.processing'),
                 bg: 'bg-purple-50',
                 text: 'text-purple-700',
                 border: 'border-purple-200',
@@ -125,7 +128,7 @@ export default function OrdersPage() {
         }
         if (paymentStatus === 'shipped') {
             return {
-                label: 'Sedang Dikirim',
+                label: t('status.shipped'),
                 bg: 'bg-indigo-50',
                 text: 'text-indigo-700',
                 border: 'border-indigo-200',
@@ -134,7 +137,7 @@ export default function OrdersPage() {
         }
         if (paymentStatus === 'completed') {
             return {
-                label: 'Pesanan Selesai',
+                label: t('status.completed'),
                 bg: 'bg-green-50',
                 text: 'text-green-700',
                 border: 'border-green-200',
@@ -143,7 +146,7 @@ export default function OrdersPage() {
         }
         if (paymentStatus === 'failed') {
             return {
-                label: 'Gagal',
+                label: t('status.failed'),
                 bg: 'bg-red-50',
                 text: 'text-red-700',
                 border: 'border-red-200',

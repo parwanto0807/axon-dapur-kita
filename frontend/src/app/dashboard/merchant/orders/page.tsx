@@ -29,6 +29,7 @@ import { getImageUrl } from '@/utils/image';
 import { useMerchantSocket } from '@/hooks/useMerchantSocket';
 import { useAuthStore } from '@/store/authStore';
 import { toast } from 'react-hot-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface OrderUser {
     id: string;
@@ -70,6 +71,7 @@ interface Order {
 
 export default function MerchantOrdersPage() {
     const { user } = useAuthStore();
+    const { t } = useLanguage();
     const [orders, setOrders] = useState<Order[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -143,7 +145,7 @@ export default function MerchantOrdersPage() {
                         bg: 'bg-yellow-50',
                         text: 'text-yellow-700',
                         border: 'border-yellow-100',
-                        label: 'PESANAN DITERIMA',
+                        label: t('status.pending_cod').toUpperCase(),
                         icon: Clock
                     };
                 }
@@ -151,7 +153,7 @@ export default function MerchantOrdersPage() {
                     bg: 'bg-amber-50',
                     text: 'text-amber-700',
                     border: 'border-amber-100',
-                    label: 'MENUNGGU PEMBAYARAN',
+                    label: t('status.pending_transfer').toUpperCase(),
                     icon: Clock
                 };
             case 'paid':
@@ -159,7 +161,7 @@ export default function MerchantOrdersPage() {
                     bg: 'bg-blue-50',
                     text: 'text-blue-700',
                     border: 'border-blue-100',
-                    label: 'PEMBAYARAN TERKONFIRMASI',
+                    label: t('status.paid').toUpperCase(),
                     icon: CheckCircle2
                 };
             case 'processing':
@@ -167,7 +169,7 @@ export default function MerchantOrdersPage() {
                     bg: 'bg-purple-50',
                     text: 'text-purple-700',
                     border: 'border-purple-100',
-                    label: 'SEDANG DIPROSES',
+                    label: t('status.processing').toUpperCase(),
                     icon: Package
                 };
             case 'shipped':
@@ -175,7 +177,7 @@ export default function MerchantOrdersPage() {
                     bg: 'bg-indigo-50',
                     text: 'text-indigo-700',
                     border: 'border-indigo-100',
-                    label: 'SEDANG DIKIRIM',
+                    label: t('status.shipped').toUpperCase(),
                     icon: Truck
                 };
             case 'completed':
@@ -183,7 +185,7 @@ export default function MerchantOrdersPage() {
                     bg: 'bg-emerald-50',
                     text: 'text-emerald-700',
                     border: 'border-emerald-100',
-                    label: 'PESANAN SELESAI',
+                    label: t('status.completed').toUpperCase(),
                     icon: CheckCircle2
                 };
             case 'failed':
@@ -191,7 +193,7 @@ export default function MerchantOrdersPage() {
                     bg: 'bg-red-50',
                     text: 'text-red-700',
                     border: 'border-red-100',
-                    label: 'GAGAL',
+                    label: t('status.failed').toUpperCase(),
                     icon: AlertCircle
                 };
             default:
@@ -259,12 +261,12 @@ export default function MerchantOrdersPage() {
                                                 : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
                                         )}
                                     >
-                                        {s === 'all' ? 'Semua' :
-                                            s === 'pending' ? 'Pesanan Masuk' :
-                                                s === 'paid' ? 'Terkonfirmasi' :
-                                                    s === 'processing' ? 'Diproses' :
-                                                        s === 'shipped' ? 'Dikirim' :
-                                                            s === 'completed' ? 'Selesai' : 'Gagal'}
+                                        {s === 'all' ? t('merchant.tab_all') :
+                                            s === 'pending' ? t('merchant.tab_pending') :
+                                                s === 'paid' ? t('merchant.tab_paid') :
+                                                    s === 'processing' ? t('merchant.tab_processing') :
+                                                        s === 'shipped' ? t('merchant.tab_shipped') :
+                                                            s === 'completed' ? t('merchant.tab_completed') : t('merchant.tab_failed')}
                                     </button>
                                 ))}
                             </div>
@@ -277,15 +279,15 @@ export default function MerchantOrdersPage() {
                 {isLoading ? (
                     <div className="flex flex-col items-center justify-center py-12">
                         <div className="h-8 w-8 border-2 border-gray-200 border-t-[#1B5E20] rounded-full animate-spin mb-3"></div>
-                        <p className="text-sm text-gray-500 font-medium">Memuat pesanan...</p>
+                        <p className="text-sm text-gray-500 font-medium">{t('merchant.loading')}</p>
                     </div>
                 ) : filteredOrders.length === 0 ? (
                     <div className="text-center py-12 bg-white rounded-xl border border-dashed border-gray-200">
                         <div className="bg-gray-50 mx-auto w-12 h-12 rounded-full flex items-center justify-center mb-3">
                             <ShoppingBag className="h-6 w-6 text-gray-300" />
                         </div>
-                        <p className="text-gray-900 font-semibold text-sm">Belum ada pesanan</p>
-                        <p className="text-xs text-gray-500">Pesanan baru akan muncul di sini</p>
+                        <p className="text-gray-900 font-semibold text-sm">{t('merchant.empty_title')}</p>
+                        <p className="text-xs text-gray-500">{t('merchant.empty_sub')}</p>
                     </div>
                 ) : (
                     <div className="grid gap-4">
@@ -392,7 +394,7 @@ export default function MerchantOrdersPage() {
                                                         onClick={() => updateStatus(order.id, order.paymentMethod === 'cod' ? 'processing' : 'paid')}
                                                         className="flex-1 sm:flex-none px-3 py-1.5 bg-[#1B5E20] text-white text-[10px] font-semibold rounded-lg hover:bg-green-800 transition-colors shadow-sm"
                                                     >
-                                                        {order.paymentMethod === 'cod' ? 'Konfirmasi' : 'Verifikasi'}
+                                                        {order.paymentMethod === 'cod' ? t('btn.confirm') : t('btn.verify')}
                                                     </button>
                                                 )}
 
@@ -401,7 +403,7 @@ export default function MerchantOrdersPage() {
                                                         onClick={() => updateStatus(order.id, 'processing')}
                                                         className="flex-1 sm:flex-none px-3 py-1.5 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
                                                     >
-                                                        Proses
+                                                        {t('btn.process')}
                                                     </button>
                                                 )}
 
@@ -410,7 +412,7 @@ export default function MerchantOrdersPage() {
                                                         onClick={() => updateStatus(order.id, 'shipped')}
                                                         className="flex-1 sm:flex-none px-3 py-1.5 bg-indigo-600 text-white text-xs font-semibold rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
                                                     >
-                                                        Kirim
+                                                        {t('btn.ship')}
                                                     </button>
                                                 )}
 
@@ -419,7 +421,7 @@ export default function MerchantOrdersPage() {
                                                         onClick={() => updateStatus(order.id, 'completed')}
                                                         className="flex-1 sm:flex-none px-3 py-1.5 bg-emerald-600 text-white text-xs font-semibold rounded-lg hover:bg-emerald-700 transition-colors shadow-sm"
                                                     >
-                                                        Selesai
+                                                        {t('btn.done')}
                                                     </button>
                                                 )}
 
@@ -427,7 +429,7 @@ export default function MerchantOrdersPage() {
                                                     href={`/dashboard/merchant/orders/${order.id}`}
                                                     className="px-3 py-1.5 bg-white border border-gray-200 text-gray-600 text-[10px] font-semibold rounded-lg hover:bg-gray-50 transition-colors"
                                                 >
-                                                    Detail
+                                                    {t('btn.detail')}
                                                 </Link>
                                             </div>
                                         </div>
@@ -437,9 +439,9 @@ export default function MerchantOrdersPage() {
                                         <div className="bg-orange-50 px-4 py-1.5 border-t border-orange-100 flex items-center justify-between">
                                             <div className="flex items-center gap-1.5 text-orange-700">
                                                 <Wallet className="h-3 w-3" />
-                                                <span className="text-[10px] font-bold uppercase tracking-wide">Bayar di Tempat (COD)</span>
+                                                <span className="text-[10px] font-bold uppercase tracking-wide">{t('merchant.cod_note')}</span>
                                             </div>
-                                            <span className="text-[10px] text-orange-600/80 font-medium">Pastikan pembayaran diterima saat pengiriman</span>
+                                            <span className="text-[10px] text-orange-600/80 font-medium">{t('merchant.cod_reminder')}</span>
                                         </div>
                                     )}
                                 </div>

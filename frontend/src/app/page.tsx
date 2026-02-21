@@ -173,6 +173,68 @@ export default function Home() {
         </section>
 
 
+        {/* === VALUE PROPOSITION SECTION === */}
+        <section className="py-1 sm:py-4">
+          <div className="text-center mb-4 sm:mb-8">
+            <span className="inline-block bg-[#1B5E20]/10 text-[#1B5E20] text-[10px] sm:text-xs font-black uppercase tracking-widest px-3 py-1.5 rounded-full mb-3">
+              🌿 Kenapa Axon DapurKita?
+            </span>
+            <h2 className="text-lg sm:text-3xl font-black text-gray-900 leading-tight">
+              Memberdayakan UMKM Lokal,<br className="hidden sm:block" />
+              <span className="text-[#1B5E20]"> Satu Dapur dalam Satu Radius</span>
+            </h2>
+            <p className="mt-2 text-xs sm:text-base text-gray-500 max-w-xl mx-auto leading-relaxed">
+              Platform digital yang menghubungkan penjual UMKM rumahan dengan pembeli di sekitarnya — cepat, segar, dan langsung dari tetangga dekat kita.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6">
+            {/* Pillar 1 */}
+            <div className="group relative bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-green-100 hover:shadow-xl hover:shadow-green-100/50 transition-all duration-300 hover:-translate-y-1">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-2xl flex items-center justify-center shadow-md shadow-green-100 mb-4 group-hover:scale-110 transition-transform">
+                <Store className="h-6 w-6 sm:h-8 sm:w-8 text-[#1B5E20]" />
+              </div>
+              <h3 className="text-sm sm:text-lg font-black text-gray-900 mb-2">Dapur Pribadi Jadi Toko Digital</h3>
+              <p className="text-[11px] sm:text-sm text-gray-600 leading-relaxed">
+                Siapapun bisa berjualan — dari ibu rumah tangga hingga pedagang warung. Kami bantu UMKM tampil modern dan profesional secara digital tanpa alat canggih.
+              </p>
+              <div className="mt-4 inline-flex items-center text-[#1B5E20] font-bold text-xs gap-1 group-hover:gap-2 transition-all">
+                <Link href="/seller-info">Mulai Berjualan</Link>
+                <span>→</span>
+              </div>
+            </div>
+
+            {/* Pillar 2 */}
+            <div className="group relative bg-gradient-to-br from-blue-50 to-sky-50 rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-blue-100 hover:shadow-xl hover:shadow-blue-100/50 transition-all duration-300 hover:-translate-y-1">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-2xl flex items-center justify-center shadow-md shadow-blue-100 mb-4 group-hover:scale-110 transition-transform">
+                <MapPin className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
+              </div>
+              <h3 className="text-sm sm:text-lg font-black text-gray-900 mb-2">Temukan Penjual di Sekitar Anda</h3>
+              <p className="text-[11px] sm:text-sm text-gray-600 leading-relaxed">
+                Cari produk berdasarkan radius lokasi — temukan UMKM tetangga yang menjual sayur segar, masakan hangat, jamu tradisional, dan lainnya hanya dalam jarak dekat.
+              </p>
+              <div className="mt-4 inline-flex items-center text-blue-600 font-bold text-xs gap-1 group-hover:gap-2 transition-all">
+                <Link href="/nearby">Cari Penjual Terdekat</Link>
+                <span>→</span>
+              </div>
+            </div>
+
+            {/* Pillar 3 */}
+            <div className="group relative bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-orange-100 hover:shadow-xl hover:shadow-orange-100/50 transition-all duration-300 hover:-translate-y-1">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-2xl flex items-center justify-center shadow-md shadow-orange-100 mb-4 group-hover:scale-110 transition-transform">
+                <Sparkles className="h-6 w-6 sm:h-8 sm:w-8 text-orange-500" />
+              </div>
+              <h3 className="text-sm sm:text-lg font-black text-gray-900 mb-2">Produk Segar, Masih Hangat</h3>
+              <p className="text-[11px] sm:text-sm text-gray-600 leading-relaxed">
+                Karena penjual ada di sekitar Anda, produk sampai lebih cepat — masakan masih hangat, sayur masih segar, dan jamu baru dibuat. Kualitas terjamin dari sumber langsung.
+              </p>
+              <div className="mt-4 inline-flex items-center text-orange-500 font-bold text-xs gap-1 group-hover:gap-2 transition-all">
+                <Link href="/dashboard">Belanja Sekarang</Link>
+                <span>→</span>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* Categories Section - Modern Horizontal Scroll */}
         <section>
