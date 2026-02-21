@@ -112,7 +112,7 @@ export default function MerchantNavbar({ onMenuClick }: { onMenuClick?: () => vo
             <div className="flex items-center space-x-4">
                 {/* Search Bar - Optional */}
                 <div className="hidden md:flex items-center relative max-w-md w-64">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-black" />
                     <input
                         type="text"
                         placeholder="Cari..."
@@ -131,7 +131,7 @@ export default function MerchantNavbar({ onMenuClick }: { onMenuClick?: () => vo
                                 connectionStatus === 'polling' ? "bg-blue-500" :
                                     "bg-red-500"
                     )} />
-                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                    <span className="text-[10px] font-medium text-gray-500 tracking-wider">
                         {connectionStatus === 'connected' ? 'Live' :
                             connectionStatus === 'connecting' ? 'Connecting' :
                                 connectionStatus === 'polling' ? 'Syncing' : 'Offline'}
@@ -142,7 +142,7 @@ export default function MerchantNavbar({ onMenuClick }: { onMenuClick?: () => vo
                 <div className="relative" ref={notifRef}>
                     <button
                         onClick={() => setIsNotifOpen(!isNotifOpen)}
-                        className="p-2 text-gray-500 hover:bg-gray-100 hover:text-[#1B5E20] rounded-xl transition-all relative"
+                        className="p-2 text-black hover:bg-gray-100 hover:text-[#1B5E20] rounded-xl transition-all relative"
                     >
                         <Bell className="h-6 w-6" />
                         {unreadCount > 0 && (
@@ -156,7 +156,7 @@ export default function MerchantNavbar({ onMenuClick }: { onMenuClick?: () => vo
                     {isNotifOpen && (
                         <div className="fixed md:absolute left-1/2 -translate-x-1/2 md:left-auto md:right-0 md:translate-x-0 mt-2 w-[calc(100vw-16px)] max-w-sm sm:max-w-md bg-white rounded-2xl shadow-xl ring-1 ring-black/5 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50 transform origin-top md:origin-top-right">
                             <div className="px-4 py-3 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
-                                <h3 className="text-sm font-bold text-gray-900">Notifikasi</h3>
+                                <h3 className="text-sm font-medium text-gray-900">Notifikasi</h3>
                                 {unreadCount > 0 && (
                                     <button
                                         onClick={markAllAsRead}
@@ -226,7 +226,7 @@ export default function MerchantNavbar({ onMenuClick }: { onMenuClick?: () => vo
                                 />
                             ) : (
                                 <div className="h-full w-full flex items-center justify-center">
-                                    <User className="h-4 w-4 text-gray-500" />
+                                    <User className="h-4 w-4 text-black" />
                                 </div>
                             )}
                         </div>

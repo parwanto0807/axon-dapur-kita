@@ -157,7 +157,7 @@ export default function Navbar() {
                 <div className="flex flex-1 md:justify-center px-0 sm:px-4 md:px-8">
                     <div className="relative w-full max-w-xl group">
                         <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                            <Search className="h-3.5 w-3.5 sm:h-5 sm:w-5 text-gray-400 group-focus-within:text-[#1B5E20] transition-colors" />
+                            <Search className="h-3.5 w-3.5 sm:h-5 sm:w-5 text-black group-focus-within:text-[#1B5E20] transition-colors" />
                         </span>
                         <input
                             type="text"
@@ -259,7 +259,7 @@ export default function Navbar() {
                                     onClick={() => setIsCartOpen(!isCartOpen)}
                                     className="p-1.5 sm:p-2 text-gray-600 hover:text-[#1B5E20] hover:bg-gray-50 rounded-xl relative block transition-all focus:outline-none"
                                 >
-                                    <ShoppingBag className="h-5 w-5 sm:h-6 sm:w-6 group-hover:scale-110 transition-transform" />
+                                    <ShoppingBag className="h-5 w-5 sm:h-6 sm:w-6 text-black group-hover:scale-110 transition-transform" />
                                     {mounted && cartItemsCount > 0 && (
                                         <span className="absolute -top-0.5 -right-0.5 h-3.5 sm:h-4 w-3.5 sm:w-4 bg-red-500 text-white text-[10px] sm:text-[9px] font-bold flex items-center justify-center rounded-full border border-white shadow-sm">
                                             {cartItemsCount}
@@ -275,7 +275,7 @@ export default function Navbar() {
                                     {mounted && cartItems.length > 0 ? (
                                         <div className="flex flex-col max-h-[400px] sm:max-h-[450px]">
                                             <div className="px-4 s:px-5 py-3 sm:py-4 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
-                                                <h3 className="text-xs sm:text-sm font-black text-gray-900 uppercase tracking-wider flex items-center">
+                                                <h3 className="text-xs sm:text-sm font-medium text-gray-900 tracking-wider flex items-center">
                                                     <ShoppingBag className="h-4 w-4 mr-2 text-[#1B5E20]" />
                                                     Keranjang ({cartItemsCount})
                                                 </h3>
@@ -311,7 +311,7 @@ export default function Navbar() {
                                             {/* Footer */}
                                             <div className="p-4 sm:p-5 border-t border-gray-100 bg-white">
                                                 <div className="flex items-center justify-between mb-3 sm:mb-4">
-                                                    <span className="text-[10px] sm:text-xs font-bold text-gray-400 tracking-wider">TOTAL ESTIMASI</span>
+                                                    <span className="text-[10px] sm:text-xs font-medium text-gray-400 tracking-wider">TOTAL ESTIMASI</span>
                                                     <span className="text-base sm:text-lg font-black text-[#1B5E20]">
                                                         {formatPrice(totalPrice)}
                                                     </span>
@@ -353,7 +353,7 @@ export default function Navbar() {
                                     onClick={() => setIsNotifOpen(!isNotifOpen)}
                                     className="p-1.5 sm:p-2 text-gray-600 hover:text-[#1B5E20] hover:bg-gray-50 rounded-xl relative block transition-all"
                                 >
-                                    <Bell className="h-5 w-5 sm:h-6 sm:w-6" />
+                                    <Bell className="h-5 w-5 sm:h-6 sm:w-6 text-black" />
                                     {mounted && unreadCount > 0 && (
                                         <span className="absolute -top-0.5 -right-0.5 h-4 w-4 bg-red-500 text-white text-[10px] font-black flex items-center justify-center rounded-full border border-white shadow-sm">
                                             {unreadCount > 9 ? '9+' : unreadCount}
@@ -442,7 +442,7 @@ export default function Navbar() {
                                     className="p-1.5 sm:p-2 text-gray-600 hover:text-[#1B5E20] hover:bg-gray-50 rounded-xl relative block group transition-all focus:outline-none"
                                     title="Pesanan Saya"
                                 >
-                                    <Mail className="h-5 w-5 sm:h-6 sm:w-6 group-hover:scale-110 transition-transform" />
+                                    <Mail className="h-5 w-5 sm:h-6 sm:w-6 text-black group-hover:scale-110 transition-transform" />
                                     {mounted && recentOrders.filter(o => o.paymentStatus === 'pending').length > 0 && (
                                         <span className="absolute top-1.5 sm:top-2 right-1.5 sm:right-2 flex h-2 w-2 sm:h-2.5 sm:w-2.5">
                                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
@@ -458,7 +458,7 @@ export default function Navbar() {
                                 )}>
                                     <div className="flex flex-col max-h-[450px]">
                                         <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
-                                            <h3 className="text-sm font-black text-gray-900 uppercase tracking-wider flex items-center">
+                                            <h3 className="text-sm font-medium text-gray-900 tracking-wider flex items-center">
                                                 <Mail className="h-4 w-4 mr-2 text-[#1B5E20]" />
                                                 Pesanan Terbaru
                                             </h3>
@@ -479,7 +479,7 @@ export default function Navbar() {
                                                         </div>
                                                         <div className="flex-1 min-w-0">
                                                             <div className="flex items-center justify-between">
-                                                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest truncate mr-2">#{order.id.slice(-6).toUpperCase()}</p>
+                                                                <p className="text-[10px] font-medium text-gray-400 tracking-widest truncate mr-2">#{order.id.slice(-6).toUpperCase()}</p>
                                                                 <span className={clsx(
                                                                     "text-[10px] font-black px-1.5 py-0.5 rounded uppercase",
                                                                     order.paymentStatus === 'paid' ? "bg-green-100 text-green-700" :

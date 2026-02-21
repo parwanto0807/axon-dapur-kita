@@ -54,7 +54,7 @@ export default function BuyerBottomNav() {
                             href={item.href}
                             className={clsx(
                                 "flex flex-col items-center justify-center flex-1 transition-all duration-300 relative py-1",
-                                isActive ? "text-[#1B5E20]" : "text-gray-400 hover:text-gray-600"
+                                isActive ? "text-[#1B5E20]" : "text-black hover:text-gray-600"
                             )}
                         >
                             {isActive && (
@@ -65,7 +65,7 @@ export default function BuyerBottomNav() {
                                 isActive && "scale-110"
                             )} />
                             <span className={clsx(
-                                "text-[10px] font-black uppercase tracking-tight",
+                                "text-[10px] font-medium tracking-tight",
                                 isActive ? "opacity-100" : "opacity-80"
                             )}>
                                 {item.label}

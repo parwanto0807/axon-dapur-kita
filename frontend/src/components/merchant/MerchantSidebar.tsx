@@ -68,7 +68,7 @@ export default function MerchantSidebar({ isOpen, onClose }: MerchantSidebarProp
                                 )}
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className="text-sm font-bold text-gray-900 truncate">{user?.name}</p>
+                                <p className="text-sm font-medium text-gray-900 truncate">{user?.name}</p>
                                 <p className="text-xs text-gray-500 truncate">ID: {user?.shopId ? `#${user.shopId}` : '-'}</p>
                             </div>
                         </div>
@@ -87,12 +87,12 @@ export default function MerchantSidebar({ isOpen, onClose }: MerchantSidebarProp
                                         flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all group
                                         ${active
                                             ? 'bg-[#1B5E20] text-white shadow-md shadow-green-900/20'
-                                            : 'text-gray-600 hover:bg-green-50 hover:text-[#1B5E20]'
+                                            : 'text-black hover:bg-green-50 hover:text-[#1B5E20]'
                                         }
                                     `}
                                 >
                                     <div className="flex items-center space-x-3">
-                                        <item.icon className={`h-5 w-5 ${active ? 'text-white' : 'text-gray-400 group-hover:text-[#1B5E20]'}`} />
+                                        <item.icon className={`h-5 w-5 ${active ? 'text-white' : 'text-black group-hover:text-[#1B5E20]'}`} />
                                         <span>{item.name}</span>
                                     </div>
                                     {active && <ChevronRight className="h-4 w-4 text-white/50" />}

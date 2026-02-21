@@ -16,11 +16,11 @@ export default function AdminNavbar({ onMenuClick }: { onMenuClick?: () => void 
             <div className="flex items-center space-x-4">
                 <button
                     onClick={onMenuClick}
-                    className="lg:hidden p-2 text-gray-500 hover:bg-gray-100 rounded-lg"
+                    className="lg:hidden p-2 text-black hover:bg-gray-100 rounded-lg"
                 >
                     <Menu className="h-6 w-6" />
                 </button>
-                <div className="hidden md:flex items-center text-sm font-medium text-gray-500">
+                <div className="hidden md:flex items-center text-sm font-medium text-black">
                     Administrator Panel
                 </div>
             </div>

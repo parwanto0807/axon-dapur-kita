@@ -29,12 +29,12 @@ export default function MerchantBottomNav() {
                             href={item.href}
                             className={clsx(
                                 "flex flex-col items-center justify-center transition-all duration-300 relative px-1",
-                                isActive ? "text-[#1B5E20]" : "text-gray-400"
+                                isActive ? "text-[#1B5E20]" : "text-black"
                             )}
                         >
                             {isActive && <span className="absolute -top-1 w-1 h-1 bg-[#1B5E20] rounded-full" />}
                             <Icon className={clsx("h-5 w-5 mb-1", isActive && "scale-110")} />
-                            <span className="text-[10px] font-black uppercase tracking-widest">{item.label}</span>
+                            <span className="text-[10px] font-medium tracking-widest">{item.label}</span>
                         </Link>
                     );
                 })}

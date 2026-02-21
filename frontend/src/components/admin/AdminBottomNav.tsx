@@ -29,7 +29,7 @@ export default function AdminBottomNav() {
                             href={item.href}
                             className={clsx(
                                 "flex flex-col items-center justify-center flex-1 transition-all duration-300 relative py-1",
-                                isActive ? "text-blue-600" : "text-gray-400 hover:text-gray-600"
+                                isActive ? "text-blue-600" : "text-black hover:text-gray-600"
                             )}
                         >
                             {isActive && (
@@ -40,7 +40,7 @@ export default function AdminBottomNav() {
                                 isActive && "scale-110"
                             )} />
                             <span className={clsx(
-                                "text-[9px] font-black uppercase tracking-tight",
+                                "text-[9px] font-medium tracking-tight",
                                 isActive ? "opacity-100" : "opacity-80"
                             )}>
                                 {item.label}
