@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import {
     ShoppingBag,
@@ -62,15 +62,7 @@ export default function OrdersPage() {
     const [selectedProduct, setSelectedProduct] = useState<any>(null);
     const [currentOrderId, setCurrentOrderId] = useState<string>('');
 
-    // Real-time updates
-    useBuyerSocket();
-
-    useEffect(() => {
-        if (isAuthLoading) return;
-        fetchOrders();
-    }, [isAuthLoading]);
-
-    const fetchOrders = async () => {
+    const fetchOrders = useCallback(async () => {
         try {
             const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
             const res = await axios.get(`${apiBaseUrl}/orders/my-orders`, {
@@ -83,12 +75,30 @@ export default function OrdersPage() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
+
+    // Real-time updates — auto-refresh list when seller updates order status
+    useBuyerSocket(fetchOrders);
+
+    useEffect(() => {
+        if (isAuthLoading) return;
+        fetchOrders();
+    }, [isAuthLoading]);
+
 
     const getStatusStyle = (paymentStatus: string, method: string) => {
         if (paymentStatus === 'pending') {
+            if (method === 'cod') {
+                return {
+                    label: 'Pesanan Diterima',
+                    bg: 'bg-yellow-50',
+                    text: 'text-yellow-700',
+                    border: 'border-yellow-200',
+                    icon: Clock
+                };
+            }
             return {
-                label: method === 'cod' ? 'Menunggu COD' : 'Menunggu Bayar',
+                label: 'Menunggu Pembayaran',
                 bg: 'bg-yellow-50',
                 text: 'text-yellow-700',
                 border: 'border-yellow-200',
@@ -97,11 +107,47 @@ export default function OrdersPage() {
         }
         if (paymentStatus === 'paid') {
             return {
-                label: 'Selesai',
+                label: 'Pembayaran Terkonfirmasi',
+                bg: 'bg-blue-50',
+                text: 'text-blue-700',
+                border: 'border-blue-200',
+                icon: CheckCircle
+            };
+        }
+        if (paymentStatus === 'processing') {
+            return {
+                label: 'Sedang Diproses',
+                bg: 'bg-purple-50',
+                text: 'text-purple-700',
+                border: 'border-purple-200',
+                icon: Package
+            };
+        }
+        if (paymentStatus === 'shipped') {
+            return {
+                label: 'Sedang Dikirim',
+                bg: 'bg-indigo-50',
+                text: 'text-indigo-700',
+                border: 'border-indigo-200',
+                icon: Truck
+            };
+        }
+        if (paymentStatus === 'completed') {
+            return {
+                label: 'Pesanan Selesai',
                 bg: 'bg-green-50',
                 text: 'text-green-700',
                 border: 'border-green-200',
                 icon: CheckCircle
+            };
+        }
+        if (paymentStatus === 'failed') {
+            return {
+                label: 'Gagal',
+                bg: 'bg-red-50',
+                text: 'text-red-700',
+                border: 'border-red-200',
+                icon: AlertCircle
             };
         }
         return {

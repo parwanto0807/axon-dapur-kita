@@ -253,7 +253,7 @@ export default function UserProfilePage() {
                             className="hidden"
                         />
                     </div>
-                    <p className="mt-3 text-[9px] sm:text-sm text-gray-900 font-bold uppercase tracking-tight">Ganti Foto Profil</p>
+                    <p className="mt-3 text-xs sm:text-sm text-gray-900 font-medium tracking-tight">Ganti Foto Profil</p>
                 </div>
 
                 {/* Form Section */}
@@ -274,7 +274,7 @@ export default function UserProfilePage() {
 
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-[7px] sm:text-xs font-black text-gray-900 uppercase tracking-widest mb-1 sm:mb-2 px-1">Nama Lengkap</label>
+                            <label className="block text-[10px] sm:text-xs font-bold text-gray-900 uppercase tracking-widest mb-1 sm:mb-2 px-1">Nama Lengkap</label>
                             <div className="relative group">
                                 <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 group-focus-within:text-[#1B5E20] transition-colors" />
                                 <input
@@ -283,27 +283,27 @@ export default function UserProfilePage() {
                                     value={formData.name}
                                     onChange={handleChange}
                                     placeholder="Masukkan nama"
-                                    className="w-full bg-white border border-gray-200 rounded-lg sm:rounded-2xl py-2 sm:py-4 pl-10 sm:pl-12 pr-4 text-[10px] sm:text-sm font-bold text-black focus:border-[#1B5E20] focus:ring-2 focus:ring-[#1B5E20]/5 transition-all outline-none"
+                                    className="w-full bg-white border border-gray-200 rounded-lg sm:rounded-2xl py-2 sm:py-4 pl-10 sm:pl-12 pr-4 text-xs sm:text-sm font-medium text-black focus:border-[#1B5E20] focus:ring-2 focus:ring-[#1B5E20]/5 transition-all outline-none"
                                 />
                             </div>
                         </div>
 
                         <div>
-                            <label className="block text-[7px] sm:text-xs font-black text-black uppercase tracking-widest mb-1 sm:mb-2 px-1">Email (Akun)</label>
+                            <label className="block text-[10px] sm:text-xs font-bold text-black uppercase tracking-widest mb-1 sm:mb-2 px-1">Email (Akun)</label>
                             <div className="relative">
                                 <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-black" />
                                 <input
                                     type="email"
                                     value={formData.email}
                                     disabled
-                                    className="w-full bg-gray-50 border border-gray-200 rounded-lg sm:rounded-2xl py-2 sm:py-4 pl-10 sm:pl-12 pr-4 text-[10px] sm:text-sm font-bold text-black cursor-not-allowed opacity-60"
+                                    className="w-full bg-gray-50 border border-gray-200 rounded-lg sm:rounded-2xl py-2 sm:py-4 pl-10 sm:pl-12 pr-4 text-xs sm:text-sm font-medium text-black cursor-not-allowed opacity-60"
                                 />
                             </div>
-                            <p className="mt-1 text-[7px] sm:text-[10px] text-gray-400 px-1 italic font-bold uppercase tracking-tight">Email tidak dapat diubah demi keamanan.</p>
+                            <p className="mt-1 text-[10px] sm:text-[11px] text-gray-400 px-1 italic font-medium">Email tidak dapat diubah demi keamanan.</p>
                         </div>
 
                         <div>
-                            <label className="block text-[7px] sm:text-xs font-black text-gray-900 uppercase tracking-widest mb-1 sm:mb-2 px-1">WhatsApp</label>
+                            <label className="block text-[10px] sm:text-xs font-bold text-gray-900 uppercase tracking-widest mb-1 sm:mb-2 px-1">WhatsApp</label>
                             <div className="relative group">
                                 <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 group-focus-within:text-[#1B5E20] transition-colors" />
                                 <input
@@ -312,13 +312,13 @@ export default function UserProfilePage() {
                                     value={formData.whatsapp}
                                     onChange={handleChange}
                                     placeholder="08123456789"
-                                    className="w-full bg-white border border-gray-200 rounded-lg sm:rounded-2xl py-2 sm:py-4 pl-10 sm:pl-12 pr-4 text-[10px] sm:text-sm font-bold text-black focus:border-[#1B5E20] focus:ring-2 focus:ring-[#1B5E20]/5 transition-all outline-none"
+                                    className="w-full bg-white border border-gray-200 rounded-lg sm:rounded-2xl py-2 sm:py-4 pl-10 sm:pl-12 pr-4 text-xs sm:text-sm font-medium text-black focus:border-[#1B5E20] focus:ring-2 focus:ring-[#1B5E20]/5 transition-all outline-none"
                                 />
                             </div>
                         </div>
 
                         <div>
-                            <label className="block text-[7px] sm:text-xs font-black text-gray-900 uppercase tracking-widest mb-1 sm:mb-2 px-1">Jenis Kelamin</label>
+                            <label className="block text-[10px] sm:text-xs font-bold text-gray-900 uppercase tracking-widest mb-1 sm:mb-2 px-1">Jenis Kelamin</label>
                             <div className="flex space-x-2 sm:space-x-4">
                                 <label className="flex items-center space-x-1.5 px-3 py-1.5 sm:p-3 border rounded-lg sm:rounded-xl cursor-pointer hover:bg-gray-50 flex-1">
                                     <input
@@ -329,7 +329,7 @@ export default function UserProfilePage() {
                                         onChange={handleChange}
                                         className="w-3 h-3 sm:w-4 sm:h-4 text-[#1B5E20] focus:ring-[#1B5E20]"
                                     />
-                                    <span className="text-[9px] sm:text-sm font-bold text-gray-700">Pria</span>
+                                    <span className="text-xs sm:text-sm font-medium text-gray-700">Pria</span>
                                 </label>
                                 <label className="flex items-center space-x-1.5 px-3 py-1.5 sm:p-3 border rounded-lg sm:rounded-xl cursor-pointer hover:bg-gray-50 flex-1">
                                     <input
@@ -340,29 +340,29 @@ export default function UserProfilePage() {
                                         onChange={handleChange}
                                         className="w-3 h-3 sm:w-4 sm:h-4 text-[#1B5E20] focus:ring-[#1B5E20]"
                                     />
-                                    <span className="text-[9px] sm:text-sm font-bold text-gray-700">Wanita</span>
+                                    <span className="text-xs sm:text-sm font-medium text-gray-700">Wanita</span>
                                 </label>
                             </div>
                         </div>
 
                         <div>
-                            <label className="block text-[7px] sm:text-xs font-black text-gray-900 uppercase tracking-widest mb-1 sm:mb-2 px-1">Tanggal Lahir</label>
+                            <label className="block text-[10px] sm:text-xs font-bold text-gray-900 uppercase tracking-widest mb-1 sm:mb-2 px-1">Tanggal Lahir</label>
                             <input
                                 type="date"
                                 name="dateOfBirth"
                                 value={formData.dateOfBirth}
                                 onChange={handleChange}
-                                className="w-full bg-white border border-gray-200 rounded-lg sm:rounded-2xl py-1.5 sm:py-4 px-3 text-[10px] sm:text-sm font-bold text-black focus:border-[#1B5E20] focus:ring-2 focus:ring-[#1B5E20]/5 transition-all outline-none"
+                                className="w-full bg-white border border-gray-200 rounded-lg sm:rounded-2xl py-1.5 sm:py-4 px-3 text-xs sm:text-sm font-medium text-black focus:border-[#1B5E20] focus:ring-2 focus:ring-[#1B5E20]/5 transition-all outline-none"
                             />
                         </div>
 
                         {/* Address Book Section */}
                         <div>
                             <div className="flex items-center justify-between mb-2">
-                                <label className="block text-[7px] sm:text-xs font-black text-gray-900 uppercase tracking-widest px-1">Daftar Alamat</label>
+                                <label className="block text-[10px] sm:text-xs font-bold text-gray-900 uppercase tracking-widest px-1">Daftar Alamat</label>
                                 <button
                                     onClick={() => setIsAddressModalOpen(true)}
-                                    className="text-[8px] sm:text-[10px] font-bold text-[#1B5E20] hover:underline uppercase"
+                                    className="text-[10px] sm:text-xs font-bold text-[#1B5E20] hover:underline uppercase"
                                 >
                                     + Tambah
                                 </button>
@@ -373,21 +373,21 @@ export default function UserProfilePage() {
                                         <div className="flex justify-between items-start">
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-1 mb-0.5">
-                                                    <span className="text-[8px] sm:text-xs font-black text-gray-900 truncate">{addr.label}</span>
-                                                    {addr.isMain && <span className="px-1 py-0.5 bg-[#1B5E20]/10 text-[#1B5E20] text-[6px] sm:text-[9px] font-bold rounded-full uppercase ml-1">Utama</span>}
+                                                    <span className="text-[10px] sm:text-xs font-bold text-gray-900 truncate">{addr.label}</span>
+                                                    {addr.isMain && <span className="px-1 py-0.5 bg-[#1B5E20]/10 text-[#1B5E20] text-[9px] sm:text-[10px] font-bold rounded-full uppercase ml-1">Utama</span>}
                                                 </div>
-                                                <p className="text-[9px] sm:text-sm font-bold text-gray-800 leading-tight">{addr.receiverName}</p>
-                                                <p className="text-[7.5px] sm:text-xs text-gray-500 font-medium leading-none mt-0.5">{addr.phone}</p>
-                                                <p className="text-[7.5px] sm:text-xs text-gray-400 mt-1 line-clamp-2 leading-relaxed">{addr.street}, {addr.city}, {addr.province}, {addr.postalCode}</p>
+                                                <p className="text-xs sm:text-sm font-medium text-gray-800 leading-tight">{addr.receiverName}</p>
+                                                <p className="text-[10px] sm:text-xs text-gray-500 font-medium leading-none mt-0.5">{addr.phone}</p>
+                                                <p className="text-[10px] sm:text-xs text-gray-400 mt-1 line-clamp-2 leading-relaxed">{addr.street}, {addr.city}, {addr.province}, {addr.postalCode}</p>
                                             </div>
                                             <button onClick={() => handleDeleteAddress(addr.id)} className="text-red-500 hover:text-red-700 p-0.5 shrink-0 ml-1.5 mt-0.5">
-                                                <span className="text-[7px] sm:text-[10px] font-bold uppercase">Hapus</span>
+                                                <span className="text-[10px] sm:text-xs font-bold uppercase">Hapus</span>
                                             </button>
                                         </div>
                                     </div>
                                 ))}
                                 {addresses.length === 0 && (
-                                    <p className="text-[8px] sm:text-xs text-gray-400 italic text-center py-3">Belum ada alamat tersimpan.</p>
+                                    <p className="text-[10px] sm:text-xs text-gray-400 italic text-center py-3">Belum ada alamat tersimpan.</p>
                                 )}
                             </div>
                         </div>
@@ -397,7 +397,7 @@ export default function UserProfilePage() {
                         <button
                             onClick={handleSave}
                             disabled={isSaving}
-                            className="w-full py-2.5 sm:py-4 bg-[#1B5E20] text-white rounded-lg sm:rounded-2xl font-black text-[10px] sm:text-sm uppercase tracking-widest shadow-lg shadow-[#1B5E20]/20 hover:bg-green-800 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center space-x-2"
+                            className="w-full py-2.5 sm:py-4 bg-[#1B5E20] text-white rounded-lg sm:rounded-2xl font-bold text-xs sm:text-sm uppercase tracking-widest shadow-lg shadow-[#1B5E20]/20 hover:bg-green-800 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center space-x-2"
                         >
                             {isSaving ? (
                                 <>
@@ -416,8 +416,8 @@ export default function UserProfilePage() {
 
                 {/* Footer Tips */}
                 <div className="mt-6 sm:mt-8 bg-gray-900/5 border border-gray-900/10 rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-6 shadow-sm">
-                    <h3 className="text-[9px] sm:text-xs font-black text-gray-900 uppercase tracking-widest mb-1.5 underline decoration-[#1B5E20] decoration-2 underline-offset-4">Tips Profil</h3>
-                    <p className="text-[8px] sm:text-[11px] text-gray-900 leading-relaxed font-bold">
+                    <h3 className="text-xs sm:text-xs font-bold text-gray-900 uppercase tracking-widest mb-1.5 underline decoration-[#1B5E20] decoration-2 underline-offset-4">Tips Profil</h3>
+                    <p className="text-[10px] sm:text-[11px] text-gray-900 leading-relaxed font-medium">
                         Data lengkap memudahkan Merchant menghubungi Anda. Pastikan WA aktif untuk notifikasi pesanan.
                     </p>
                 </div>

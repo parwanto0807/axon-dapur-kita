@@ -175,7 +175,7 @@ export default function DashboardPage() {
                             </div>
                             <div>
                                 <h1 className="text-sm sm:text-2xl font-bold text-gray-900">Halo, {user?.name}! 👋</h1>
-                                <p className="text-[10px] sm:text-sm text-gray-500">Selamat datang kembali di Axon DapurKita.</p>
+                                <p className="text-xs sm:text-sm text-gray-500">Selamat datang kembali di Axon DapurKita.</p>
                             </div>
                         </div>
                         {user?.role === 'SELLER' && (
@@ -208,9 +208,9 @@ export default function DashboardPage() {
                     <div className="mb-2 sm:mb-6 flex items-center justify-between">
                         <div className="flex items-center space-x-1 sm:space-x-2">
                             <MapPin className="h-3 w-3 sm:h-6 sm:w-6 text-[#1B5E20]" />
-                            <h2 className="text-[11px] sm:text-2xl font-bold text-gray-900">Toko Terbaru</h2>
+                            <h2 className="text-base sm:text-2xl font-bold text-gray-900">Toko Terbaru</h2>
                         </div>
-                        <a href="#" className="text-[#1B5E20] hover:underline font-medium text-[8px] sm:text-base">Lihat Semua</a>
+                        <a href="#" className="text-[#1B5E20] hover:underline font-medium text-[10px] sm:text-base">Lihat Semua</a>
                     </div>
 
                     {loading ? (
@@ -238,10 +238,10 @@ export default function DashboardPage() {
                                                     )}
                                                 </div>
                                                 <div className="min-w-0">
-                                                    <h3 className="font-bold text-[9px] sm:text-lg text-gray-900 group-hover:text-[#1B5E20] transition truncate">
+                                                    <h3 className="font-bold text-[11px] sm:text-lg text-gray-900 group-hover:text-[#1B5E20] transition truncate">
                                                         {shop.name}
                                                     </h3>
-                                                    <p className="text-[8px] sm:text-sm text-gray-500 line-clamp-1 flex items-center mt-0.5">
+                                                    <p className="text-[10px] sm:text-sm text-gray-500 line-clamp-1 flex items-center mt-0.5">
                                                         <MapPin className="h-2 w-2 sm:h-3 sm:w-3 mr-0.5 shrink-0" />
                                                         {shop.address || 'Alamat tidak tersedia'}
                                                     </p>
@@ -290,7 +290,7 @@ export default function DashboardPage() {
                                     <Grid className="h-4 w-4 sm:h-8 sm:w-8" />
                                 </div>
                                 <span className={clsx(
-                                    "text-[8px] sm:text-xs font-bold text-center",
+                                    "text-[10px] sm:text-xs font-bold text-center",
                                     selectedCategory === 'all' ? "text-[#1B5E20]" : "text-gray-600"
                                 )}>Semua</span>
                             </button>
@@ -323,7 +323,7 @@ export default function DashboardPage() {
                                                 <Icon className={clsx("h-4 w-4 sm:h-8 sm:w-8 transition-colors", isSelected ? style.color : style.color)} />
                                             </div>
                                             <span className={clsx(
-                                                "text-[8px] sm:text-xs font-bold text-center max-w-[40px] sm:max-w-[80px] leading-tight",
+                                                "text-[10px] sm:text-xs font-bold text-center max-w-[50px] sm:max-w-[80px] leading-tight",
                                                 isSelected ? "text-gray-900" : "text-gray-500"
                                             )}>{cat.name}</span>
                                         </button>
@@ -476,12 +476,12 @@ export default function DashboardPage() {
 
                                             {/* Content */}
                                             <div className="p-4 flex flex-col flex-1">
-                                                <div className="text-[9px] text-gray-500 font-medium uppercase tracking-wider mb-1 truncate flex items-center">
+                                                <div className="text-[11px] text-gray-500 font-medium uppercase tracking-wider mb-1 truncate flex items-center">
                                                     <Store className="h-3 w-3 mr-1" />
                                                     {product.shop.name}
                                                 </div>
                                                 {product.shop.address && (
-                                                    <div className="text-[8px] text-gray-400 flex items-center mb-2 truncate">
+                                                    <div className="text-[10px] text-gray-400 flex items-center mb-2 truncate">
                                                         <MapPin className="h-3 w-3 mr-1" />
                                                         {product.shop.address}
                                                     </div>
@@ -492,7 +492,7 @@ export default function DashboardPage() {
 
                                                 <div className="mt-auto flex items-end justify-between">
                                                     <div>
-                                                        <p className="text-[8px] text-gray-500 line-through">{formatPrice(product.price * 1.1)}</p>
+                                                        <p className="text-[10px] text-gray-500 line-through">{formatPrice(product.price * 1.1)}</p>
                                                         <p className="text-xs sm:text-lg font-black text-[#1B5E20]">
                                                             {formatPrice(product.price)}
                                                         </p>

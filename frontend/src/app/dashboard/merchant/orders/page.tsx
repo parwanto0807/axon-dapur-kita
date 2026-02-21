@@ -135,17 +135,18 @@ export default function MerchantOrdersPage() {
         return matchesSearch && matchesStatus;
     });
 
-    const getStatusStyles = (status: string) => {
+    const getStatusStyles = (status: string, paymentMethod?: string) => {
         switch (status) {
-            case 'paid':
-                return {
-                    bg: 'bg-emerald-50',
-                    text: 'text-emerald-700',
-                    border: 'border-emerald-100',
-                    label: 'LUNAS',
-                    icon: CheckCircle2
-                };
             case 'pending':
+                if (paymentMethod === 'cod') {
+                    return {
+                        bg: 'bg-yellow-50',
+                        text: 'text-yellow-700',
+                        border: 'border-yellow-100',
+                        label: 'PESANAN DITERIMA',
+                        icon: Clock
+                    };
+                }
                 return {
                     bg: 'bg-amber-50',
                     text: 'text-amber-700',
@@ -153,19 +154,20 @@ export default function MerchantOrdersPage() {
                     label: 'MENUNGGU PEMBAYARAN',
                     icon: Clock
                 };
-                return {
-                    bg: 'bg-red-50',
-                    text: 'text-red-700',
-                    border: 'border-red-100',
-                    label: 'GAGAL',
-                    icon: AlertCircle
-                };
-            case 'processing':
+            case 'paid':
                 return {
                     bg: 'bg-blue-50',
                     text: 'text-blue-700',
                     border: 'border-blue-100',
-                    label: 'DIPROSES',
+                    label: 'PEMBAYARAN TERKONFIRMASI',
+                    icon: CheckCircle2
+                };
+            case 'processing':
+                return {
+                    bg: 'bg-purple-50',
+                    text: 'text-purple-700',
+                    border: 'border-purple-100',
+                    label: 'SEDANG DIPROSES',
                     icon: Package
                 };
             case 'shipped':
@@ -181,8 +183,16 @@ export default function MerchantOrdersPage() {
                     bg: 'bg-emerald-50',
                     text: 'text-emerald-700',
                     border: 'border-emerald-100',
-                    label: 'SELESAI',
+                    label: 'PESANAN SELESAI',
                     icon: CheckCircle2
+                };
+            case 'failed':
+                return {
+                    bg: 'bg-red-50',
+                    text: 'text-red-700',
+                    border: 'border-red-100',
+                    label: 'GAGAL',
+                    icon: AlertCircle
                 };
             default:
                 return {
@@ -250,8 +260,8 @@ export default function MerchantOrdersPage() {
                                         )}
                                     >
                                         {s === 'all' ? 'Semua' :
-                                            s === 'pending' ? 'Belum Bayar' :
-                                                s === 'paid' ? 'Dibayar' :
+                                            s === 'pending' ? 'Pesanan Masuk' :
+                                                s === 'paid' ? 'Terkonfirmasi' :
                                                     s === 'processing' ? 'Diproses' :
                                                         s === 'shipped' ? 'Dikirim' :
                                                             s === 'completed' ? 'Selesai' : 'Gagal'}
@@ -280,7 +290,7 @@ export default function MerchantOrdersPage() {
                 ) : (
                     <div className="grid gap-4">
                         {filteredOrders.map((order) => {
-                            const statusStyle = getStatusStyles(order.paymentStatus);
+                            const statusStyle = getStatusStyles(order.paymentStatus, order.paymentMethod);
                             const StatusIcon = statusStyle.icon;
 
                             return (
@@ -386,7 +396,7 @@ export default function MerchantOrdersPage() {
                                                     </button>
                                                 )}
 
-                                                {order.paymentStatus === 'paid' && order.paymentMethod !== 'cod' && (
+                                                {order.paymentStatus === 'paid' && (
                                                     <button
                                                         onClick={() => updateStatus(order.id, 'processing')}
                                                         className="flex-1 sm:flex-none px-3 py-1.5 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
@@ -406,7 +416,7 @@ export default function MerchantOrdersPage() {
 
                                                 {order.paymentStatus === 'shipped' && (
                                                     <button
-                                                        onClick={() => updateStatus(order.id, order.paymentMethod === 'cod' ? 'paid' : 'completed')}
+                                                        onClick={() => updateStatus(order.id, 'completed')}
                                                         className="flex-1 sm:flex-none px-3 py-1.5 bg-emerald-600 text-white text-xs font-semibold rounded-lg hover:bg-emerald-700 transition-colors shadow-sm"
                                                     >
                                                         Selesai

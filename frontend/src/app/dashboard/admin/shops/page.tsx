@@ -110,13 +110,13 @@ export default function AdminShopsPage() {
                             placeholder="Cari toko..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="pl-8 pr-3 py-1.5 sm:py-2 border border-gray-200 rounded-lg text-[10px] sm:text-sm font-bold focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none w-full sm:w-64"
+                            className="pl-8 pr-3 py-1.5 sm:py-2 border border-gray-200 rounded-lg text-xs sm:text-sm font-bold focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none w-full sm:w-64"
                         />
                     </div>
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        className="px-2 py-1.5 sm:py-2 border border-gray-200 rounded-lg text-[10px] sm:text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none bg-white min-w-[100px]"
+                        className="px-2 py-1.5 sm:py-2 border border-gray-200 rounded-lg text-xs sm:text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none bg-white min-w-[100px]"
                     >
                         <option value="ALL">Semua</option>
                         <option value="PENDING">Menunggu</option>
@@ -132,10 +132,10 @@ export default function AdminShopsPage() {
                     {isLoading ? (
                         <div className="p-10 text-center text-gray-500">
                             <Loader2 className="h-6 w-6 animate-spin text-blue-500 mx-auto mb-2" />
-                            <span className="text-[10px] font-bold uppercase tracking-widest">Memuat...</span>
+                            <span className="text-xs font-bold uppercase tracking-widest">Memuat...</span>
                         </div>
                     ) : shops.length === 0 ? (
-                        <div className="p-10 text-center text-gray-400 text-[10px] font-bold uppercase tracking-widest italic">
+                        <div className="p-10 text-center text-gray-400 text-xs font-bold uppercase tracking-widest italic">
                             Kosong
                         </div>
                     ) : (
@@ -147,23 +147,23 @@ export default function AdminShopsPage() {
                                             <Store className="h-4 w-4 text-gray-400" />
                                         </div>
                                         <div className="min-w-0">
-                                            <h3 className="text-[10px] font-black text-gray-900 truncate leading-tight uppercase tracking-tight">{shop.name}</h3>
-                                            <p className="text-[7px] font-bold text-gray-400 tracking-widest">#{shop.id.slice(-6)}</p>
+                                            <h3 className="text-xs font-black text-gray-900 truncate leading-tight uppercase tracking-tight">{shop.name}</h3>
+                                            <p className="text-[10px] font-bold text-gray-400 tracking-widest">#{shop.id.slice(-6)}</p>
                                         </div>
                                     </div>
                                     {getStatusBadge(shop.status)}
                                 </div>
                                 <div className="grid grid-cols-2 gap-2 mb-3">
                                     <div className="p-1.5 bg-gray-50 rounded-lg">
-                                        <p className="text-[6px] font-black text-gray-400 uppercase tracking-widest mb-0.5">Pemilik</p>
-                                        <p className="text-[8.5px] font-bold text-gray-800 truncate">{shop.owner.name}</p>
-                                        <p className="text-[7px] text-gray-500 truncate leading-none mt-0.5">{shop.owner.email}</p>
+                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-0.5">Pemilik</p>
+                                        <p className="text-[11px] font-bold text-gray-800 truncate">{shop.owner.name}</p>
+                                        <p className="text-[10px] text-gray-500 truncate leading-none mt-0.5">{shop.owner.email}</p>
                                     </div>
                                     <div className="p-1.5 bg-gray-50 rounded-lg">
-                                        <p className="text-[6px] font-black text-gray-400 uppercase tracking-widest mb-0.5">Metrik</p>
+                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-0.5">Metrik</p>
                                         <div className="flex gap-2">
-                                            <span className="text-[8.5px] font-bold text-gray-800">{shop._count.products} Prd</span>
-                                            <span className="text-[8.5px] font-bold text-gray-800">{shop._count.orders} Psn</span>
+                                            <span className="text-[11px] font-bold text-gray-800">{shop._count.products} Prd</span>
+                                            <span className="text-[11px] font-bold text-gray-800">{shop._count.orders} Psn</span>
                                         </div>
                                     </div>
                                 </div>
@@ -173,14 +173,14 @@ export default function AdminShopsPage() {
                                             <button
                                                 onClick={() => updateStatus(shop.id, 'ACTIVE')}
                                                 disabled={actionLoading === shop.id}
-                                                className="bg-green-500 text-white px-2 py-1 rounded text-[8px] font-black uppercase tracking-widest shadow-sm shadow-green-200"
+                                                className="bg-green-500 text-white px-2 py-1 rounded text-[10px] font-black uppercase tracking-widest shadow-sm shadow-green-200"
                                             >
                                                 Approve
                                             </button>
                                             <button
                                                 onClick={() => updateStatus(shop.id, 'REJECTED')}
                                                 disabled={actionLoading === shop.id}
-                                                className="bg-red-50 text-red-500 px-2 py-1 rounded text-[8px] font-black uppercase tracking-widest border border-red-100"
+                                                className="bg-red-50 text-red-500 px-2 py-1 rounded text-[10px] font-black uppercase tracking-widest border border-red-100"
                                             >
                                                 Tolak
                                             </button>
@@ -190,7 +190,7 @@ export default function AdminShopsPage() {
                                         <button
                                             onClick={() => updateStatus(shop.id, 'SUSPENDED')}
                                             disabled={actionLoading === shop.id}
-                                            className="text-orange-500 px-2 py-1 rounded text-[8px] font-black uppercase tracking-widest bg-orange-50 border border-orange-100"
+                                            className="text-orange-500 px-2 py-1 rounded text-[10px] font-black uppercase tracking-widest bg-orange-50 border border-orange-100"
                                         >
                                             Suspend
                                         </button>
@@ -199,7 +199,7 @@ export default function AdminShopsPage() {
                                         <button
                                             onClick={() => updateStatus(shop.id, 'ACTIVE')}
                                             disabled={actionLoading === shop.id}
-                                            className="text-green-600 px-2 py-1 rounded text-[8px] font-black uppercase tracking-widest bg-green-50 border border-green-100"
+                                            className="text-green-600 px-2 py-1 rounded text-[10px] font-black uppercase tracking-widest bg-green-50 border border-green-100"
                                         >
                                             Aktifkan
                                         </button>
@@ -328,17 +328,17 @@ export default function AdminShopsPage() {
                         <button
                             onClick={() => setPage(p => Math.max(1, p - 1))}
                             disabled={page === 1}
-                            className="px-2 py-1 border border-gray-300 rounded text-[9px] sm:text-sm font-bold disabled:opacity-50 uppercase tracking-widest"
+                            className="px-2 py-1 border border-gray-300 rounded text-[11px] sm:text-sm font-bold disabled:opacity-50 uppercase tracking-widest"
                         >
                             Prev
                         </button>
-                        <span className="text-[9px] sm:text-sm text-gray-400 font-black uppercase tracking-widest">
+                        <span className="text-[11px] sm:text-sm text-gray-400 font-black uppercase tracking-widest">
                             Hlm {page} / {totalPages}
                         </span>
                         <button
                             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                             disabled={page === totalPages}
-                            className="px-2 py-1 border border-gray-300 rounded text-[9px] sm:text-sm font-bold disabled:opacity-50 uppercase tracking-widest"
+                            className="px-2 py-1 border border-gray-300 rounded text-[11px] sm:text-sm font-bold disabled:opacity-50 uppercase tracking-widest"
                         >
                             Next
                         </button>

@@ -44,14 +44,14 @@ export default function WishlistPage() {
                     </div>
                     <div>
                         <h1 className="text-lg sm:text-xl font-black text-gray-900 uppercase tracking-tighter leading-none">Wishlist</h1>
-                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">{items.length} Produk Favorit</p>
+                        <p className="text-[10px] sm:text-xs text-gray-400 font-medium uppercase tracking-widest mt-1">{items.length} Produk Favorit</p>
                     </div>
                 </div>
                 <button
                     onClick={() => {
                         if (confirm('Hapus semua wishlist?')) clearWishlist();
                     }}
-                    className="text-[10px] font-black text-red-500 uppercase tracking-widest hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors"
+                    className="text-[10px] sm:text-xs font-bold text-red-500 uppercase tracking-widest hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors"
                 >
                     Kosongkan
                 </button>
@@ -80,10 +80,10 @@ export default function WishlistPage() {
                         <div className="flex-1 min-w-0 pr-8">
                             <div className="flex items-center space-x-1.5 mb-1">
                                 <Store className="h-3 w-3 text-gray-400" />
-                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider truncate">{item.shop.name}</span>
+                                <span className="text-[10px] sm:text-xs font-medium text-gray-400 uppercase tracking-wider truncate">{item.shop.name}</span>
                             </div>
                             <Link href={`/product/${item.id}`}>
-                                <h3 className="font-black text-sm text-gray-900 uppercase tracking-tighter truncate group-hover:text-red-500 transition-colors leading-tight">
+                                <h3 className="font-bold text-sm text-gray-900 tracking-tight truncate group-hover:text-red-500 transition-colors leading-tight">
                                     {item.name}
                                 </h3>
                             </Link>
@@ -94,7 +94,7 @@ export default function WishlistPage() {
                             <div className="mt-3 flex items-center space-x-2">
                                 <Link
                                     href={`/product/${item.id}`}
-                                    className="flex-1 bg-[#1B5E20] text-white py-2 rounded-xl font-black text-[10px] uppercase tracking-widest text-center shadow-lg shadow-green-900/10 hover:bg-green-800 transition-all flex items-center justify-center space-x-2"
+                                    className="flex-1 bg-[#1B5E20] text-white py-2 rounded-xl font-bold text-[10px] sm:text-xs uppercase tracking-widest text-center shadow-lg shadow-green-900/10 hover:bg-green-800 transition-all flex items-center justify-center space-x-2"
                                 >
                                     <span>Lihat Produk</span>
                                     <ChevronRight className="h-3 w-3" />
@@ -114,7 +114,7 @@ export default function WishlistPage() {
             </main>
 
             <div className="max-w-3xl mx-auto px-4 pt-10 text-center">
-                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Tarik ke bawah untuk refresh</p>
+                <p className="text-[10px] sm:text-xs text-gray-400 font-medium uppercase tracking-widest">Tarik ke bawah untuk refresh</p>
             </div>
         </div>
     );
