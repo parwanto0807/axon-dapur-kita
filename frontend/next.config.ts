@@ -7,7 +7,22 @@ const nextConfig: NextConfig = {
         protocol: 'http',
         hostname: 'localhost',
         port: '5003',
-        pathname: '/api/products/**',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'axon-ecosystem.id',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'imagedelivery.net',
+        pathname: '/**',
       },
     ],
   },
