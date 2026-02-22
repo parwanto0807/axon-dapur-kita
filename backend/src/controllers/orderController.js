@@ -12,7 +12,7 @@ import path from 'path';
  * SUPPORTS MULTI-SHOP ORDERS
  */
 export const createOrder = async (req, res) => {
-    const { items, paymentMethod, shippingAddress, notes } = req.body;
+    const { items, paymentMethod, shippingAddress, notes, shippingMethod } = req.body;
     const userId = req.user.id;
 
     if (!items || !items.length) {
@@ -121,6 +121,7 @@ export const createOrder = async (req, res) => {
                         status: 'pending',
                         shippingAddress: shippingAddress || {},
                         notes,
+                        shippingMethod: shippingMethod || 'seller',
                         items: {
                             create: orderItemsData
                         }

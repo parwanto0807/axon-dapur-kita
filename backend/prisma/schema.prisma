@@ -244,6 +244,7 @@ model Order {
     shippingAddress Json? // Simpan sebagai JSON untuk fleksibilitas
     paymentProof    String? // Path to manual payment proof (Transfer/QRIS)
     notes           String?
+    shippingMethod  String?      @default("seller") // seller, grab, gojek, maxim, lalamove
 
     commission Decimal @db.Decimal(20, 2) // Amount taken by platform
     netAmount  Decimal @db.Decimal(20, 2) // Amount earned by tenant
