@@ -10,6 +10,7 @@ import {
     Apple, Wheat, Package, Droplet, Fish, Egg, CupSoda,
     Cookie, ChefHat, Croissant, ShoppingBasket, ArrowRight, Star, Share2, X
 } from "lucide-react";
+import StarRating from "@/components/ui/StarRating";
 import { useAuthStore } from "@/store/authStore";
 import Link from "next/link";
 import axios from "axios";
@@ -24,6 +25,8 @@ interface Shop {
     address: string;
     domain: string | null;
     logo: string | null;
+    averageRating?: number;
+    totalReviews?: number;
 }
 
 interface Product {
@@ -44,6 +47,8 @@ interface Product {
         slug: string;
         parent?: { name: string; slug: string } | null;
     } | null;
+    averageRating?: number;
+    totalReviews?: number;
 }
 
 interface Category {
@@ -237,11 +242,16 @@ export default function DashboardPage() {
                                                         <Store className="h-4 w-4 sm:h-8 sm:w-8 text-[#1B5E20]" />
                                                     )}
                                                 </div>
-                                                <div className="min-w-0">
-                                                    <h3 className="font-bold text-[11px] sm:text-lg text-gray-900 group-hover:text-[#1B5E20] transition truncate">
+                                                <div className="min-w-0 flex-1">
+                                                    <h3 className="font-black text-[13px] sm:text-lg text-black group-hover:text-[#1B5E20] transition truncate uppercase tracking-tight">
                                                         {shop.name}
                                                     </h3>
-                                                    <p className="text-[10px] sm:text-sm text-gray-500 line-clamp-1 flex items-center mt-0.5">
+                                                    <div className="flex items-center mt-1">
+                                                        <StarRating rating={shop.averageRating || 0} size={10} className="mr-1" />
+                                                        <span className="text-[10px] sm:text-xs font-black text-black">{(shop.averageRating || 0).toFixed(1)}</span>
+                                                        <span className="text-[9px] sm:text-xs text-gray-400 ml-1 font-bold">({shop.totalReviews || 0} ulasan)</span>
+                                                    </div>
+                                                    <p className="text-[10px] sm:text-sm text-gray-500 line-clamp-1 flex items-center mt-1 font-bold">
                                                         <MapPin className="h-2 w-2 sm:h-3 sm:w-3 mr-0.5 shrink-0" />
                                                         {shop.address || 'Alamat tidak tersedia'}
                                                     </p>
@@ -531,9 +541,15 @@ export default function DashboardPage() {
                                                         {product.shop.address}
                                                     </div>
                                                 )}
-                                                <h3 className="font-bold text-gray-900 text-[11px] sm:text-[15px] leading-snug mb-2 line-clamp-2 group-hover:text-[#1B5E20] transition-colors">
+                                                <h3 className="font-black text-black text-[11px] sm:text-[15px] leading-snug mb-1 line-clamp-2 group-hover:text-[#1B5E20] transition-colors uppercase tracking-tight">
                                                     {product.name}
                                                 </h3>
+
+                                                <div className="flex items-center mb-2">
+                                                    <StarRating rating={product.averageRating || 0} size={10} className="mr-1" />
+                                                    <span className="text-[10px] font-black text-black">{(product.averageRating || 0).toFixed(1)}</span>
+                                                    <span className="text-[9px] text-gray-400 ml-1 font-bold">({product.totalReviews || 0})</span>
+                                                </div>
 
                                                 {product.category && (() => {
                                                     const catStyle = getCategoryStyle(product.category.slug);

@@ -71,18 +71,34 @@ router.get('/public', async (req, res) => {
                 category: { 
                     include: { parent: true }
                 },
-                tags: { include: { tag: true } }
+                tags: { include: { tag: true } },
+                _count: {
+                    select: { reviews: true }
+                },
+                reviews: {
+                    select: { rating: true }
+                }
             }
         });
 
-        const productsWithImage = products.map(product => ({
-            ...product,
-            image: product.images.length > 0 
-                ? (product.images.find(img => img.isPrimary)?.url || product.images[0].url) 
-                : null
-        }));
+        const productsWithStats = products.map(product => {
+            const totalReviews = product._count.reviews;
+            const avgRating = totalReviews > 0 
+                ? product.reviews.reduce((acc, rev) => acc + rev.rating, 0) / totalReviews 
+                : 0;
 
-        res.json(productsWithImage);
+            const { reviews, ...productData } = product;
+            return {
+                ...productData,
+                image: product.images.length > 0 
+                    ? (product.images.find(img => img.isPrimary)?.url || product.images[0].url) 
+                    : null,
+                averageRating: avgRating,
+                totalReviews
+            };
+        });
+
+        res.json(productsWithStats);
     } catch (error) {
         console.error('Error fetching public products:', error);
         res.status(500).json({ message: 'Server error fetching products' });

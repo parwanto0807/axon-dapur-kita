@@ -20,6 +20,7 @@ import addressRoutes from './routes/addressRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import tagRoutes from './routes/tagRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import carouselRoutes from './routes/carouselRoutes.js';
 
 dotenv.config();
 
@@ -50,8 +51,10 @@ const publicDir = path.join(__dirname, '..', 'public');
 
 // Ensure required directories exist
 const paymentsDir = path.join(publicDir, 'payments');
+const heroDir = path.join(publicDir, 'hero');
 const uploadsDir = path.join(__dirname, '..', 'uploads');
 if (!fs.existsSync(paymentsDir)) fs.mkdirSync(paymentsDir, { recursive: true });
+if (!fs.existsSync(heroDir)) fs.mkdirSync(heroDir, { recursive: true });
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
 app.use(express.static(publicDir)); // Serve static files with absolute path
@@ -59,6 +62,7 @@ app.use('/uploads', express.static('uploads')); // Serve uploads
 
 // Fix for production proxy: also serve static files under /api
 app.use('/api/products', express.static(path.join(publicDir, 'products')));
+app.use('/api/hero', express.static(path.join(publicDir, 'hero')));
 app.use('/api/merchant', express.static(path.join(publicDir, 'merchant')));
 app.use('/api/payments', express.static(path.join(publicDir, 'payments'))); // ADDED: Payment proofs
 app.use('/api/uploads', express.static('uploads'));
@@ -99,6 +103,7 @@ app.use('/api/addresses', addressRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/tags', tagRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/carousel', carouselRoutes);
 
 // Basic Error Handler
 app.use((err, req, res, next) => {

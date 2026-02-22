@@ -16,7 +16,8 @@ import {
     // Search,
     Package,
     LayoutDashboard,
-    CreditCard
+    CreditCard,
+    MessageCircle
 } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import axios from 'axios';
@@ -38,18 +39,25 @@ interface OrderItem {
     quantity: number;
     price: number;
     subtotal: number;
+    hasReview: boolean;
 }
 
 interface Order {
     id: string;
     totalAmount: number;
     paymentStatus: string;
-    deliveryStatus: string;
     paymentMethod: string;
     createdAt: string;
     status: string;
+    deliveryStatus: string;
+    shopId: string;
+    hasShopReview: boolean;
     shop: {
         name: string;
+        logo?: string;
+        owner?: {
+            whatsapp?: string;
+        };
     };
     items: OrderItem[];
 }
@@ -62,7 +70,7 @@ export default function OrdersPage() {
     const [filter, setFilter] = useState('all');
 
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState<{id: string, name: string, image: string} | null>(null);
+    const [selectedProduct, setSelectedProduct] = useState<{ id: string, name: string, image: string } | null>(null);
     const [currentOrderId, setCurrentOrderId] = useState<string>('');
 
     const { t } = useLanguage();
@@ -83,7 +91,7 @@ export default function OrdersPage() {
     }, []);
 
     // Real-time updates — auto-refresh list when seller updates order status
-    useBuyerSocket(fetchOrders);
+    useBuyerSocket(fetchOrders, { notify: false });
 
     useEffect(() => {
         if (isAuthLoading) return;
@@ -183,7 +191,7 @@ export default function OrdersPage() {
         <div className="min-h-screen bg-gray-50 font-(family-name:--font-poppins) pb-24 lg:pb-12">
             <header className="bg-white border-b sticky top-0 z-30">
                 <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-                    <h1 className="text-lg font-black text-gray-900 tracking-tight">Pesanan Saya</h1>
+                    <h1 className="text-lg font-black text-black tracking-tight">Pesanan Saya</h1>
                 </div>
             </header>
 
@@ -299,10 +307,10 @@ export default function OrdersPage() {
                                                         )}
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <h4 className="font-bold text-gray-900 truncate text-xs sm:text-sm">{item.product.name}</h4>
-                                                        <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5">{item.quantity} x {formatPrice(item.price)}</p>
+                                                        <h4 className="font-bold text-black truncate text-xs sm:text-sm">{item.product.name}</h4>
+                                                        <p className="text-[10px] sm:text-xs text-gray-700 mt-0.5">{item.quantity} x {formatPrice(item.price)}</p>
 
-                                                        {order.paymentStatus === 'paid' && (
+                                                        {(order.status === 'completed' || order.deliveryStatus === 'delivered' || order.status === 'delivered' || order.paymentStatus === 'paid' || order.paymentStatus === 'completed' || order.deliveryStatus === 'completed') && !item.hasReview && (
                                                             <button
                                                                 onClick={() => {
                                                                     setSelectedProduct({
@@ -313,11 +321,18 @@ export default function OrdersPage() {
                                                                     setCurrentOrderId(order.id);
                                                                     setIsReviewModalOpen(true);
                                                                 }}
-                                                                className="mt-2 inline-flex items-center space-x-1 px-3 py-1 bg-brand/5 text-brand text-[10px] font-bold rounded-lg hover:bg-brand/10 transition-colors"
+                                                                className="mt-2 inline-flex items-center space-x-1.5 px-3 py-1.5 bg-[#1B5E20]/5 text-[#1B5E20] text-[10px] sm:text-xs font-bold rounded-lg hover:bg-[#1B5E20]/10 transition-colors border border-[#1B5E20]/10"
                                                             >
                                                                 <StarRating rating={0} size={10} />
                                                                 <span>Beri Ulasan</span>
                                                             </button>
+                                                        )}
+
+                                                        {item.hasReview && (
+                                                            <div className="mt-2 inline-flex items-center space-x-1 px-2 py-1 bg-gray-50 text-gray-400 text-[10px] font-bold rounded-lg border border-gray-100">
+                                                                <CheckCircle className="h-3 w-3" />
+                                                                <span>Sudah Diulas</span>
+                                                            </div>
                                                         )}
                                                     </div>
                                                 </div>
@@ -331,16 +346,53 @@ export default function OrdersPage() {
                                     {/* Total & Action */}
                                     <div className="flex items-center justify-between pt-4 border-t border-gray-50">
                                         <div>
-                                            <p className="text-[10px] sm:text-xs text-gray-400 font-bold uppercase tracking-widest leading-none mb-1">Total Belanja</p>
+                                            <p className="text-[10px] sm:text-xs text-gray-600 font-bold uppercase tracking-widest leading-none mb-1">Total Belanja</p>
                                             <p className="text-sm sm:text-lg font-black text-brand leading-none">{formatPrice(order.totalAmount)}</p>
                                         </div>
-                                        <Link
-                                            href={`/dashboard/orders/${order.id}`}
-                                            className="flex items-center space-x-1 px-4 sm:px-6 py-2 sm:py-2.5 bg-gray-900 text-white text-[10px] sm:text-xs font-bold rounded-lg sm:rounded-xl hover:bg-gray-800 transition-all active:scale-95"
-                                        >
-                                            <span>Detail</span>
-                                            <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
-                                        </Link>
+                                        <div className="flex items-center gap-2">
+                                            {(order.status === 'completed' || order.deliveryStatus === 'delivered' || order.status === 'delivered' || order.paymentStatus === 'paid' || order.paymentStatus === 'completed' || order.deliveryStatus === 'completed') && !order.hasShopReview && (
+                                                <button
+                                                    onClick={() => {
+                                                        setSelectedProduct({
+                                                            id: '',
+                                                            name: order.shop.name,
+                                                            image: order.shop.logo ? getImageUrl(order.shop.logo) : '/images/default-shop.png',
+                                                            shopId: order.shopId
+                                                        } as any);
+                                                        setCurrentOrderId(order.id);
+                                                        setIsReviewModalOpen(true);
+                                                    }}
+                                                    className="px-3 py-2 bg-yellow-50 text-yellow-700 text-[10px] sm:text-xs font-bold rounded-lg border border-yellow-100 hover:bg-yellow-100 transition-all flex items-center gap-1.5"
+                                                >
+                                                    <StarRating rating={0} size={10} />
+                                                    <span>Ulas Toko</span>
+                                                </button>
+                                            )}
+                                            {order.hasShopReview && (
+                                                <div className="px-3 py-2 bg-gray-50 text-gray-400 text-[10px] sm:text-xs font-bold rounded-lg border border-gray-100 flex items-center gap-1.5">
+                                                    <CheckCircle className="h-3 w-3" />
+                                                    <span>Toko Diulas</span>
+                                                </div>
+                                            )}
+                                            {order.shop.owner?.whatsapp && (
+                                                <a
+                                                    href={`https://wa.me/${order.shop.owner.whatsapp.replace(/\D/g, '').replace(/^0/, '62').replace(/^8/, '628')}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="px-4 sm:px-6 py-2 sm:py-2.5 bg-[#25D366] text-white text-[10px] sm:text-xs font-bold rounded-lg sm:rounded-xl hover:bg-[#128C7E] transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
+                                                >
+                                                    <MessageCircle className="h-3 w-3 sm:h-4 sm:w-4" />
+                                                    <span className="hidden xs:inline">Chat</span>
+                                                </a>
+                                            )}
+                                            <Link
+                                                href={`/dashboard/orders/${order.id}`}
+                                                className="flex items-center space-x-1 px-4 sm:px-6 py-2 sm:py-2.5 bg-gray-900 text-white text-[10px] sm:text-xs font-bold rounded-lg sm:rounded-xl hover:bg-gray-800 transition-all active:scale-95"
+                                            >
+                                                <span>Detail</span>
+                                                <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
+                                            </Link>
+                                        </div>
                                     </div>
                                 </div>
                             );

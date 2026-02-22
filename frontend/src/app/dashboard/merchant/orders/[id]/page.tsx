@@ -129,43 +129,43 @@ export default function MerchantOrderDetailPage() {
                         <h1 className="font-bold text-gray-900 text-sm sm:text-base">Detail Pesanan Toko</h1>
                     </div>
                     <div className={clsx(
-                        "px-3 py-1 rounded-full text-[10px] font-bold border flex items-center gap-1.5",
+                        "px-2.5 py-1 rounded-lg text-xs font-bold border flex items-center gap-1.5",
                         statusStyle.bg, statusStyle.text, statusStyle.border
                     )}>
-                        <StatusIcon className="h-3 w-3" />
+                        <StatusIcon className="h-3.5 w-3.5" />
                         {statusStyle.label}
                     </div>
                 </div>
             </div>
 
-            <main className="max-w-4xl mx-auto px-4 sm:px-6 py-6 md:py-8">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <main className="max-w-4xl mx-auto px-4 sm:px-6 py-4 md:py-6">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
                     {/* Left Column: Items & Details */}
-                    <div className="lg:col-span-8 space-y-6">
+                    <div className="lg:col-span-8 space-y-4">
                         {/* Order ID & Time */}
-                        <div className="bg-white rounded-[1.5rem] p-6 border border-gray-100 shadow-sm flex flex-wrap justify-between items-center gap-4">
+                        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm flex flex-wrap justify-between items-center gap-3">
                             <div>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Order ID</p>
-                                <p className="text-base font-black text-gray-900">#{order.id.slice(-8).toUpperCase()}</p>
+                                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-0.5">Order ID</p>
+                                <p className="text-sm font-black text-gray-900">#{order.id.slice(-8).toUpperCase()}</p>
                             </div>
                             <div>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 text-right sm:text-left">Waktu Pesanan</p>
+                                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-0.5 text-right sm:text-left">Waktu Pesanan</p>
                                 <p className="text-sm font-bold text-gray-900">{formatDate(order.createdAt)}</p>
                             </div>
                         </div>
 
                         {/* Customer Info */}
-                        <div className="bg-white rounded-[1.5rem] p-6 border border-gray-100 shadow-sm">
-                            <h3 className="font-bold text-gray-900 mb-4 flex items-center text-sm">
+                        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+                            <h3 className="font-bold text-gray-900 mb-3 flex items-center text-sm">
                                 <User className="h-4 w-4 mr-2 text-[#1B5E20]" />
                                 Informasi Pembeli
                             </h3>
-                            <div className="flex items-center gap-4">
-                                <div className="h-12 w-12 bg-gray-50 rounded-full flex items-center justify-center text-[#1B5E20] font-bold text-lg">
+                            <div className="flex items-center gap-3">
+                                <div className="h-10 w-10 bg-gray-50 rounded-full flex items-center justify-center text-[#1B5E20] font-bold text-base">
                                     {order.user?.name?.[0]?.toUpperCase()}
                                 </div>
                                 <div>
-                                    <p className="font-bold text-gray-900">{order.user?.name}</p>
+                                    <p className="font-bold text-gray-900 text-sm">{order.user?.name}</p>
                                     <p className="text-xs text-gray-500">{order.user?.email}</p>
                                     {order.user?.whatsapp && (
                                         <a href={`https://wa.me/62${order.user.whatsapp.replace(/^0/, '')}`} target="_blank" className="text-xs text-[#25D366] font-bold flex items-center mt-1">
@@ -177,54 +177,54 @@ export default function MerchantOrderDetailPage() {
                         </div>
 
                         {/* Order Items */}
-                        <div className="bg-white rounded-[1.5rem] border border-gray-100 shadow-sm overflow-hidden">
-                            <div className="px-6 py-4 border-b border-gray-50 bg-gray-50/50">
+                        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+                            <div className="px-4 py-3 border-b border-gray-50 bg-gray-50/50">
                                 <h3 className="font-bold text-gray-900 text-sm flex items-center">
                                     <Package className="h-4 w-4 mr-2 text-[#1B5E20]" />
                                     Produk yang Dipesan
                                 </h3>
                             </div>
-                            <div className="p-6 space-y-4">
+                            <div className="p-4 space-y-3">
                                 {order.items.map((item: any) => (
-                                    <div key={item.id} className="flex gap-4">
-                                        <div className="h-16 w-16 bg-gray-50 rounded-xl border border-gray-100 overflow-hidden shrink-0">
+                                    <div key={item.id} className="flex gap-3">
+                                        <div className="h-14 w-14 bg-gray-50 rounded-lg border border-gray-100 overflow-hidden shrink-0">
                                             {item.product.images?.[0] ? (
                                                 <img src={getImageUrl(item.product.images[0].url)} className="h-full w-full object-cover" alt={item.product.name} />
                                             ) : (
-                                                <div className="h-full w-full flex items-center justify-center"><Package className="h-6 w-6 text-gray-200" /></div>
+                                                <div className="h-full w-full flex items-center justify-center"><Package className="h-5 w-5 text-gray-200" /></div>
                                             )}
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <p className="font-bold text-gray-900 text-xs sm:text-sm truncate">{item.product.name}</p>
-                                            <p className="text-[10px] sm:text-xs text-gray-500">{item.quantity} x {formatPrice(item.price)}</p>
+                                            <p className="text-[11px] sm:text-xs text-gray-500">{item.quantity} x {formatPrice(item.price)}</p>
                                         </div>
                                         <p className="font-bold text-gray-900 text-xs sm:text-sm">{formatPrice(item.subtotal)}</p>
                                     </div>
                                 ))}
                             </div>
-                            <div className="p-6 bg-gray-50/50 border-t border-gray-100">
-                                <div className="flex justify-between items-center text-sm">
-                                    <span className="font-bold text-gray-500 uppercase tracking-widest text-[10px]">Total Belanja</span>
+                            <div className="p-4 bg-gray-50/50 border-t border-gray-100">
+                                <div className="flex justify-between items-center">
+                                    <span className="font-bold text-gray-400 uppercase tracking-widest text-xs">Total Belanja</span>
                                     <span className="font-black text-[#1B5E20] text-lg">{formatPrice(order.totalAmount)}</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Shipping Address */}
-                        <div className="bg-white rounded-[1.5rem] p-6 border border-gray-100 shadow-sm">
-                            <h3 className="font-bold text-gray-900 mb-4 flex items-center text-sm">
+                        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+                            <h3 className="font-bold text-gray-900 mb-3 flex items-center text-sm">
                                 <MapPin className="h-4 w-4 mr-2 text-[#1B5E20]" />
                                 Alamat Pengiriman
                             </h3>
-                            <div className="p-4 bg-gray-100 rounded-2xl">
+                            <div className="p-3.5 bg-gray-50 rounded-xl border border-gray-100">
                                 <p className="font-bold text-gray-900 text-xs mb-1">{order.shippingAddress?.receiverName || order.user?.name}</p>
-                                <p className="text-xs text-gray-600 leading-relaxed mb-2">{order.shippingAddress?.street}, {order.shippingAddress?.city}, {order.shippingAddress?.province}</p>
+                                <p className="text-xs text-gray-600 leading-relaxed mb-1.5">{order.shippingAddress?.street}, {order.shippingAddress?.city}, {order.shippingAddress?.province}</p>
                                 <p className="text-xs font-bold text-gray-800 tracking-tight flex items-center">
-                                    <MessageCircle className="h-3 w-3 mr-1" /> {order.shippingAddress?.phone}
+                                    <MessageCircle className="h-3.5 w-3.5 mr-1.5 text-gray-400" /> {order.shippingAddress?.phone}
                                 </p>
                             </div>
                             {order.notes && (
-                                <div className="mt-4 p-3 bg-yellow-50 rounded-xl border border-yellow-100 text-[11px] text-yellow-800 italic">
+                                <div className="mt-3 p-2.5 bg-yellow-50 rounded-lg border border-yellow-100 text-[11px] text-yellow-800 italic">
                                     "{order.notes}"
                                 </div>
                             )}
@@ -232,29 +232,29 @@ export default function MerchantOrderDetailPage() {
                     </div>
 
                     {/* Right Column: Actions & Payment Proof */}
-                    <div className="lg:col-span-4 space-y-6">
+                    <div className="lg:col-span-4 space-y-4">
                         {/* Action Panel */}
-                        <div className="bg-white rounded-[2rem] p-6 border border-gray-100 shadow-sm sticky top-24">
-                            <h3 className="font-bold text-gray-900 mb-6 flex items-center text-sm uppercase tracking-wide">
+                        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm sticky top-24">
+                            <h3 className="font-bold text-gray-900 mb-4 flex items-center text-xs uppercase tracking-widest">
                                 <Banknote className="h-4 w-4 mr-2 text-[#1B5E20]" />
                                 Kelola Pesanan
                             </h3>
 
                             {/* Status Actions */}
-                            <div className="space-y-3">
+                            <div className="space-y-2.5">
                                 {order.paymentStatus === 'pending' && (
-                                    <div className="space-y-3">
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase mb-2">Konfirmasi Pembayaran</p>
+                                    <div className="space-y-2.5">
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase mb-1">Konfirmasi Pembayaran</p>
                                         <button
                                             disabled={isUpdating}
                                             onClick={verifyPayment}
-                                            className="w-full py-4 bg-[#1B5E20] text-white rounded-2xl font-bold text-xs hover:bg-green-800 transition-all flex items-center justify-center space-x-2 shadow-lg shadow-green-100 disabled:opacity-50"
+                                            className="w-full py-3 bg-[#1B5E20] text-white rounded-xl font-bold text-xs hover:bg-green-800 transition-all flex items-center justify-center space-x-2 shadow-lg shadow-green-100 disabled:opacity-50"
                                         >
                                             <CheckCircle2 className="h-4 w-4" />
                                             <span>Konfirmasi Sudah Bayar</span>
                                         </button>
                                         {order.paymentMethod === 'cod' && (
-                                            <p className="text-[9px] text-orange-600 font-medium text-center italic">
+                                            <p className="text-[10px] text-orange-600 font-medium text-center italic">
                                                 *Klik konfirmasi jika pesanan sudah siap diproses (COD).
                                             </p>
                                         )}
@@ -265,7 +265,7 @@ export default function MerchantOrderDetailPage() {
                                     <button
                                         disabled={isUpdating}
                                         onClick={() => updateStatus('processing')}
-                                        className="w-full py-4 bg-purple-600 text-white rounded-2xl font-bold text-xs hover:bg-purple-700 transition-all flex items-center justify-center space-x-2 shadow-lg shadow-purple-100 disabled:opacity-50"
+                                        className="w-full py-3 bg-purple-600 text-white rounded-xl font-bold text-xs hover:bg-purple-700 transition-all flex items-center justify-center space-x-2 shadow-lg shadow-purple-100 disabled:opacity-50"
                                     >
                                         <Package className="h-4 w-4" />
                                         <span>Mulai Proses Pesanan</span>
@@ -276,7 +276,7 @@ export default function MerchantOrderDetailPage() {
                                     <button
                                         disabled={isUpdating}
                                         onClick={() => updateStatus('shipped')}
-                                        className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold text-xs hover:bg-indigo-700 transition-all flex items-center justify-center space-x-2 shadow-lg shadow-indigo-100 disabled:opacity-50"
+                                        className="w-full py-3 bg-indigo-600 text-white rounded-xl font-bold text-xs hover:bg-indigo-700 transition-all flex items-center justify-center space-x-2 shadow-lg shadow-indigo-100 disabled:opacity-50"
                                     >
                                         <Truck className="h-4 w-4" />
                                         <span>Konfirmasi Pengiriman</span>
@@ -284,52 +284,66 @@ export default function MerchantOrderDetailPage() {
                                 )}
 
                                 {order.paymentStatus === 'shipped' && (
-                                    <p className="text-center py-4 bg-gray-50 rounded-2xl text-[10px] text-gray-500 font-medium">
+                                    <p className="text-center py-3.5 bg-gray-50 rounded-xl text-xs text-gray-500 font-medium border border-gray-100 uppercase tracking-widest px-2">
                                         Menunggu pembeli menerima pesanan.
                                     </p>
                                 )}
 
                                 {order.paymentStatus === 'completed' && (
-                                    <div className="text-center py-6 bg-green-50 rounded-[2rem] border border-green-100">
-                                        <CheckCircle2 className="h-10 w-10 text-green-600 mx-auto mb-2" />
+                                    <div className="text-center py-5 bg-green-50 rounded-xl border border-green-100">
+                                        <CheckCircle2 className="h-8 w-8 text-green-600 mx-auto mb-2" />
                                         <p className="font-black text-green-900 text-sm">PESANAN SELESAI</p>
-                                        <p className="text-[10px] text-green-700">Dana telah diteruskan ke saldo toko.</p>
+                                        <p className="text-xs text-green-700">Dana telah diteruskan ke saldo toko.</p>
                                     </div>
                                 )}
                             </div>
 
                             {/* Payment Proof Section for Manual Transfer */}
                             {(order.paymentMethod === 'transfer' || order.paymentMethod === 'qris') && (
-                                <div className="mt-8 pt-8 border-t border-gray-100">
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Bukti Pembayaran (Manual)</p>
+                                <div className="mt-6 pt-6 border-t border-gray-100">
+                                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Bukti Pembayaran</p>
                                     {order.paymentProof ? (
                                         <div className="space-y-4">
                                             <div className="rounded-2xl overflow-hidden border border-gray-200">
                                                 <img
-                                                    src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5003'}${order.paymentProof}`}
+                                                    src={getImageUrl(order.paymentProof)}
                                                     className="w-full h-auto cursor-pointer"
                                                     alt="Bukti Bayar"
-                                                    onClick={() => window.open(`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5003'}${order.paymentProof}`, '_blank')}
+                                                    onClick={() => window.open(getImageUrl(order.paymentProof), '_blank')}
                                                 />
                                             </div>
-                                            <p className="text-[10px] text-gray-500 text-center italic">Klik gambar untuk memperbesar</p>
+                                            <p className="text-xs text-gray-500 text-center italic">Klik gambar untuk memperbesar</p>
                                         </div>
                                     ) : (
-                                        <div className="py-8 bg-gray-50 rounded-2xl border border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-400">
-                                            <Banknote className="h-8 w-8 mb-2 opacity-20" />
-                                            <p className="text-[10px] font-medium">Belum ada bukti diunggah</p>
+                                        <div className="py-6 bg-gray-50 rounded-xl border border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-400">
+                                            <Banknote className="h-6 w-6 mb-2 opacity-20" />
+                                            <p className="text-xs font-medium">Belum ada bukti diunggah</p>
                                         </div>
                                     )}
                                 </div>
                             )}
 
                             {/* Contact Buyer */}
-                            <div className="mt-8">
-                                <button className="w-full py-3 bg-white border border-gray-200 text-gray-700 rounded-xl font-bold text-xs flex items-center justify-center space-x-2 hover:bg-gray-50 transition-all">
-                                    <MessageCircle className="h-4 w-4" />
-                                    <span>Tanya Pembeli</span>
-                                </button>
-                            </div>
+                            {(() => {
+                                const phone = order.user?.whatsapp || order.shippingAddress?.phone;
+                                if (!phone) return null;
+                                const formattedPhone = phone.replace(/\D/g, '').replace(/^0/, '62').replace(/^8/, '628');
+                                const finalPhone = formattedPhone.startsWith('62') ? formattedPhone : `62${formattedPhone}`;
+
+                                return (
+                                    <div className="mt-6">
+                                        <a
+                                            href={`https://wa.me/${finalPhone}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="w-full py-3 bg-[#25D366] text-white rounded-xl font-bold text-xs flex items-center justify-center space-x-2 hover:bg-[#128C7E] transition-all shadow-md shadow-green-100"
+                                        >
+                                            <MessageCircle className="h-4 w-4" />
+                                            <span>Chat via WhatsApp</span>
+                                        </a>
+                                    </div>
+                                );
+                            })()}
                         </div>
                     </div>
                 </div>

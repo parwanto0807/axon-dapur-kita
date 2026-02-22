@@ -1,16 +1,14 @@
 import prisma from '../config/db.js';
 
 /**
- * Get all reviews for a shop
+ * Get all reviews for a shop (both product and general)
  */
 export const getShopReviews = async (req, res) => {
     const { shopId } = req.params;
 
     try {
         const reviews = await prisma.review.findMany({
-            where: {
-                product: { shopId }
-            },
+            where: { shopId },
             include: {
                 user: {
                     select: {
@@ -35,39 +33,71 @@ export const getShopReviews = async (req, res) => {
 };
 
 /**
- * Create a new review for a product
+ * Create a new review for a product or shop
  */
 export const createReview = async (req, res) => {
-    const { productId, rating, comment, images, orderId } = req.body;
+    const { productId, shopId, rating, comment, images, orderId } = req.body;
     const userId = req.user.id;
 
-    if (!productId || !rating) {
-        return res.status(400).json({ message: 'Product ID dan rating wajib diisi' });
+    if (!rating) {
+        return res.status(400).json({ message: 'Rating wajib diisi' });
+    }
+
+    if (!productId && !shopId) {
+        return res.status(400).json({ message: 'Product ID atau Shop ID wajib diisi' });
     }
 
     try {
-        // Optional: Check if user actually bought the product
-        const hasBought = await prisma.order.findFirst({
-            where: {
-                userId,
-                status: 'completed',
-                items: {
-                    some: { productId }
-                }
+        // Enforce completed order status
+        if (orderId) {
+            const order = await prisma.order.findUnique({
+                where: { id: orderId },
+                include: { items: true }
+            });
+
+            if (!order || order.userId !== userId) {
+                return res.status(403).json({ message: 'Pesanan tidak ditemukan atau bukan milik Anda' });
+            }
+
+            const isFinished = order.status === 'completed' || 
+                               order.deliveryStatus === 'delivered' || 
+                               order.status === 'delivered' ||
+                               order.paymentStatus === 'paid' ||
+                               order.paymentStatus === 'completed' ||
+                               order.deliveryStatus === 'completed';
+
+            if (!isFinished) {
+                return res.status(403).json({ message: 'Anda hanya dapat memberikan ulasan untuk pesanan yang sudah diterima/selesai' });
+            }
+
+            // Check if product belongs to this order
+            if (productId && !order.items.some(item => item.productId === productId)) {
+                return res.status(403).json({ message: 'Produk tidak ditemukan dalam pesanan ini' });
+            }
+        }
+
+        // Check if already reviewed for this product/shop in this order
+        const existingReview = await prisma.review.findFirst({
+            where: { 
+                userId, 
+                orderId,
+                productId: productId || null,
+                shopId: productId ? undefined : shopId // Only for direct shop reviews if no productId
             }
         });
 
-        if (!hasBought) {
-            return res.status(403).json({ message: 'Anda hanya dapat memberikan ulasan untuk produk yang sudah dibeli dan selesai' });
+        if (existingReview) {
+            return res.status(400).json({ message: 'Anda sudah memberikan ulasan untuk item ini' });
         }
 
-        // Check if already reviewed for this product (to avoid duplicates if desired)
-        const existingReview = await prisma.review.findFirst({
-            where: { userId, productId, orderId }
-        });
-
-        if (existingReview) {
-            return res.status(400).json({ message: 'Anda sudah memberikan ulasan untuk produk ini di pesanan ini' });
+        // Determine shopId if not provided but productId is
+        let finalShopId = shopId;
+        if (productId && !finalShopId) {
+            const product = await prisma.product.findUnique({
+                where: { id: productId },
+                select: { shopId: true }
+            });
+            finalShopId = product?.shopId;
         }
 
         const review = await prisma.review.create({
@@ -76,7 +106,8 @@ export const createReview = async (req, res) => {
                 comment,
                 images: images || [],
                 userId,
-                productId,
+                productId: productId || null,
+                shopId: finalShopId,
                 orderId
             },
             include: {
@@ -143,11 +174,7 @@ export const getShopStats = async (req, res) => {
     try {
         console.log('Fetching stats for shopId:', shopId);
         const aggregate = await prisma.review.aggregate({
-            where: {
-                product: {
-                    shopId: shopId
-                }
-            },
+            where: { shopId },
             _avg: { rating: true },
             _count: { rating: true }
         });

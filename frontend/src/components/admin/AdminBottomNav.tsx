@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, LayoutDashboard, Store, Tag, Scale } from 'lucide-react';
+import { Home, LayoutDashboard, Store, Tag, Scale, Image as ImageIcon } from 'lucide-react';
 import { clsx } from 'clsx';
 
 export default function AdminBottomNav() {
@@ -14,6 +14,7 @@ export default function AdminBottomNav() {
         { label: 'Toko', icon: Store, href: '/dashboard/admin/shops' },
         { label: 'Kategori', icon: Tag, href: '/dashboard/admin/categories' },
         { label: 'Satuan', icon: Scale, href: '/dashboard/admin/units' },
+        { label: 'Carousel', icon: ImageIcon, href: '/dashboard/admin/carousel' },
         { label: 'Home', icon: Home, href: '/' },
     ];
 

@@ -240,11 +240,32 @@ router.get('/public', async (req, res) => {
                 name: true,
                 slug: true,
                 address: true,
-                logo: true
-                // Add lat/lng later if needed
+                logo: true,
+                _count: {
+                    select: { reviews: true }
+                },
+                reviews: {
+                    select: { rating: true }
+                }
             }
         });
-        res.json(shops);
+
+        const shopsWithStats = shops.map(shop => {
+            const totalReviews = shop._count.reviews;
+            const avgRating = totalReviews > 0 
+                ? shop.reviews.reduce((acc, rev) => acc + rev.rating, 0) / totalReviews 
+                : 0;
+            
+            // Remove the full reviews array before sending
+            const { reviews, ...shopData } = shop;
+            return {
+                ...shopData,
+                averageRating: avgRating,
+                totalReviews
+            };
+        });
+
+        res.json(shopsWithStats);
     } catch (error) {
         console.error('Error fetching public shops:', error);
         res.status(500).json({ message: 'Server error fetching shops' });

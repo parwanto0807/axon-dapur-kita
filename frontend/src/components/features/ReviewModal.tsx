@@ -13,6 +13,7 @@ interface ReviewModalProps {
         id: string;
         name: string;
         image: string;
+        shopId?: string;
     };
     orderId?: string;
     onSuccess?: () => void;
@@ -30,7 +31,8 @@ export default function ReviewModal({ isOpen, onClose, product, orderId, onSucce
         try {
             const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
             await axios.post(`${apiBaseUrl}/reviews`, {
-                productId: product.id,
+                productId: product.id || null,
+                shopId: !product.id ? product.shopId : undefined,
                 rating,
                 comment,
                 orderId
@@ -53,26 +55,32 @@ export default function ReviewModal({ isOpen, onClose, product, orderId, onSucce
                 {/* Header */}
                 <div className="px-8 py-6 border-b border-gray-100 flex items-center justify-between">
                     <div>
-                        <h3 className="text-xl font-black text-gray-900">Beri Ulasan</h3>
-                        <p className="text-xs text-gray-500 font-medium">Bagikan pengalamanmu dengan produk ini</p>
+                        <h3 className="text-xl font-black text-black">{!product.id ? 'Ulas Toko' : 'Beri Ulasan'}</h3>
+                        <p className="text-xs text-black font-semibold">{!product.id ? 'Bagikan pengalamanmu berbelanja di toko ini' : 'Bagikan pengalamanmu dengan produk ini'}</p>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                        <X className="h-6 w-6 text-gray-400" />
+                        <X className="h-6 w-6 text-gray-900" />
                     </button>
                 </div>
 
                 <div className="p-8 space-y-8">
                     {/* Product Summary */}
                     <div className="flex items-center space-x-4 bg-gray-50 p-4 rounded-3xl">
-                        <div className="h-16 w-16 rounded-xl overflow-hidden border border-gray-200 bg-white">
-                            <img src={product.image} alt={product.name} className="h-full w-full object-cover" />
+                        <div className="h-16 w-16 rounded-xl overflow-hidden border border-gray-200 bg-white shrink-0">
+                            {product.image ? (
+                                <img src={product.image} alt={product.name} className="h-full w-full object-cover" />
+                            ) : (
+                                <div className="h-full w-full flex items-center justify-center bg-gray-100 text-gray-400">
+                                    <Camera className="h-8 w-8" />
+                                </div>
+                            )}
                         </div>
-                        <p className="font-bold text-gray-900 line-clamp-2">{product.name}</p>
+                        <p className="font-black text-black line-clamp-2">{product.name}</p>
                     </div>
 
                     {/* Star Rating */}
                     <div className="space-y-3 text-center">
-                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Kualitas Produk</p>
+                        <p className="text-xs font-black text-black uppercase tracking-widest">{!product.id ? 'Pelayanan Toko' : 'Kualitas Produk'}</p>
                         <div className="flex justify-center">
                             <InteractiveStarRating rating={rating} onRatingChange={setRating} size={40} />
                         </div>
@@ -86,12 +94,12 @@ export default function ReviewModal({ isOpen, onClose, product, orderId, onSucce
 
                     {/* Comment */}
                     <div className="space-y-3">
-                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Tulis Komentar</p>
+                        <p className="text-xs font-black text-black uppercase tracking-widest">Tulis Komentar</p>
                         <textarea
                             value={comment}
                             onChange={(e) => setComment(e.target.value)}
-                            placeholder="Apa yang kamu sukai dari produk ini?"
-                            className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm focus:bg-white focus:ring-4 focus:ring-[#1B5E20]/5 focus:border-[#1B5E20] transition-all min-h-[120px] resize-none outline-none font-medium"
+                            placeholder={!product.id ? "Bagaimana pelayanan tokonya?" : "Apa yang kamu sukai dari produk ini?"}
+                            className="w-full px-5 py-4 bg-gray-50 border-2 border-gray-200 rounded-2xl text-sm focus:bg-white focus:ring-4 focus:ring-[#1B5E20]/5 focus:border-[#1B5E20] transition-all min-h-[120px] resize-none outline-none font-bold text-black"
                         />
                     </div>
 
@@ -99,7 +107,7 @@ export default function ReviewModal({ isOpen, onClose, product, orderId, onSucce
                     <button
                         onClick={handleSubmit}
                         disabled={isSubmitting}
-                        className="w-full py-4 bg-[#1B5E20] text-white font-bold rounded-2xl hover:bg-[#154a1a] transition-all shadow-xl shadow-green-100 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center space-x-2"
+                        className="w-full py-4 bg-[#1B5E20] text-white font-black rounded-2xl hover:bg-[#154a1a] transition-all shadow-xl shadow-green-100 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center space-x-2"
                     >
                         {isSubmitting ? (
                             <>

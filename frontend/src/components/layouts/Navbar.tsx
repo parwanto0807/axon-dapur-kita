@@ -84,7 +84,7 @@ export default function Navbar() {
     // Real-time: refresh notifications when a new order update arrives
     useBuyerSocket(() => {
         fetchNotifications();
-    });
+    }, { notify: true });
 
     useEffect(() => {
         setMounted(true);

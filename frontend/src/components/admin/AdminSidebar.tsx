@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Store, Tag, LogOut, ChevronRight, ShieldCheck, Scale } from 'lucide-react';
+import { LayoutDashboard, Store, Tag, LogOut, ChevronRight, ShieldCheck, Scale, Image as ImageIcon } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import { useState } from 'react';
 import LogoutModal from '../auth/LogoutModal';
@@ -22,6 +22,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
         { name: 'Kelola Toko', href: '/dashboard/admin/shops', icon: Store },
         { name: 'Kategori', href: '/dashboard/admin/categories', icon: Tag },
         { name: 'Satuan', href: '/dashboard/admin/units', icon: Scale },
+        { name: 'Carousel', href: '/dashboard/admin/carousel', icon: ImageIcon },
     ];
 
     const isActive = (path: string) => {

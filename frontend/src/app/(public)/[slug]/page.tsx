@@ -178,23 +178,23 @@ export default function ShopPage() {
                         </div>
 
                         {/* Shop Info */}
-                        <div className="mt-4 sm:mt-0 sm:ml-6 pb-6 flex-1">
-                            <h1 className="text-lg sm:text-3xl font-bold text-gray-900">{shop.name}</h1>
-                            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-2 text-[10px] sm:text-sm text-gray-600">
+                        <div className="mt-4 sm:mt-0 sm:ml-6 pb-4 flex-1">
+                            <h1 className="text-xl sm:text-3xl font-black text-black tracking-tight">{shop.name}</h1>
+                            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-2 text-xs sm:text-sm text-black">
                                 <div className="flex items-center">
-                                    <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                                    <span>{shop.address || 'Lokasi belum diatur'}</span>
+                                    <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 text-gray-700" />
+                                    <span className="font-bold">{shop.address || 'Lokasi belum diatur'}</span>
                                 </div>
                                 <div className="flex items-center">
                                     <StarRating rating={shopStats.averageRating} size={14} className="mr-1" />
-                                    <span className="font-bold text-gray-900">{shopStats.averageRating.toFixed(1)}</span>
-                                    <span className="ml-1 text-gray-400">({shopStats.totalReviews} ulasan)</span>
+                                    <span className="font-black text-black">{shopStats.averageRating.toFixed(1)}</span>
+                                    <span className="ml-1 text-gray-600 font-bold">({shopStats.totalReviews} ulasan)</span>
                                 </div>
                                 <div className="h-1 w-1 bg-gray-300 rounded-full mx-1"></div>
                                 <div className="flex items-center">
-                                    <ShoppingBag className="h-4 w-4 mr-1 text-blue-500" />
-                                    <span className="font-bold text-gray-900">{shopStats.totalCompletedOrders}</span>
-                                    <span className="ml-1 text-gray-400">produk terjual</span>
+                                    <ShoppingBag className="h-4 w-4 mr-1 text-blue-600 font-black" />
+                                    <span className="font-black text-black">{shopStats.totalCompletedOrders}</span>
+                                    <span className="ml-1 text-gray-600 font-bold">produk terjual</span>
                                 </div>
                             </div>
                         </div>
@@ -222,34 +222,34 @@ export default function ShopPage() {
                 </div>
 
                 {/* Tabs / Nav */}
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-2">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-1">
                     <div className="flex border-b border-gray-100">
                         <button
                             onClick={() => setActiveTab('PRODUCTS')}
                             className={clsx(
-                                "px-4 py-3 border-b-2 font-bold text-[11px] sm:text-sm transition-colors",
-                                activeTab === 'PRODUCTS' ? "border-[#1B5E20] text-[#1B5E20]" : "border-transparent text-gray-500 hover:text-gray-700"
+                                "px-4 py-2 border-b-2 font-black text-xs sm:text-sm transition-colors",
+                                activeTab === 'PRODUCTS' ? "border-[#1B5E20] text-[#1B5E20]" : "border-transparent text-gray-500 hover:text-black"
                             )}
                         >
-                            Produk
+                            Produk ({shop.products.length})
                         </button>
                         <button
                             onClick={() => setActiveTab('REVIEWS')}
                             className={clsx(
-                                "px-4 py-3 border-b-2 font-bold text-[11px] sm:text-sm transition-colors",
-                                activeTab === 'REVIEWS' ? "border-[#1B5E20] text-[#1B5E20]" : "border-transparent text-gray-500 hover:text-gray-700"
+                                "px-4 py-2 border-b-2 font-black text-xs sm:text-sm transition-colors",
+                                activeTab === 'REVIEWS' ? "border-[#1B5E20] text-[#1B5E20]" : "border-transparent text-gray-500 hover:text-black"
                             )}
                         >
-                            Ulasan
+                            Ulasan ({shopStats.totalReviews})
                         </button>
                         <button
                             onClick={() => setActiveTab('HOME')}
                             className={clsx(
-                                "px-4 py-3 border-b-2 font-bold text-[11px] sm:text-sm transition-colors",
-                                activeTab === 'HOME' ? "border-[#1B5E20] text-[#1B5E20]" : "border-transparent text-gray-500 hover:text-gray-700"
+                                "px-4 py-2 border-b-2 font-black text-xs sm:text-sm transition-colors",
+                                activeTab === 'HOME' ? "border-[#1B5E20] text-[#1B5E20]" : "border-transparent text-gray-500 hover:text-black"
                             )}
                         >
-                            Beranda
+                            Info Toko
                         </button>
                     </div>
                 </div>
@@ -263,9 +263,9 @@ export default function ShopPage() {
                         {activeTab === 'HOME' && (
                             <>
                                 {shop.description && (
-                                    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                                        <h3 className="font-bold text-gray-900 mb-2 text-xs sm:text-base">Tentang Toko</h3>
-                                        <p className="text-gray-600 text-[10px] sm:text-sm leading-relaxed">{shop.description}</p>
+                                    <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+                                        <h3 className="font-black text-black mb-2 text-xs sm:text-base uppercase tracking-tight">Tentang Toko</h3>
+                                        <p className="text-black text-[11px] sm:text-sm leading-relaxed font-bold">{shop.description}</p>
                                     </div>
                                 )}
 
@@ -293,15 +293,15 @@ export default function ShopPage() {
                                                         )}
                                                     </div>
                                                     <div className="p-4 flex flex-col flex-1">
-                                                        <h4 className="font-bold text-gray-900 line-clamp-2 mb-1 text-[10px] sm:text-base">
+                                                        <h4 className="font-bold text-gray-900 line-clamp-2 mb-1 text-xs sm:text-base">
                                                             {product.name}
                                                         </h4>
-                                                        <p className="text-[#1B5E20] font-bold text-[11px] sm:text-[15px] mb-2">
+                                                        <p className="text-[#1B5E20] font-bold text-sm sm:text-lg mb-2">
                                                             {formatPrice(product.price)}
                                                         </p>
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); /* Add to cart logic if needed */ }}
-                                                            className="mt-auto w-full py-2 bg-green-50 text-[#1B5E20] font-bold text-[10px] sm:text-sm rounded-lg hover:bg-green-100 transition"
+                                                            className="mt-auto w-full py-2.5 bg-green-50 text-[#1B5E20] font-bold text-xs sm:text-sm rounded-xl hover:bg-green-100 transition"
                                                         >
                                                             + Keranjang
                                                         </button>
@@ -320,19 +320,19 @@ export default function ShopPage() {
 
                         {activeTab === 'PRODUCTS' && (
                             <div className="space-y-1">
-                                <h2 className="font-bold text-sm text-gray-900 mb-2 uppercase tracking-tight">Daftar Semua Produk</h2>
+                                <h2 className="font-bold text-sm text-gray-900 mb-4 uppercase tracking-tight">Daftar Semua Produk</h2>
                                 {shop.products && shop.products.length > 0 ? (
-                                    <div className="flex flex-col gap-1.5">
+                                    <div className="flex flex-col gap-2">
                                         {shop.products.map((product) => (
                                             <div
                                                 key={product.id}
                                                 onClick={() => router.push(`/product/${product.id}`)}
                                                 className={clsx(
-                                                    "bg-white border border-gray-100 rounded-lg flex items-center px-2 py-1 h-11 sm:h-14 hover:border-green-600 transition-all cursor-pointer group relative",
+                                                    "bg-white border border-gray-100 rounded-xl flex items-center px-3 py-2 h-14 sm:h-18 hover:border-green-600 transition-all cursor-pointer group relative shadow-sm",
                                                     !product.isActive && "bg-gray-50/80"
                                                 )}
                                             >
-                                                <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-md bg-gray-100 overflow-hidden shrink-0 border border-gray-50">
+                                                <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-lg bg-gray-100 overflow-hidden shrink-0 border border-gray-50">
                                                     {product.images?.[0]?.url ? (
                                                         <img
                                                             src={getImageUrl(product.images[0].url) || ''}
@@ -341,35 +341,35 @@ export default function ShopPage() {
                                                         />
                                                     ) : (
                                                         <div className="w-full h-full flex items-center justify-center text-gray-300">
-                                                            <Store className="h-4 w-4" />
+                                                            <Store className="h-6 w-6" />
                                                         </div>
                                                     )}
                                                 </div>
 
-                                                <div className="flex-1 min-w-0 mx-2 flex items-center justify-between">
+                                                <div className="flex-1 min-w-0 mx-3 flex items-center justify-between">
                                                     <div className="flex flex-col flex-1 min-w-0 mr-2">
                                                         <h4 className={clsx(
-                                                            "font-black text-gray-900 truncate uppercase tracking-tight leading-none mb-0.5",
-                                                            product.isActive ? "text-[8px] sm:text-xs" : "text-[8px] sm:text-xs text-gray-400"
+                                                            "font-black text-gray-900 truncate uppercase tracking-tight leading-none mb-1",
+                                                            product.isActive ? "text-xs sm:text-sm" : "text-xs sm:text-sm text-gray-400"
                                                         )}>
                                                             {product.name}
                                                         </h4>
-                                                        <p className="text-[7.5px] sm:text-[10px] font-bold text-[#1B5E20] leading-none">
+                                                        <p className="text-[11px] sm:text-xs font-bold text-[#1B5E20] leading-none">
                                                             {formatPrice(product.price)}
                                                         </p>
                                                     </div>
 
-                                                    <div className="flex items-center space-x-2 shrink-0">
+                                                    <div className="flex items-center space-x-3 shrink-0">
                                                         {product.isActive ? (
-                                                            <span className="text-[6px] sm:text-[8px] font-black uppercase text-green-600 border border-green-200 px-1 rounded bg-green-50 tracking-tighter">Aktif</span>
+                                                            <span className="text-[8px] sm:text-[10px] font-black uppercase text-green-600 border border-green-200 px-1.5 py-0.5 rounded-md bg-green-50 tracking-tighter shadow-sm">Aktif</span>
                                                         ) : (
-                                                            <span className="text-[6px] sm:text-[8px] font-black uppercase text-gray-400 border border-gray-200 px-1 rounded bg-gray-50 tracking-tighter">Non-Aktif</span>
+                                                            <span className="text-[8px] sm:text-[10px] font-black uppercase text-gray-400 border border-gray-200 px-1.5 py-0.5 rounded-md bg-gray-50 tracking-tighter">Habis</span>
                                                         )}
                                                         <button
                                                             disabled={!product.isActive}
                                                             onClick={(e) => { e.stopPropagation(); }}
                                                             className={clsx(
-                                                                "hidden sm:flex px-2 py-1 rounded text-[10px] font-black uppercase transition shrink-0",
+                                                                "hidden sm:flex px-3 py-1.5 rounded-lg text-[10px] font-black uppercase transition shrink-0",
                                                                 product.isActive
                                                                     ? "bg-green-50 text-[#1B5E20] hover:bg-green-600 hover:text-white"
                                                                     : "bg-gray-100 text-gray-300 cursor-not-allowed"
@@ -391,8 +391,8 @@ export default function ShopPage() {
                         )}
 
                         {activeTab === 'REVIEWS' && (
-                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                                <h3 className="font-bold text-gray-900 mb-6 text-sm sm:text-lg">Ulasan Pembeli</h3>
+                            <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+                                <h3 className="font-black text-black mb-4 text-sm sm:text-lg uppercase tracking-tight">Ulasan Pembeli</h3>
                                 <ReviewList reviews={shopReviews} isLoading={reviewsLoading} />
                             </div>
                         )}
@@ -408,8 +408,8 @@ export default function ShopPage() {
                                         <MapPin className="h-5 w-5 text-[#1B5E20]" />
                                     </div>
                                     <div>
-                                        <p className="text-[11px] sm:text-sm font-bold text-gray-900">Jarak Maksimal</p>
-                                        <p className="text-gray-500 text-[9px] sm:text-xs">{shop.maxDeliveryDistance} km dari lokasi toko</p>
+                                        <p className="text-xs sm:text-sm font-bold text-gray-900">Jarak Maksimal</p>
+                                        <p className="text-gray-500 text-[11px] sm:text-xs">{shop.maxDeliveryDistance} km dari lokasi toko</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start">
@@ -417,8 +417,8 @@ export default function ShopPage() {
                                         <Clock className="h-5 w-5 text-blue-600" />
                                     </div>
                                     <div>
-                                        <p className="text-[11px] sm:text-sm font-bold text-gray-900">Jam Operasional</p>
-                                        <p className="text-gray-500 text-[9px] sm:text-xs">08:00 - 17:00 WIB</p>
+                                        <p className="text-xs sm:text-sm font-bold text-gray-900">Jam Operasional</p>
+                                        <p className="text-gray-500 text-[11px] sm:text-xs">08:00 - 17:00 WIB</p>
                                     </div>
                                 </div>
                             </div>

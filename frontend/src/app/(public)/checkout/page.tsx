@@ -250,8 +250,9 @@ export default function CheckoutPage() {
             }, { withCredentials: true });
 
             setOrderResult(response.data);
-            setStep(5);
             clearCart();
+            toast.success('Pesanan berhasil dibuat!');
+            router.push('/dashboard/orders');
         } catch (error: unknown) {
             const err = error as { response?: { data?: { message?: string } } };
             console.error('Checkout error:', error);

@@ -8,14 +8,17 @@ import {
     Clock, CheckCircle, XCircle, Truck,
     Calendar, Store, Hash, AlertTriangle,
     ExternalLink, Download, MessageCircle,
-    Info, Copy, Check
+    Info, Copy, Check, X, Loader2, Image as ImageIcon
 } from "lucide-react";
+import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import Link from 'next/link';
 import clsx from 'clsx';
 import { useBuyerSocket } from '@/hooks/useBuyerSocket';
 import { formatPrice, formatShortDate, formatDate } from '@/utils/format';
 import { getImageUrl } from '@/utils/image';
+import ReviewModal from '@/components/features/ReviewModal';
+import StarRating from '@/components/ui/StarRating';
 
 export default function OrderDetailsPage() {
     const { id } = useParams();
@@ -25,6 +28,12 @@ export default function OrderDetailsPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
     const [copied, setCopied] = useState(false);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
+
+    const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+    const [selectedReviewTarget, setSelectedReviewTarget] = useState<{ id: string, name: string, image: string, shopId: string, isShop?: boolean } | null>(null);
 
     useEffect(() => {
         if (isAuthLoading) return;
@@ -190,35 +199,61 @@ export default function OrderDetailsPage() {
                         {/* Summary Info */}
                         <div className="bg-white rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-8 border border-gray-100 shadow-sm grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                             <div>
-                                <p className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 md:mb-2">Order ID</p>
+                                <p className="text-[8px] md:text-[10px] font-bold text-gray-600 uppercase tracking-widest mb-1 md:mb-2">Order ID</p>
                                 <div className="flex items-center space-x-2">
-                                    <span className="font-bold text-gray-900 text-[11px] md:text-base">#{order.id.slice(-8).toUpperCase()}</span>
+                                    <span className="font-bold text-black text-[11px] md:text-base">#{order.id.slice(-8).toUpperCase()}</span>
                                     <button onClick={() => handleCopy(order.id)} className="text-[#1B5E20] hover:bg-green-50 p-1 rounded">
                                         {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                                     </button>
                                 </div>
                             </div>
                             <div>
-                                <p className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 md:mb-2">Waktu Transaksi</p>
-                                <p className="font-bold text-gray-900 text-[10px] md:text-base">{formatDate(order.createdAt)}</p>
+                                <p className="text-[8px] md:text-[10px] font-bold text-gray-600 uppercase tracking-widest mb-1 md:mb-2">Waktu Transaksi</p>
+                                <p className="font-bold text-black text-[10px] md:text-base">{formatDate(order.createdAt)}</p>
                             </div>
                             <div>
-                                <p className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 md:mb-2">Metode Pembayaran</p>
-                                <p className="font-bold text-gray-900 uppercase text-[10px] md:text-base">{order.paymentMethod.replace('_', ' ')}</p>
+                                <p className="text-[8px] md:text-[10px] font-bold text-gray-600 uppercase tracking-widest mb-1 md:mb-2">Metode Pembayaran</p>
+                                <p className="font-bold text-black uppercase text-[10px] md:text-base">{order.paymentMethod.replace('_', ' ')}</p>
                             </div>
                             <div>
-                                <p className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 md:mb-2">Penjual</p>
-                                <Link href={`/${order.shop.slug}`} className="font-bold text-[#1B5E20] hover:underline flex items-center text-[10px] md:text-base">
-                                    {order.shop.name}
-                                    <ExternalLink className="h-2.5 w-2.5 md:h-3 md:w-3 ml-1" />
-                                </Link>
+                                <p className="text-[8px] md:text-[10px] font-bold text-gray-600 uppercase tracking-widest mb-1 md:mb-2">Penjual</p>
+                                <div className="flex flex-col space-y-2">
+                                    <Link href={`/${order.shop.slug}`} className="font-bold text-[#1B5E20] hover:underline flex items-center text-[10px] md:text-base">
+                                        {order.shop.name}
+                                        <ExternalLink className="h-2.5 w-2.5 md:h-3 md:w-3 ml-1" />
+                                    </Link>
+                                    {(order.status === 'completed' || order.deliveryStatus === 'delivered' || order.status === 'delivered' || order.paymentStatus === 'paid' || order.paymentStatus === 'completed' || order.deliveryStatus === 'completed') && !order.hasShopReview && (
+                                        <button
+                                            onClick={() => {
+                                                setSelectedReviewTarget({
+                                                    id: '',
+                                                    name: order.shop.name,
+                                                    image: order.shop.logo ? getImageUrl(order.shop.logo) : '/images/default-shop.png',
+                                                    shopId: order.shopId,
+                                                    isShop: true
+                                                });
+                                                setIsReviewModalOpen(true);
+                                            }}
+                                            className="inline-flex items-center space-x-1 px-2 py-1 bg-[#1B5E20]/5 text-[#1B5E20] text-[10px] font-bold rounded-lg hover:bg-[#1B5E20]/10 transition-colors border border-[#1B5E20]/10 w-fit"
+                                        >
+                                            <StarRating rating={0} size={10} />
+                                            <span>Beri Ulasan Toko</span>
+                                        </button>
+                                    )}
+                                    {order.hasShopReview && (
+                                        <div className="inline-flex items-center space-x-1 px-2 py-1 bg-gray-50 text-gray-400 text-[10px] font-bold rounded-lg border border-gray-100 w-fit">
+                                            <CheckCircle className="h-3 w-3" />
+                                            <span>Toko Sudah Diulas</span>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
                         {/* Order Items */}
                         <div className="bg-white rounded-[1.5rem] md:rounded-[2rem] overflow-hidden border border-gray-100 shadow-sm">
                             <div className="px-5 md:px-6 py-4 md:py-5 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
-                                <h3 className="font-bold text-gray-900 text-sm md:text-base flex items-center">
+                                <h3 className="font-bold text-black text-sm md:text-base flex items-center">
                                     <Package className="h-4 w-4 md:h-5 md:w-5 mr-2 md:mr-3 text-[#1B5E20]" />
                                     Rincian Produk
                                 </h3>
@@ -242,8 +277,33 @@ export default function OrderDetailsPage() {
                                                 )}
                                             </div>
                                             <div>
-                                                <h4 className="font-bold text-gray-900 text-[11px] md:text-base mb-0.5 md:mb-1">{item.product.name}</h4>
-                                                <p className="text-[9px] md:text-xs text-gray-500 font-medium">{item.quantity} x {formatPrice(item.price)}</p>
+                                                <h4 className="font-bold text-black text-[11px] md:text-base mb-0.5 md:mb-1">{item.product.name}</h4>
+                                                <p className="text-[9px] md:text-xs text-gray-700 font-medium mb-2">{item.quantity} x {formatPrice(item.price)}</p>
+
+                                                {(order.status === 'completed' || order.deliveryStatus === 'delivered' || order.status === 'delivered' || order.paymentStatus === 'paid' || order.paymentStatus === 'completed' || order.deliveryStatus === 'completed') && !item.hasReview && (
+                                                    <button
+                                                        onClick={() => {
+                                                            setSelectedReviewTarget({
+                                                                id: item.productId,
+                                                                name: item.product.name,
+                                                                image: getImageUrl(item.product.images?.[0]?.url) || '',
+                                                                shopId: order.shopId
+                                                            });
+                                                            setIsReviewModalOpen(true);
+                                                        }}
+                                                        className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-[#1B5E20]/5 text-[#1B5E20] text-[10px] sm:text-xs font-bold rounded-lg hover:bg-[#1B5E20]/10 transition-colors border border-[#1B5E20]/10"
+                                                    >
+                                                        <StarRating rating={0} size={10} />
+                                                        <span>Beri Ulasan Produk</span>
+                                                    </button>
+                                                )}
+
+                                                {item.hasReview && (
+                                                    <div className="inline-flex items-center space-x-1 px-2 py-1 bg-gray-50 text-gray-400 text-[10px] font-bold rounded-lg border border-gray-100">
+                                                        <CheckCircle className="h-3 w-3" />
+                                                        <span>Sudah Diulas</span>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                         <div className="text-right">
@@ -372,7 +432,7 @@ export default function OrderDetailsPage() {
                                                 {order.shop?.qrisImage ? (
                                                     <div className="bg-white p-3 rounded-2xl border border-pink-100 inline-block mb-3 shadow-sm">
                                                         <img
-                                                            src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5003'}${order.shop.qrisImage}`}
+                                                            src={getImageUrl(order.shop.qrisImage)}
                                                             alt="QRIS"
                                                             className="w-48 h-48 md:w-56 md:h-56 object-contain"
                                                         />
@@ -393,72 +453,132 @@ export default function OrderDetailsPage() {
                                             </p>
                                         </div>
 
-                                        {/* Payment Proof Preview / Upload */}
-                                        {order.paymentProof ? (
-                                            <div className="space-y-4">
-                                                <p className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Bukti yang Diunggah</p>
-                                                <div className="relative group rounded-2xl overflow-hidden border border-gray-200">
-                                                    <img
-                                                        src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5003'}${order.paymentProof}`}
-                                                        className="w-full h-auto max-h-48 object-cover group-hover:scale-105 transition-transform duration-500"
-                                                        alt="Bukti Bayar"
-                                                    />
-                                                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                        <span className="text-white text-[10px] font-bold uppercase tracking-widest">Awaiting Verification</span>
+                                        {/* Payment Proof Section */}
+                                        <div className="mt-4 space-y-4">
+                                            {/* Existing Proof Overlay / Replacement Button */}
+                                            {order.paymentProof && !previewUrl && (
+                                                <div className="space-y-4">
+                                                    <p className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Bukti yang Diunggah</p>
+                                                    <div className="relative group rounded-2xl overflow-hidden border border-gray-200">
+                                                        <img
+                                                            src={getImageUrl(order.paymentProof)}
+                                                            className="w-full h-auto max-h-48 object-cover group-hover:scale-105 transition-transform duration-500"
+                                                            alt="Bukti Bayar"
+                                                        />
+                                                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                            <span className="text-white text-[10px] font-bold uppercase tracking-widest">Awaiting Verification</span>
+                                                        </div>
+                                                    </div>
+                                                    <button
+                                                        onClick={() => document.getElementById('proof-upload')?.click()}
+                                                        className="w-full py-2.5 bg-gray-50 text-gray-600 rounded-xl font-bold text-xs hover:bg-gray-100 transition-all flex items-center justify-center space-x-2 border border-gray-200"
+                                                    >
+                                                        <ImageIcon className="h-4 w-4" />
+                                                        <span>Ganti Bukti Pembayaran</span>
+                                                    </button>
+                                                    <p className="text-[10px] text-orange-600 font-bold text-center bg-orange-50 py-2 rounded-xl border border-orange-100 animate-pulse">
+                                                        Menunggu Verifikasi Penjual
+                                                    </p>
+                                                </div>
+                                            )}
+
+                                            {/* Preview Selected Image */}
+                                            {previewUrl && (
+                                                <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">
+                                                    <p className="text-[8px] md:text-[10px] font-bold text-[#1B5E20] uppercase tracking-widest mb-2">Pratinjau Bukti Baru</p>
+                                                    <div className="relative rounded-2xl overflow-hidden border-2 border-[#1B5E20]/30 shadow-lg">
+                                                        <img
+                                                            src={previewUrl}
+                                                            className="w-full h-auto max-h-64 object-cover"
+                                                            alt="Preview Bukti"
+                                                        />
+                                                        <button
+                                                            onClick={() => {
+                                                                setPreviewUrl(null);
+                                                                setSelectedFile(null);
+                                                            }}
+                                                            className="absolute top-2 right-2 p-1.5 bg-black/60 text-white rounded-full hover:bg-black transition-all"
+                                                        >
+                                                            <X className="h-4 w-4" />
+                                                        </button>
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        <button
+                                                            disabled={isUploading}
+                                                            onClick={async () => {
+                                                                if (!selectedFile) return;
+                                                                const formData = new FormData();
+                                                                formData.append('paymentProof', selectedFile);
+
+                                                                setIsUploading(true);
+                                                                try {
+                                                                    const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
+                                                                    await axios.post(`${apiBaseUrl}/orders/${id}/upload-proof`, formData, {
+                                                                        withCredentials: true,
+                                                                        headers: { 'Content-Type': 'multipart/form-data' }
+                                                                    });
+                                                                    toast.success('Bukti berhasil diunggah!');
+                                                                    setPreviewUrl(null);
+                                                                    setSelectedFile(null);
+                                                                    fetchOrderDetails();
+                                                                } catch (err) {
+                                                                    console.error(err);
+                                                                    toast.error('Gagal mengunggah bukti');
+                                                                } finally {
+                                                                    setIsUploading(false);
+                                                                }
+                                                            }}
+                                                            className="flex-1 py-3 bg-[#1B5E20] text-white rounded-xl font-bold text-sm hover:bg-green-800 transition-all flex items-center justify-center space-x-2 shadow-lg shadow-green-100 disabled:opacity-70"
+                                                        >
+                                                            {isUploading ? (
+                                                                <Loader2 className="h-4 w-4 animate-spin" />
+                                                            ) : (
+                                                                <Check className="h-4 w-4" />
+                                                            )}
+                                                            <span>{isUploading ? 'Mengunggah...' : 'Konfirmasi & Upload'}</span>
+                                                        </button>
+                                                        <button
+                                                            disabled={isUploading}
+                                                            onClick={() => {
+                                                                setPreviewUrl(null);
+                                                                setSelectedFile(null);
+                                                            }}
+                                                            className="px-4 py-3 bg-white text-gray-600 rounded-xl font-bold text-sm border border-gray-200 hover:bg-gray-50 transition-all"
+                                                        >
+                                                            Batal
+                                                        </button>
                                                     </div>
                                                 </div>
-                                                <p className="text-[10px] text-orange-600 font-bold text-center bg-orange-50 py-2 rounded-xl border border-orange-100 animate-pulse">
-                                                    Menunggu Verifikasi Penjual
-                                                </p>
-                                            </div>
-                                        ) : (
-                                            <div className="mt-4">
-                                                <input
-                                                    type="file"
-                                                    id="proof-upload"
-                                                    className="hidden"
-                                                    accept="image/*"
-                                                    onChange={async (e) => {
-                                                        const file = e.target.files?.[0];
-                                                        if (!file) return;
+                                            )}
 
-                                                        const formData = new FormData();
-                                                        formData.append('paymentProof', file);
+                                            {/* Initial Upload Button */}
+                                            {!order.paymentProof && !previewUrl && (
+                                                <div className="mt-4">
+                                                    <button
+                                                        onClick={() => document.getElementById('proof-upload')?.click()}
+                                                        className="w-full py-3.5 md:py-4 bg-[#1B5E20] text-white rounded-xl font-bold text-xs md:text-base hover:bg-green-800 transition-all flex items-center justify-center space-x-2 shadow-lg shadow-green-100"
+                                                    >
+                                                        <Download className="h-4 w-4" />
+                                                        <span>Unggah Bukti Pembayaran</span>
+                                                    </button>
+                                                </div>
+                                            )}
 
-                                                        try {
-                                                            const btn = document.getElementById('proof-btn');
-                                                            if (btn) {
-                                                                btn.innerHTML = 'Mengunggah...';
-                                                                (btn as HTMLButtonElement).disabled = true;
-                                                            }
-                                                            await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api'}/orders/${id}/upload-proof`, formData, {
-                                                                withCredentials: true,
-                                                                headers: { 'Content-Type': 'multipart/form-data' }
-                                                            });
-                                                            fetchOrderDetails();
-                                                            alert('Bukti pembayaran berhasil diunggah!');
-                                                        } catch (err) {
-                                                            console.error(err);
-                                                            alert('Gagal mengunggah bukti pembayaran');
-                                                        } finally {
-                                                            const btn = document.getElementById('proof-btn');
-                                                            if (btn) {
-                                                                btn.innerHTML = 'Saya Sudah Bayar';
-                                                                (btn as HTMLButtonElement).disabled = false;
-                                                            }
-                                                        }
-                                                    }}
-                                                />
-                                                <button
-                                                    id="proof-btn"
-                                                    onClick={() => document.getElementById('proof-upload')?.click()}
-                                                    className="w-full py-3.5 md:py-4 bg-[#1B5E20] text-white rounded-xl font-bold text-xs md:text-base hover:bg-green-800 transition-all flex items-center justify-center space-x-2 shadow-lg shadow-green-100"
-                                                >
-                                                    <Download className="h-4 w-4" />
-                                                    <span>Unggah Bukti Pembayaran</span>
-                                                </button>
-                                            </div>
-                                        )}
+                                            {/* Hidden File Input */}
+                                            <input
+                                                type="file"
+                                                id="proof-upload"
+                                                className="hidden"
+                                                accept="image/*"
+                                                onChange={(e) => {
+                                                    const file = e.target.files?.[0];
+                                                    if (file) {
+                                                        setSelectedFile(file);
+                                                        setPreviewUrl(URL.createObjectURL(file));
+                                                    }
+                                                }}
+                                            />
+                                        </div>
                                     </div>
                                 ) : order.paymentStatus === 'paid' ? (
                                     <div className="text-center py-6">
@@ -471,7 +591,7 @@ export default function OrderDetailsPage() {
                                         {order.paymentProof && (
                                             <div className="mt-4 pt-4 border-t border-gray-100">
                                                 <a
-                                                    href={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5003'}${order.paymentProof}`}
+                                                    href={getImageUrl(order.paymentProof)}
                                                     target="_blank"
                                                     className="text-[10px] text-[#1B5E20] font-bold hover:underline flex items-center justify-center"
                                                 >
@@ -493,10 +613,22 @@ export default function OrderDetailsPage() {
 
                 {/* Footer Actions */}
                 <div className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md border-t border-gray-100 p-4 z-40 lg:hidden">
-                    <button className="w-full py-4 bg-[#1B5E20] text-white rounded-2xl font-bold shadow-lg shadow-green-100 flex items-center justify-center space-x-2">
-                        <MessageCircle className="h-5 w-5" />
-                        <span>Hubungi Penjual</span>
-                    </button>
+                    {order.shop?.owner?.whatsapp ? (
+                        <a
+                            href={`https://wa.me/${order.shop.owner.whatsapp.replace(/\D/g, '').replace(/^0/, '62').replace(/^8/, '628')}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full py-4 bg-[#25D366] text-white rounded-2xl font-bold shadow-lg shadow-green-100 flex items-center justify-center space-x-2"
+                        >
+                            <MessageCircle className="h-5 w-5" />
+                            <span>Hubungi Penjual</span>
+                        </a>
+                    ) : (
+                        <button className="w-full py-4 bg-gray-400 text-white rounded-2xl font-bold flex items-center justify-center space-x-2 cursor-not-allowed">
+                            <MessageCircle className="h-5 w-5" />
+                            <span>Nomor Tidak Tersedia</span>
+                        </button>
+                    )}
                 </div>
 
                 <div className="hidden lg:flex justify-center mt-12 space-x-4">
@@ -504,12 +636,34 @@ export default function OrderDetailsPage() {
                         <Download className="h-4 w-4" />
                         <span>Download Invoice</span>
                     </button>
-                    <button className="px-8 py-3 bg-[#1B5E20] text-white rounded-xl font-bold flex items-center space-x-2 hover:bg-green-800 transition-all shadow-lg shadow-green-100">
-                        <MessageCircle className="h-4 w-4" />
-                        <span>Hubungi Penjual</span>
-                    </button>
+                    {order.shop?.owner?.whatsapp ? (
+                        <a
+                            href={`https://wa.me/${order.shop.owner.whatsapp.replace(/\D/g, '').replace(/^0/, '62').replace(/^8/, '628')}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-8 py-3 bg-[#25D366] text-white rounded-xl font-bold flex items-center space-x-2 hover:bg-[#128C7E] transition-all shadow-lg shadow-green-100"
+                        >
+                            <MessageCircle className="h-4 w-4" />
+                            <span>Hubungi Penjual</span>
+                        </a>
+                    ) : (
+                        <button className="px-8 py-3 bg-gray-400 text-white rounded-xl font-bold flex items-center space-x-2 cursor-not-allowed">
+                            <MessageCircle className="h-4 w-4" />
+                            <span>Nomor Tidak Tersedia</span>
+                        </button>
+                    )}
                 </div>
             </main>
+
+            {selectedReviewTarget && (
+                <ReviewModal
+                    isOpen={isReviewModalOpen}
+                    onClose={() => setIsReviewModalOpen(false)}
+                    product={selectedReviewTarget}
+                    orderId={order.id}
+                    onSuccess={fetchOrderDetails}
+                />
+            )}
         </div>
     );
 }

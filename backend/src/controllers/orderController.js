@@ -200,7 +200,15 @@ export const getOrderDetails = async (req, res) => {
         const order = await prisma.order.findUnique({
             where: { id: req.params.id },
             include: {
-                shop: true,
+                shop: {
+                    include: {
+                        owner: {
+                            select: {
+                                whatsapp: true
+                            }
+                        }
+                    }
+                },
                 user: {
                     select: {
                         id: true,
@@ -210,6 +218,7 @@ export const getOrderDetails = async (req, res) => {
                         whatsapp: true
                     }
                 },
+                reviews: true,
                 items: {
                     include: {
                         product: {
@@ -232,7 +241,16 @@ export const getOrderDetails = async (req, res) => {
             // Let's refine the security check
         }
 
-        res.json(order);
+        const orderWithStatus = {
+            ...order,
+            hasShopReview: order.reviews.some(r => r.shopId === order.shopId && !r.productId),
+            items: order.items.map(item => ({
+                ...item,
+                hasReview: order.reviews.some(r => r.productId === item.productId)
+            }))
+        };
+
+        res.json(orderWithStatus);
     } catch (error) {
         console.error('Error fetching order details:', error);
         res.status(500).json({ message: 'Server error fetching order details' });
@@ -248,7 +266,16 @@ export const getMyOrders = async (req, res) => {
         const orders = await prisma.order.findMany({
             where: { userId: req.user.id },
             include: {
-                shop: true,
+                shop: {
+                    include: {
+                        owner: {
+                            select: {
+                                whatsapp: true
+                            }
+                        }
+                    }
+                },
+                reviews: true,
                 items: {
                     include: {
                         product: {
@@ -262,7 +289,17 @@ export const getMyOrders = async (req, res) => {
             orderBy: { createdAt: 'desc' },
             take: limit ? parseInt(limit) : undefined
         });
-        res.json(orders);
+
+        const ordersWithStatus = orders.map(order => ({
+            ...order,
+            hasShopReview: order.reviews.some(r => r.shopId === order.shopId && !r.productId),
+            items: order.items.map(item => ({
+                ...item,
+                hasReview: order.reviews.some(r => r.productId === item.productId)
+            }))
+        }));
+
+        res.json(ordersWithStatus);
     } catch (error) {
         console.error('Error fetching user orders:', error);
         res.status(500).json({ message: 'Server error fetching orders' });
