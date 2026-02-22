@@ -5,7 +5,8 @@ import axios from 'axios';
 import {
     Search, Filter, Check, X, Ban, ExternalLink, Loader2, Store,
     User, Mail, Phone, ShoppingBag, Clock, ShieldCheck, ShieldAlert,
-    Briefcase, ArrowUpRight, TrendingUp, MoreVertical, LayoutGrid, Users
+    Briefcase, ArrowUpRight, TrendingUp, MoreVertical, LayoutGrid, Users,
+    Info
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { clsx } from 'clsx';
