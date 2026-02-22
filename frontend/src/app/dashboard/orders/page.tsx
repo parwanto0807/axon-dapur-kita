@@ -1,5 +1,7 @@
 'use client';
 
+import Image from 'next/image';
+
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import {
@@ -11,7 +13,7 @@ import {
     Clock,
     AlertCircle,
     Truck,
-    Search,
+    // Search,
     Package,
     LayoutDashboard,
     CreditCard
@@ -53,14 +55,14 @@ interface Order {
 }
 
 export default function OrdersPage() {
-    const { user, isLoading: isAuthLoading } = useAuthStore();
+    const { isLoading: isAuthLoading } = useAuthStore();
     const [orders, setOrders] = useState<Order[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
     const [filter, setFilter] = useState('all');
 
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState<any>(null);
+    const [selectedProduct, setSelectedProduct] = useState<{id: string, name: string, image: string} | null>(null);
     const [currentOrderId, setCurrentOrderId] = useState<string>('');
 
     const { t } = useLanguage();
@@ -86,7 +88,7 @@ export default function OrdersPage() {
     useEffect(() => {
         if (isAuthLoading) return;
         fetchOrders();
-    }, [isAuthLoading]);
+    }, [isAuthLoading, fetchOrders]);
 
 
     const getStatusStyle = (paymentStatus: string, method: string) => {
@@ -172,13 +174,13 @@ export default function OrdersPage() {
     if (isLoading) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1B5E20]"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand"></div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 font-[family-name:var(--font-poppins)] pb-24 lg:pb-12">
+        <div className="min-h-screen bg-gray-50 font-(family-name:--font-poppins) pb-24 lg:pb-12">
             <header className="bg-white border-b sticky top-0 z-30">
                 <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
                     <h1 className="text-lg font-black text-gray-900 tracking-tight">Pesanan Saya</h1>
@@ -187,40 +189,40 @@ export default function OrdersPage() {
 
             <main className="max-w-3xl mx-auto px-4 py-6">
                 {/* Stats / Filter Tabs */}
-                <div className="grid grid-cols-3 gap-3 mb-8">
+                <div className="grid grid-cols-3 gap-3 mb-6 sm:mb-8">
                     <button
                         onClick={() => setFilter('all')}
                         className={clsx(
-                            "p-2 sm:p-4 rounded-xl sm:rounded-2xl border transition-all text-left",
+                            "p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition-all text-left",
                             filter === 'all' ? "bg-gray-900 text-white border-gray-900 shadow-lg shadow-gray-900/20" : "bg-white text-gray-600 border-gray-100 hover:border-gray-200 shadow-sm"
                         )}
                     >
-                        <ShoppingBag className={clsx("h-3.5 w-3.5 sm:h-5 sm:w-5 mb-1 sm:mb-2", filter === 'all' ? "text-gray-400" : "text-gray-400")} />
-                        <p className="text-[10px] sm:text-[10px] font-bold uppercase tracking-wider opacity-80 leading-none mb-0.5">Semua</p>
+                        <ShoppingBag className={clsx("h-4 w-4 sm:h-5 sm:w-5 mb-1 sm:mb-2", filter === 'all' ? "text-gray-400" : "text-gray-400")} />
+                        <p className="text-[10px] font-bold uppercase tracking-wider opacity-80 leading-none mb-0.5">Semua</p>
                         <p className="text-sm sm:text-xl font-black leading-none">{orders.length}</p>
                     </button>
 
                     <button
                         onClick={() => setFilter('pending')}
                         className={clsx(
-                            "p-2 sm:p-4 rounded-xl sm:rounded-2xl border transition-all text-left",
+                            "p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition-all text-left",
                             filter === 'pending' ? "bg-yellow-500 text-white border-yellow-500 shadow-lg shadow-yellow-500/20" : "bg-white text-gray-600 border-gray-100 hover:border-gray-200 shadow-sm"
                         )}
                     >
-                        <CreditCard className={clsx("h-3.5 w-3.5 sm:h-5 sm:w-5 mb-1 sm:mb-2", filter === 'pending' ? "text-yellow-100" : "text-yellow-500")} />
-                        <p className="text-[10px] sm:text-[10px] font-bold uppercase tracking-wider opacity-80 leading-none mb-0.5">Bayar</p>
+                        <CreditCard className={clsx("h-4 w-4 sm:h-5 sm:w-5 mb-1 sm:mb-2", filter === 'pending' ? "text-yellow-100" : "text-yellow-500")} />
+                        <p className="text-[10px] font-bold uppercase tracking-wider opacity-80 leading-none mb-0.5">Bayar</p>
                         <p className="text-sm sm:text-xl font-black leading-none">{orders.filter(o => o.paymentStatus === 'pending').length}</p>
                     </button>
 
                     <button
                         onClick={() => setFilter('paid')}
                         className={clsx(
-                            "p-2 sm:p-4 rounded-xl sm:rounded-2xl border transition-all text-left",
+                            "p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition-all text-left",
                             filter === 'paid' ? "bg-green-600 text-white border-green-600 shadow-lg shadow-green-600/20" : "bg-white text-gray-600 border-gray-100 hover:border-gray-200 shadow-sm"
                         )}
                     >
-                        <CheckCircle className={clsx("h-3.5 w-3.5 sm:h-5 sm:w-5 mb-1 sm:mb-2", filter === 'paid' ? "text-green-100" : "text-green-600")} />
-                        <p className="text-[10px] sm:text-[10px] font-bold uppercase tracking-wider opacity-80 leading-none mb-0.5">Lunas</p>
+                        <CheckCircle className={clsx("h-4 w-4 sm:h-5 sm:w-5 mb-1 sm:mb-2", filter === 'paid' ? "text-green-100" : "text-green-600")} />
+                        <p className="text-[10px] font-bold uppercase tracking-wider opacity-80 leading-none mb-0.5">Lunas</p>
                         <p className="text-sm sm:text-xl font-black leading-none">{orders.filter(o => o.paymentStatus === 'paid').length}</p>
                     </button>
                 </div>
@@ -241,26 +243,30 @@ export default function OrdersPage() {
                             return (
                                 <div key={order.id} className="bg-white rounded-2xl sm:rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all overflow-hidden group p-4 sm:p-6">
                                     {/* Order Meta Info */}
-                                    <div className="flex items-center justify-between gap-2 mb-4 sm:mb-6">
-                                        <div className="flex items-center space-x-2.5 sm:space-x-4">
-                                            <div className="h-8 w-8 sm:h-12 sm:w-12 bg-gray-50 rounded-lg sm:rounded-xl flex items-center justify-center text-gray-400 group-hover:bg-[#1B5E20]/10 group-hover:text-[#1B5E20] transition-colors shrink-0">
-                                                <ShoppingBag className="h-4 w-4 sm:h-6 sm:w-6" />
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6">
+                                        <div className="flex items-center space-x-3 sm:space-x-4 min-w-0">
+                                            <div className="h-10 w-10 sm:h-12 sm:w-12 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 group-hover:bg-brand/10 group-hover:text-brand transition-colors shrink-0">
+                                                <ShoppingBag className="h-5 w-5 sm:h-6 sm:w-6" />
                                             </div>
                                             <div className="min-w-0">
                                                 <div className="flex items-center space-x-1.5 leading-none">
-                                                    <span className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest hidden xs:inline">Order ID</span>
-                                                    <span className="text-[10px] sm:text-xs font-black text-gray-900 bg-gray-100 px-1 py-0.5 rounded-md">#{order.id.slice(-6).toUpperCase()}</span>
+                                                    <span className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest">Order ID</span>
+                                                    <span className="text-[10px] sm:text-xs font-black text-gray-900 bg-gray-100 px-1.5 py-0.5 rounded-md">#{order.id.slice(-6).toUpperCase()}</span>
                                                 </div>
-                                                <div className="flex items-center space-x-2 mt-1 text-[10px] sm:text-xs text-gray-500 font-medium leading-none">
-                                                    <span className="flex items-center truncate max-w-[100px] sm:max-w-none"><Store className="h-3 w-3 sm:h-3 sm:w-3 mr-1" /> {order.shop.name}</span>
-                                                    <span className="h-0.5 w-0.5 bg-gray-300 rounded-full"></span>
-                                                    <span className="flex items-center whitespace-nowrap"><Calendar className="h-3 w-3 sm:h-3 sm:w-3 mr-1" /> {formatShortDate(order.createdAt)}</span>
+                                                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1.5 text-[10px] sm:text-xs text-gray-500 font-medium leading-none">
+                                                    <span className="flex items-center truncate max-w-30 sm:max-w-none">
+                                                        <Store className="h-3 w-3 mr-1" /> {order.shop.name}
+                                                    </span>
+                                                    <span className="hidden sm:block h-0.5 w-0.5 bg-gray-300 rounded-full"></span>
+                                                    <span className="flex items-center">
+                                                        <Calendar className="h-3 w-3 mr-1" /> {formatShortDate(order.createdAt)}
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div className={clsx(
-                                            "flex items-center space-x-1 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg border text-[10px] sm:text-xs font-black transition-all whitespace-nowrap",
+                                            "self-start sm:self-center flex items-center space-x-1.5 px-3 py-1 rounded-full border text-[10px] sm:text-xs font-black transition-all whitespace-nowrap shadow-sm",
                                             status.bg,
                                             status.text,
                                             status.border
@@ -278,9 +284,12 @@ export default function OrdersPage() {
                                                 <div key={item.id} className="flex items-center space-x-3">
                                                     <div className="h-12 w-12 rounded-lg bg-gray-50 border border-gray-100 overflow-hidden shrink-0">
                                                         {productImage ? (
+                                                            // eslint-disable-next-line @next/next/no-img-element
                                                             <img
                                                                 src={getImageUrl(productImage)}
                                                                 alt={item.product.name}
+                                                                width={48}
+                                                                height={48}
                                                                 className="h-full w-full object-cover"
                                                             />
                                                         ) : (
@@ -304,7 +313,7 @@ export default function OrdersPage() {
                                                                     setCurrentOrderId(order.id);
                                                                     setIsReviewModalOpen(true);
                                                                 }}
-                                                                className="mt-2 inline-flex items-center space-x-1 px-3 py-1 bg-[#1B5E20]/5 text-[#1B5E20] text-[10px] font-bold rounded-lg hover:bg-[#1B5E20]/10 transition-colors"
+                                                                className="mt-2 inline-flex items-center space-x-1 px-3 py-1 bg-brand/5 text-brand text-[10px] font-bold rounded-lg hover:bg-brand/10 transition-colors"
                                                             >
                                                                 <StarRating rating={0} size={10} />
                                                                 <span>Beri Ulasan</span>
@@ -323,7 +332,7 @@ export default function OrdersPage() {
                                     <div className="flex items-center justify-between pt-4 border-t border-gray-50">
                                         <div>
                                             <p className="text-[10px] sm:text-xs text-gray-400 font-bold uppercase tracking-widest leading-none mb-1">Total Belanja</p>
-                                            <p className="text-sm sm:text-lg font-black text-[#1B5E20] leading-none">{formatPrice(order.totalAmount)}</p>
+                                            <p className="text-sm sm:text-lg font-black text-brand leading-none">{formatPrice(order.totalAmount)}</p>
                                         </div>
                                         <Link
                                             href={`/dashboard/orders/${order.id}`}
@@ -347,7 +356,7 @@ export default function OrdersPage() {
                             </p>
                             <Link
                                 href="/dashboard"
-                                className="inline-flex items-center space-x-2 px-8 py-4 bg-[#1B5E20] text-white font-bold rounded-2xl hover:bg-green-700 transition-all shadow-lg shadow-green-100 active:scale-95"
+                                className="inline-flex items-center space-x-2 px-8 py-4 bg-brand text-white font-bold rounded-2xl hover:bg-green-700 transition-all shadow-lg shadow-green-100 active:scale-95"
                             >
                                 <LayoutDashboard className="h-5 w-5" />
                                 <span>Belanja Sekarang</span>
