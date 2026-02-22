@@ -29,7 +29,7 @@ interface Product {
     weight: number;
     condition: string;
     category: { name: string };
-    unit: { name: string };
+    unit: { name: string; symbol: string | null };
     images: { url: string; isPrimary: boolean }[];
     shop: {
         name: string;
@@ -289,7 +289,7 @@ export default function ProductPage() {
                                 <p className="text-base md:text-3xl lg:text-4xl font-black text-[#1B5E20]">
                                     {formatPrice(product.price)}
                                 </p>
-                                {product.unit && <span className="text-xs md:text-base text-gray-400 font-medium uppercase tracking-wider">/ {product.unit.name}</span>}
+                                {product.unit && <span className="text-xs md:text-base text-gray-400 font-medium uppercase tracking-wider">/ {product.unit.symbol || product.unit.name}</span>}
                             </div>
 
                             <div className="mt-4 grid grid-cols-3 gap-2 py-3 border-t border-gray-50">
@@ -303,7 +303,7 @@ export default function ProductPage() {
                                 </div>
                                 <div className="text-center">
                                     <span className="block text-[10px] text-gray-400 font-medium uppercase tracking-wider mb-0.5">Stok</span>
-                                    <span className="text-xs sm:text-sm font-bold text-gray-900">{product.stock} {product.unit?.name || 'Pcs'}</span>
+                                    <span className="text-xs sm:text-sm font-bold text-gray-900">{product.stock} {product.unit?.symbol || product.unit?.name || 'Pcs'}</span>
                                 </div>
                             </div>
                         </div>
@@ -375,7 +375,7 @@ export default function ProductPage() {
                             <div>
                                 <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider leading-none mb-0.5">Harga</p>
                                 <p className="text-base font-black text-[#1B5E20] leading-tight">{formatPrice(product.price)}</p>
-                                {product.unit && <p className="text-[10px] text-gray-400 font-medium">per {product.unit.name}</p>}
+                                {product.unit && <p className="text-[10px] text-gray-400 font-medium">per {product.unit.symbol || product.unit.name}</p>}
                             </div>
 
                             {product.stock > 0 && (

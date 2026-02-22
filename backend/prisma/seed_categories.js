@@ -2,41 +2,94 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-const categories = [
-    { name: 'Lauk Mateng', slug: 'lauk-mateng' },
-    { name: 'Sayuran Segar', slug: 'sayuran-segar' },
-    { name: 'Bumbu Dapur', slug: 'bumbu-dapur' },
-    { name: 'Buah-buahan', slug: 'buah-buahan' },
-    { name: 'Beras', slug: 'beras' },
-    { name: 'Sembako', slug: 'sembako' },
-    { name: 'Minyak Goreng', slug: 'minyak-goreng' },
-    { name: 'Daging & Ikan', slug: 'daging-ikan' },
-    { name: 'Telur & Susu', slug: 'telur-susu' },
-    { name: 'Makanan Berat', slug: 'makanan-berat' },
-    { name: 'Minuman', slug: 'minuman' },
-    { name: 'Cemilan', slug: 'cemilan' },
-    { name: 'Frozen Food', slug: 'frozen-food' },
-    { name: 'Katering', slug: 'katering' },
-    { name: 'Kue & Roti', slug: 'kue-roti' },
-    { name: 'Jajanan Pasar', slug: 'jajanan-pasar' }
+// === KATEGORI UTAMA (Parent) ===
+const parentCategories = [
+    { name: 'Makanan Berat', slug: 'makanan-berat', icon: 'CookingPot' },
+    { name: 'Hidangan Berkuah', slug: 'hidangan-berkuah', icon: 'Soup' },
+    { name: 'Camilan & Gorengan', slug: 'camilan-gorengan', icon: 'Cookie' },
+    { name: 'Kue & Jajanan Pasar', slug: 'kue-jajanan-pasar', icon: 'Croissant' },
+    { name: 'Minuman', slug: 'minuman', icon: 'CupSoda' },
+    { name: 'Bumbu & Rempah', slug: 'bumbu-rempah', icon: 'Utensils' },
+    { name: 'Lauk Mentah & Protein', slug: 'lauk-mentah', icon: 'Fish' },
+    { name: 'Bahan Pokok', slug: 'bahan-pokok', icon: 'Wheat' },
+    { name: 'Frozen Food', slug: 'frozen-food', icon: 'Snowflake' },
+    { name: 'Paket & Bundling', slug: 'paket-bundling', icon: 'Package' },
+    { name: 'Jamu & Herbal', slug: 'jamu-herbal', icon: 'Leaf' },
+];
+
+// === SUB-KATEGORI (Child) — slug parent harus ada di list atas ===
+const subCategories = [
+    // Makanan Berat
+    { name: 'Nasi & Aneka Lauk', slug: 'nasi-lauk', parentSlug: 'makanan-berat' },
+    { name: 'Olahan Ayam', slug: 'olahan-ayam', parentSlug: 'makanan-berat' },
+    { name: 'Olahan Daging', slug: 'olahan-daging', parentSlug: 'makanan-berat' },
+    { name: 'Olahan Ikan & Seafood', slug: 'olahan-ikan-seafood', parentSlug: 'makanan-berat' },
+    { name: 'Olahan Tahu & Tempe', slug: 'olahan-tahu-tempe', parentSlug: 'makanan-berat' },
+    { name: 'Sayuran Siap Santap', slug: 'sayuran-siap-santap', parentSlug: 'makanan-berat' },
+
+    // Hidangan Berkuah
+    { name: 'Soto & Rawon', slug: 'soto-rawon', parentSlug: 'hidangan-berkuah' },
+    { name: 'Sop & Sup', slug: 'sop-sup', parentSlug: 'hidangan-berkuah' },
+    { name: 'Bakso & Mie Ayam', slug: 'bakso-mie', parentSlug: 'hidangan-berkuah' },
+    { name: 'Sayur Berkuah', slug: 'sayur-berkuah', parentSlug: 'hidangan-berkuah' },
+
+    // Camilan & Gorengan
+    { name: 'Gorengan', slug: 'gorengan', parentSlug: 'camilan-gorengan' },
+    { name: 'Jajanan Tradisional', slug: 'jajanan-tradisional', parentSlug: 'camilan-gorengan' },
+    { name: 'Snack Modern', slug: 'snack-modern', parentSlug: 'camilan-gorengan' },
+    { name: 'Keripik & Rempeyek', slug: 'keripik-rempeyek', parentSlug: 'camilan-gorengan' },
+
+    // Minuman
+    { name: 'Minuman Dingin', slug: 'minuman-dingin', parentSlug: 'minuman' },
+    { name: 'Minuman Hangat', slug: 'minuman-hangat', parentSlug: 'minuman' },
+    { name: 'Minuman Kemasan UMKM', slug: 'minuman-kemasan', parentSlug: 'minuman' },
+
+    // Bumbu & Rempah
+    { name: 'Bumbu Giling Siap Pakai', slug: 'bumbu-giling', parentSlug: 'bumbu-rempah' },
+    { name: 'Rempah Segar', slug: 'rempah-segar', parentSlug: 'bumbu-rempah' },
+
+    // Lauk Mentah
+    { name: 'Daging Segar', slug: 'daging-segar', parentSlug: 'lauk-mentah' },
+    { name: 'Ikan & Seafood Segar', slug: 'ikan-seafood-segar', parentSlug: 'lauk-mentah' },
+    { name: 'Telur & Produk Susu', slug: 'telur-susu', parentSlug: 'lauk-mentah' },
+
+    // Bahan Pokok
+    { name: 'Beras & Serealia', slug: 'beras-serealia', parentSlug: 'bahan-pokok' },
+    { name: 'Tepung & Bihun', slug: 'tepung-bihun', parentSlug: 'bahan-pokok' },
+    { name: 'Minyak & Lemak', slug: 'minyak-lemak', parentSlug: 'bahan-pokok' },
 ];
 
 async function main() {
-    console.log('Start seeding categories...');
-    for (const cat of categories) {
-        const existing = await prisma.category.findUnique({
-            where: { slug: cat.slug }
+    console.log('🌿 Seeding categories (professional taxonomy)...');
+
+    // Upsert parent categories
+    const parentMap = {};
+    for (const cat of parentCategories) {
+        const result = await prisma.category.upsert({
+            where: { slug: cat.slug },
+            update: { name: cat.name, icon: cat.icon },
+            create: { name: cat.name, slug: cat.slug, icon: cat.icon },
         });
-        if (!existing) {
-            await prisma.category.create({
-                data: cat
-            });
-            console.log(`Created category: ${cat.name}`);
-        } else {
-            console.log(`Category exists: ${cat.name}`);
-        }
+        parentMap[cat.slug] = result.id;
+        console.log(`✅ Parent: ${cat.name}`);
     }
-    console.log('Seeding finished.');
+
+    // Upsert sub-categories
+    for (const sub of subCategories) {
+        const parentId = parentMap[sub.parentSlug];
+        if (!parentId) {
+            console.warn(`⚠️  Parent not found for sub: ${sub.name} (parentSlug: ${sub.parentSlug})`);
+            continue;
+        }
+        await prisma.category.upsert({
+            where: { slug: sub.slug },
+            update: { name: sub.name, parentId },
+            create: { name: sub.name, slug: sub.slug, parentId },
+        });
+        console.log(`  ↳ Sub: ${sub.name}`);
+    }
+
+    console.log('\n✨ Category seeding complete!');
 }
 
 main()

@@ -9,7 +9,7 @@ import {
   Store, MapPin, TrendingUp, Sparkles, ShoppingCart, ShoppingBag,
   Grid, Utensils, Snowflake, Coffee, Leaf, CookingPot, UtensilsCrossed,
   Apple, Wheat, Package, Droplet, Fish, Egg, CupSoda, Cookie, ChefHat,
-  Croissant, ShoppingBasket, Search, ArrowRight, Star, Share2
+  Croissant, ShoppingBasket, Search, ArrowRight, Star, Share2, Soup, X
 } from "lucide-react";
 import Link from "next/link";
 import axios from "axios";
@@ -28,7 +28,6 @@ interface Shop {
   domain: string | null;
   logo: string | null;
 }
-
 interface Product {
   id: string;
   name: string;
@@ -41,6 +40,19 @@ interface Product {
     slug: string;
     address?: string;
   };
+  category: {
+    id: string;
+    name: string;
+    slug: string;
+    parent?: { name: string; slug: string } | null;
+  } | null;
+  tags?: {
+    tag: {
+      id: string;
+      name: string;
+      type: string;
+    };
+  }[];
 }
 
 interface Category {
@@ -49,28 +61,19 @@ interface Category {
   slug: string;
 }
 
-
-
-// ... (existing getCategoryStyle function)
 const getCategoryStyle = (slug: string) => {
   switch (slug) {
-    case 'lauk-mateng': return { icon: CookingPot, color: 'text-orange-600', bg: 'bg-orange-50', border: 'border-orange-100', ring: 'ring-orange-500' };
-    case 'sayur-matang': return { icon: UtensilsCrossed, color: 'text-green-600', bg: 'bg-green-50', border: 'border-green-100', ring: 'ring-green-500' };
-    case 'sayuran-segar': return { icon: Leaf, color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-100', ring: 'ring-emerald-500' };
-    case 'bumbu-dapur': return { icon: Utensils, color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-100', ring: 'ring-red-500' };
-    case 'buah-buahan': return { icon: Apple, color: 'text-rose-600', bg: 'bg-rose-50', border: 'border-rose-100', ring: 'ring-rose-500' };
-    case 'beras': return { icon: Wheat, color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-100', ring: 'ring-amber-500' };
-    case 'sembako': return { icon: Package, color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-100', ring: 'ring-blue-500' };
-    case 'minyak-goreng': return { icon: Droplet, color: 'text-yellow-600', bg: 'bg-yellow-50', border: 'border-yellow-100', ring: 'ring-yellow-500' };
-    case 'daging-ikan': return { icon: Fish, color: 'text-red-700', bg: 'bg-red-50', border: 'border-red-100', ring: 'ring-red-500' };
-    case 'telur-susu': return { icon: Egg, color: 'text-orange-500', bg: 'bg-orange-50', border: 'border-orange-100', ring: 'ring-orange-500' };
+    case 'makanan-berat': return { icon: CookingPot, color: 'text-orange-600', bg: 'bg-orange-50', border: 'border-orange-100', ring: 'ring-orange-500' };
+    case 'hidangan-berkuah': return { icon: UtensilsCrossed, color: 'text-amber-700', bg: 'bg-amber-50', border: 'border-amber-100', ring: 'ring-amber-500' };
+    case 'camilan-gorengan': return { icon: Cookie, color: 'text-yellow-700', bg: 'bg-yellow-50', border: 'border-yellow-100', ring: 'ring-yellow-500' };
+    case 'kue-jajanan-pasar': return { icon: Croissant, color: 'text-pink-600', bg: 'bg-pink-50', border: 'border-pink-100', ring: 'ring-pink-500' };
     case 'minuman': return { icon: CupSoda, color: 'text-sky-600', bg: 'bg-sky-50', border: 'border-sky-100', ring: 'ring-sky-500' };
-    case 'cemilan': return { icon: Cookie, color: 'text-amber-700', bg: 'bg-amber-50', border: 'border-amber-100', ring: 'ring-amber-500' };
+    case 'bumbu-rempah': return { icon: Utensils, color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-100', ring: 'ring-red-500' };
+    case 'lauk-mentah': return { icon: Fish, color: 'text-rose-700', bg: 'bg-rose-50', border: 'border-rose-100', ring: 'ring-rose-500' };
+    case 'bahan-pokok': return { icon: Wheat, color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-100', ring: 'ring-amber-500' };
     case 'frozen-food': return { icon: Snowflake, color: 'text-cyan-600', bg: 'bg-cyan-50', border: 'border-cyan-100', ring: 'ring-cyan-500' };
-    case 'katering': return { icon: ChefHat, color: 'text-purple-600', bg: 'bg-purple-50', border: 'border-purple-100', ring: 'ring-purple-500' };
-    case 'kue-roti': return { icon: Croissant, color: 'text-pink-600', bg: 'bg-pink-50', border: 'border-pink-100', ring: 'ring-pink-500' };
-    case 'jajanan-pasar': return { icon: ShoppingBasket, color: 'text-teal-600', bg: 'bg-teal-50', border: 'border-teal-100', ring: 'ring-teal-500' };
-    case 'jamu': return { icon: Coffee, color: 'text-yellow-800', bg: 'bg-yellow-50', border: 'border-yellow-100', ring: 'ring-yellow-600' };
+    case 'paket-bundling': return { icon: Package, color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-100', ring: 'ring-blue-500' };
+    case 'jamu-herbal': return { icon: Leaf, color: 'text-green-700', bg: 'bg-green-50', border: 'border-green-100', ring: 'ring-green-500' };
     default: return { icon: Grid, color: 'text-gray-600', bg: 'bg-gray-50', border: 'border-gray-100', ring: 'ring-gray-400' };
   }
 };
@@ -458,6 +461,30 @@ export default function Home() {
                           {product.name}
                         </h3>
 
+                        {product.category && (() => {
+                          const catStyle = getCategoryStyle(product.category.slug);
+                          const CatIcon = catStyle.icon;
+                          return (
+                            <div className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full mb-1 ${catStyle.bg} ${catStyle.color} text-[9px] sm:text-[10px] font-semibold w-fit`}>
+                              <CatIcon className="h-2.5 w-2.5 shrink-0" />
+                              <span className="truncate max-w-[120px]">
+                                {product.category.parent ? `${product.category.parent.name} > ` : ''}
+                                {product.category.name}
+                              </span>
+                            </div>
+                          );
+                        })()}
+
+                        {product.tags && product.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-0.5 mb-1.5 min-h-[14px]">
+                            {product.tags.map((t) => (
+                              <span key={t.tag.id} className="px-1 py-0.5 bg-[#1B5E20]/5 text-[#1B5E20] text-[7px] font-bold rounded-sm uppercase border border-[#1B5E20]/10 tracking-tight leading-none">
+                                {t.tag.name}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
                         <div className="mt-auto flex items-end justify-between">
                           <div>
                             <p className="text-[10px] sm:text-[10px] text-gray-500 line-through">{formatPrice(product.price * 1.1)}</p>
@@ -488,51 +515,59 @@ export default function Home() {
 
       </main>
 
-      {/* Modern Modal for All Categories */}
+      {/* Modern Modal for All Categories - Now with Native Mobile Feel */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center px-4 sm:px-6">
+        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4">
           <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-all"
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity animate-in fade-in duration-300"
             onClick={() => setIsModalOpen(false)}
           ></div>
 
-          <div className="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-3xl max-h-[85vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-white z-10">
+          <div className="relative bg-white rounded-t-[2.5rem] sm:rounded-[2.5rem] shadow-2xl w-full sm:max-w-3xl max-h-[85vh] sm:h-auto flex flex-col overflow-hidden animate-in slide-in-from-bottom sm:zoom-in-95 duration-300">
+            {/* Mobile Drag Handle */}
+            <div className="w-full flex justify-center pt-3 pb-1 sm:hidden">
+              <div className="w-12 h-1.5 bg-gray-200 rounded-full"></div>
+            </div>
+
+            <div className="px-6 py-4 sm:py-6 border-b border-gray-100 flex items-center justify-between bg-white z-10">
               <div>
-                <h3 className="text-sm sm:text-xl font-black text-gray-900 flex items-center gap-2">
+                <h3 className="text-base sm:text-xl font-black text-gray-900 flex items-center gap-2">
                   Jelajahi Kategori
                 </h3>
-                <p className="text-[11px] sm:text-sm text-gray-500">Temukan semua kebutuhan dapurmu disini</p>
+                <p className="text-[10px] sm:text-sm text-gray-400 font-medium">Temukan semua kebutuhan dapurmu disini</p>
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-2 bg-gray-50 rounded-full text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-all"
+                className="p-2 bg-gray-50 rounded-full text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-all hidden sm:block"
               >
                 <span className="sr-only">Close</span>
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <X className="h-6 w-6" />
               </button>
             </div>
 
-            <div className="p-4 sm:p-8 overflow-y-auto custom-scrollbar">
-              <div className="grid grid-cols-4 md:grid-cols-4 gap-2 sm:gap-4">
+            <div className="p-5 sm:p-8 overflow-y-auto custom-scrollbar pb-10 sm:pb-8">
+              <div className="grid grid-cols-4 sm:grid-cols-4 gap-3 sm:gap-6">
                 <button
                   onClick={() => { setSelectedCategory('all'); setIsModalOpen(false); }}
                   className={clsx(
-                    "flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl sm:rounded-3xl border transition-all text-center h-full group",
+                    "flex flex-col items-center justify-center p-3 sm:p-6 rounded-2xl sm:rounded-[2rem] border transition-all text-center h-full group",
                     selectedCategory === 'all'
                       ? "bg-green-50 border-[#1B5E20] ring-1 ring-[#1B5E20]"
                       : "bg-white border-gray-100 hover:border-green-200 hover:bg-green-50/30 hover:shadow-lg"
                   )}
                 >
                   <div className={clsx(
-                    "p-3 sm:p-4 rounded-xl sm:rounded-2xl mb-2 sm:mb-3 transition-colors",
-                    selectedCategory === 'all' ? "bg-[#1B5E20] text-white" : "bg-gray-50 text-gray-400 group-hover:bg-green-100 group-hover:text-green-600"
+                    "p-2.5 sm:p-5 rounded-xl sm:rounded-2xl mb-2 sm:mb-4 transition-all duration-300",
+                    selectedCategory === 'all'
+                      ? "bg-[#1B5E20] text-white scale-110"
+                      : "bg-gray-50 text-gray-400 group-hover:bg-green-100 group-hover:text-green-600"
                   )}>
-                    <Grid className="h-6 w-6 sm:h-8 sm:w-8" />
+                    <Grid className="h-5 w-5 sm:h-8 sm:w-8" />
                   </div>
-                  <span className={clsx("font-bold text-[8px] sm:text-sm", selectedCategory === 'all' ? "text-[#1B5E20]" : "text-gray-700")}>Semua Produk</span>
+                  <span className={clsx(
+                    "font-bold text-[9px] sm:text-xs leading-tight",
+                    selectedCategory === 'all' ? "text-[#1B5E20]" : "text-gray-500"
+                  )}>Semua</span>
                 </button>
 
                 {categories.map((cat) => {
@@ -545,21 +580,21 @@ export default function Home() {
                       key={cat.id}
                       onClick={() => { setSelectedCategory(cat.slug); setIsModalOpen(false); }}
                       className={clsx(
-                        "flex flex-col items-center justify-center p-2 sm:p-6 rounded-2xl sm:rounded-3xl border transition-all text-center h-full group",
+                        "flex flex-col items-center justify-center p-3 sm:p-6 rounded-2xl sm:rounded-[2rem] border transition-all text-center h-full group",
                         isSelected
-                          ? "bg-gray-900 text-white border-gray-900 shadow-xl"
+                          ? "bg-gray-900 border-gray-900 shadow-xl scale-105"
                           : "bg-white border-gray-100 hover:border-gray-200 hover:shadow-xl hover:-translate-y-1"
                       )}
                     >
                       <div className={clsx(
-                        "p-3 sm:p-4 rounded-xl sm:rounded-2xl mb-2 sm:mb-3 transition-colors",
+                        "p-2.5 sm:p-5 rounded-xl sm:rounded-2xl mb-2 sm:mb-4 transition-all duration-300",
                         isSelected ? "bg-white/10 text-white" : `${style.bg} ${style.color} group-hover:opacity-80`
                       )}>
-                        <Icon className="h-6 w-6 sm:h-8 sm:w-8" />
+                        <Icon className="h-5 w-5 sm:h-8 sm:w-8" />
                       </div>
                       <span className={clsx(
-                        "font-bold text-[8px] sm:text-sm",
-                        isSelected ? "text-white" : "text-gray-700"
+                        "font-bold text-[9px] sm:text-xs leading-tight transition-colors",
+                        isSelected ? "text-white" : "text-gray-500"
                       )}>
                         {cat.name}
                       </span>

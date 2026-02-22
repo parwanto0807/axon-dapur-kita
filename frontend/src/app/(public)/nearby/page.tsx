@@ -36,6 +36,17 @@ interface NearbyProduct {
         latitude: number;
         longitude: number;
     };
+    category?: {
+        name: string;
+        parent?: { name: string } | null;
+    } | null;
+    tags?: {
+        tag: {
+            id: string;
+            name: string;
+            type: string;
+        };
+    }[];
 }
 
 export default function NearbyPage() {
@@ -406,7 +417,24 @@ export default function NearbyPage() {
                                                 <Store className="h-2.5 w-2.5 text-gray-400" />
                                                 <span className="text-[9px] font-black text-gray-400 uppercase tracking-wider truncate">{product.shop.name}</span>
                                             </div>
-                                            <h4 className="font-black text-xs text-gray-900 uppercase tracking-tighter truncate mb-1.5 group-hover:text-[#1B5E20] transition-colors">{product.name}</h4>
+                                            <h4 className="font-black text-xs text-gray-900 uppercase tracking-tighter truncate mb-1 group-hover:text-[#1B5E20] transition-colors">{product.name}</h4>
+                                            {product.category && (
+                                                <div className="flex items-center space-x-1 mb-1.5 opacity-80">
+                                                    <span className="text-[7px] font-bold text-gray-400 uppercase">
+                                                        {product.category.parent ? `${product.category.parent.name} > ` : ''}
+                                                    </span>
+                                                    <span className="text-[7px] font-bold text-[#1B5E20] uppercase">{product.category.name}</span>
+                                                </div>
+                                            )}
+                                            {product.tags && product.tags.length > 0 && (
+                                                <div className="flex flex-wrap gap-0.5 mb-1.5">
+                                                    {product.tags.map((t) => (
+                                                        <span key={t.tag.id} className="px-1 py-0.5 bg-[#1B5E20]/5 text-[#1B5E20] text-[6px] font-bold rounded uppercase border border-[#1B5E20]/10 tracking-tight">
+                                                            {t.tag.name}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            )}
                                             <div className="flex items-baseline space-x-1">
                                                 <span className="text-[10px] font-black text-[#1B5E20]">{formatPrice(product.price)}</span>
                                             </div>

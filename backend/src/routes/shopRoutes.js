@@ -398,7 +398,10 @@ const upload = multer({
 // @desc    Update current user's shop
 // @route   PUT /api/shops
 // @access  Private
-router.put('/', upload.single('logo'), async (req, res) => {
+router.put('/', upload.fields([
+    { name: 'logo', maxCount: 1 },
+    { name: 'qrisImage', maxCount: 1 }
+]), async (req, res) => {
     if (!req.isAuthenticated()) {
         return res.status(401).json({ message: 'Not authenticated' });
     }
@@ -436,10 +439,10 @@ router.put('/', upload.single('logo'), async (req, res) => {
 
         // Handle Logo Upload
         let logoPath = shop.logo;
-        if (req.file) {
+        if (req.files && req.files['logo']) {
+            const logoFile = req.files['logo'][0];
             const uploadDir = path.join('public', 'merchant', newSlug);
             
-            // Create directory if not exists
             if (!fs.existsSync(uploadDir)) {
                 fs.mkdirSync(uploadDir, { recursive: true });
             }
@@ -447,14 +450,35 @@ router.put('/', upload.single('logo'), async (req, res) => {
             const fileName = `logo.webp`;
             const filePath = path.join(uploadDir, fileName);
 
-            // Process image: resize to 500x500 and convert to webp
-            await sharp(req.file.buffer)
+            await sharp(logoFile.buffer)
                 .resize(500, 500, { fit: 'cover' })
                 .toFormat('webp')
                 .toFile(filePath);
             
-            // Format path for DB (relative to public)
-            logoPath = `/merchant/${newSlug}/${fileName}?t=${Date.now()}`; // Add timestamp to bust cache
+            logoPath = `/merchant/${newSlug}/${fileName}?t=${Date.now()}`;
+        }
+
+        // Handle QRIS Image Upload
+        let qrisImagePath = shop.qrisImage;
+        if (req.files && req.files['qrisImage']) {
+            const qrisFile = req.files['qrisImage'][0];
+            const uploadDir = path.join('public', 'merchant', newSlug);
+            
+            if (!fs.existsSync(uploadDir)) {
+                fs.mkdirSync(uploadDir, { recursive: true });
+            }
+
+            const fileName = `qris.webp`;
+            const filePath = path.join(uploadDir, fileName);
+
+            await sharp(qrisFile.buffer)
+                .resize(800, 800, { fit: 'inside' }) // Keep aspect ratio for QR
+                .toFormat('webp')
+                .toFile(filePath);
+            
+            qrisImagePath = `/merchant/${newSlug}/${fileName}?t=${Date.now()}`;
+        } else if (newSlug !== shop.slug && shop.qrisImage) {
+             qrisImagePath = shop.qrisImage.replace(shop.slug, newSlug);
         } else if (newSlug !== shop.slug && shop.logo) {
             // Move existing logo if slug changed
             const oldDir = path.join('public', 'merchant', shop.slug);
@@ -489,6 +513,10 @@ router.put('/', upload.single('logo'), async (req, res) => {
                 slug: newSlug,
                 address: address || shop.address,
                 logo: logoPath,
+                qrisImage: qrisImagePath,
+                bankName: req.body.bankName !== undefined ? req.body.bankName : shop.bankName,
+                bankAccountName: req.body.bankAccountName !== undefined ? req.body.bankAccountName : shop.bankAccountName,
+                bankAccountNumber: req.body.bankAccountNumber !== undefined ? req.body.bankAccountNumber : shop.bankAccountNumber,
                 isOpen: isOpen !== undefined ? isOpenBool : shop.isOpen,
                 latitude: req.body.latitude ? parseFloat(req.body.latitude) : shop.latitude,
                 longitude: req.body.longitude ? parseFloat(req.body.longitude) : shop.longitude,

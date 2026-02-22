@@ -66,6 +66,10 @@ model Shop {
     commissionRate      Float      @default(0.05) // Default 5%
     isOpen              Boolean    @default(true)
     paymentMethods      String[]   @default([]) // Array of payment method codes (e.g. ["cod", "transfer"])
+    bankName            String?
+    bankAccountName     String?
+    bankAccountNumber   String?
+    qrisImage           String?
     status              ShopStatus @default(PENDING)
 
     owner    User?
@@ -84,10 +88,34 @@ enum ShopStatus {
 }
 
 model Category {
-    id       String    @id @default(cuid())
-    name     String    @unique // Sayur Mateng, Frozen, Jamu
-    slug     String    @unique
+    id   String  @id @default(cuid())
+    name String  @unique // Sayur Mateng, Frozen, Jamu
+    slug String  @unique
+    icon String? // Optional icon name (e.g., 'Leaf', 'CookingPot')
+
+    // Sub-category hierarchy
+    parentId String?
+    parent   Category?  @relation("SubCategories", fields: [parentId], references: [id])
+    children Category[] @relation("SubCategories")
+
     products Product[]
+}
+
+model Tag {
+    id       String       @id @default(cuid())
+    name     String       @unique // "Pedas", "Vegetarian", "Menu Sahur"
+    slug     String       @unique
+    type     TagType      @default(CHARACTERISTIC)
+    products ProductTag[]
+}
+
+model ProductTag {
+    productId String
+    tagId     String
+    product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+    tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+    @@id([productId, tagId])
 }
 
 model Product {
@@ -123,6 +151,7 @@ model Product {
     images    ProductImage[]
     variants  ProductVariant[] // Untuk variasi rasa Jamu/Frozen
     stockLogs StockLog[] // Log perubahan stok (termasuk expired)
+    tags      ProductTag[] // Many-to-many via join table
 
     trackStock Boolean     @default(true) // Whether to track/decrement stock for this product
     createdAt  DateTime    @default(now())
@@ -187,8 +216,16 @@ model ProductVariant {
 }
 
 model Unit {
-    id       String    @id @default(cuid())
-    name     String    @unique
+    id                String  @id @default(cuid())
+    name              String  @unique // Contoh: "Kilogram"
+    symbol            String? // Contoh: "kg"
+    group             String? // Contoh: "BERAT", "KEMASAN"
+    subGroup          String? // Contoh: "Berat Besar", "Kemasan Retail"
+    isFractionAllowed Boolean @default(false) // Boleh 0.5?
+    decimalPlaces     Int     @default(0) // Jumlah desimal yang diizinkan
+    conversionBase    String? // Unit dasar (misal: "gr")
+    conversionRate    Float? // 1 unit ini = berapa unit dasar (misal: 1000)
+
     products Product[]
 }
 
@@ -205,6 +242,7 @@ model Order {
     deliveryStatus  String      @default("pending") // pending, processing, shipped, delivered
     status          String      @default("pending") // Overall status: pending, processing, completed, cancelled
     shippingAddress Json? // Simpan sebagai JSON untuk fleksibilitas
+    paymentProof    String? // Path to manual payment proof (Transfer/QRIS)
     notes           String?
 
     commission Decimal @db.Decimal(20, 2) // Amount taken by platform
@@ -243,6 +281,12 @@ enum ProductStatus {
     ACTIVE
     INACTIVE
     ARCHIVED
+}
+
+enum TagType {
+    CHARACTERISTIC // "Pedas", "Ada Nasi", "Vegetarian"
+    EVENT // "Menu Sahur", "Buka Puasa", "Hajatan"
+    DIET // "Organik", "Bebas Gluten", "Rendah Kalori"
 }
 
 enum Condition {

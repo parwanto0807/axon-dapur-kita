@@ -7,18 +7,6 @@ import Link from 'next/link';
 const slides = [
     {
         id: 1,
-        title: "Sayur Segar, Langsung dari Kebun",
-        subtitle: "FRESH & LOCAL",
-        description: "Nikmati kesegaran alam setiap hari dengan pilihan sayuran organik terbaik dari petani lokal.",
-        image: "/hero/vegetables.png",
-        position: "bg-center",
-        cta: "Belanja Sekarang",
-        ctaLink: "/category/sayur-segar",
-        color: "from-green-900",
-        accent: "bg-green-500"
-    },
-    {
-        id: 2,
         title: "Masakan Rumah, Hangat & Nikmat",
         subtitle: "HOME COOKING",
         description: "Rindu masakan ibu? Pesan menu matang autentik dari tetangga di sekitarmu.",
@@ -30,6 +18,18 @@ const slides = [
         accent: "bg-orange-500"
     },
     {
+        id: 2,
+        title: "Camilan Seru, Langsung dari UMKM Lokal",
+        subtitle: "SNACK LOCAL",
+        description: "Gorengan, keripik, jajanan pasar — pesan langsung dari warung tetangga.",
+        image: "/hero/vegetables.png",
+        position: "bg-center",
+        cta: "Belanja Sekarang",
+        ctaLink: "/category/camilan-gorengan",
+        color: "from-green-900",
+        accent: "bg-green-500"
+    },
+    {
         id: 3,
         title: "Sehat Alami dengan Jamu Tradisional",
         subtitle: "WELLNESS",
@@ -37,7 +37,7 @@ const slides = [
         image: "/hero/jamu.png",
         position: "bg-[center_90%]",
         cta: "Cari Jamu",
-        ctaLink: "/category/jamu",
+        ctaLink: "/category/jamu-herbal",
         color: "from-yellow-900",
         accent: "bg-yellow-500"
     }

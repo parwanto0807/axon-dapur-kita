@@ -1,12 +1,11 @@
 import prisma from '../config/db.js';
 import { emitNewOrder, emitOrderStatusUpdate, emitShopEvent } from '../socket.js';
 import { createNotification } from './notificationController.js';
+import sharp from 'sharp';
+import fs from 'fs';
+import path from 'path';
 
 
-/**
- * Create a new order with multiple items
- * Includes stock validation and price snapshotting in a transaction
- */
 /**
  * Create a new order with multiple items
  * Includes stock validation and price snapshotting in a transaction
@@ -127,6 +126,7 @@ export const createOrder = async (req, res) => {
                         }
                     },
                     include: {
+                        shop: true,
                         items: {
                             include: {
                                 product: {
@@ -197,6 +197,15 @@ export const getOrderDetails = async (req, res) => {
             where: { id: req.params.id },
             include: {
                 shop: true,
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        image: true,
+                        whatsapp: true
+                    }
+                },
                 items: {
                     include: {
                         product: {
@@ -400,7 +409,135 @@ export const updateOrderStatus = async (req, res) => {
 };
 
 /**
- * User confirms payment (User -> Seller)
+ * User uploads payment proof (User -> Seller)
+ */
+export const uploadPaymentProof = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: 'Tidak ada file bukti pembayaran yang diunggah' });
+        }
+
+        const order = await prisma.order.findUnique({
+            where: { id },
+            include: { shop: true, user: true }
+        });
+
+        if (!order) {
+            return res.status(404).json({ message: 'Pesanan tidak ditemukan' });
+        }
+
+        if (order.userId !== req.user.id) {
+            return res.status(403).json({ message: 'Anda tidak memiliki akses ke pesanan ini' });
+        }
+
+        // Process image with sharp
+        const uploadDir = path.join('public', 'payments');
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+
+        const fileName = `proof_${order.id}_${Date.now()}.webp`;
+        const filePath = path.join(uploadDir, fileName);
+
+        await sharp(req.file.buffer)
+            .resize(1200, 1200, { fit: 'inside', withoutEnlargement: true })
+            .webp({ quality: 80 })
+            .toFile(filePath);
+
+        const paymentProofPath = `/payments/${fileName}`;
+
+        // Update order
+        const updatedOrder = await prisma.order.update({
+            where: { id },
+            data: { 
+                paymentProof: paymentProofPath,
+                updatedAt: new Date()
+            },
+            include: { shop: true, user: true }
+        });
+
+        // Notify Seller
+        emitShopEvent(updatedOrder.shopId, 'payment_proof_uploaded', updatedOrder);
+        
+        const shopOwner = await prisma.user.findFirst({
+            where: { shopId: order.shopId }
+        });
+
+        if (shopOwner) {
+            await createNotification({
+                userId: shopOwner.id,
+                title: 'Bukti Pembayaran Baru',
+                body: `Buyer ${req.user.name} telah mengunggah bukti pembayaran untuk Order #${order.id.slice(-6).toUpperCase()}`,
+                type: 'ORDER_PAYMENT',
+                link: `/dashboard/merchant/orders/${order.id}`
+            });
+        }
+
+        res.json(updatedOrder);
+
+    } catch (error) {
+        console.error('[OrderController] Error uploading payment proof:', error);
+        res.status(500).json({ message: 'Gagal mengunggah bukti pembayaran' });
+    }
+};
+
+/**
+ * Seller verifies payment (Seller -> User)
+ */
+export const verifyPayment = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const order = await prisma.order.findUnique({
+            where: { id },
+            include: { shop: true, user: true }
+        });
+
+        if (!order) {
+            return res.status(404).json({ message: 'Pesanan tidak ditemukan' });
+        }
+
+        // Verify that the user owns the shop
+        if (order.shopId !== req.user.shopId && req.user.role !== 'ADMIN') {
+            return res.status(403).json({ message: 'Anda tidak memiliki akses untuk memverifikasi pesanan ini' });
+        }
+
+        const updatedOrder = await prisma.order.update({
+            where: { id },
+            data: { 
+                paymentStatus: 'paid',
+                updatedAt: new Date()
+            },
+            include: { shop: true, user: true }
+        });
+
+        // Notify Buyer
+        emitOrderStatusUpdate(updatedOrder.userId, {
+            id: updatedOrder.id,
+            paymentStatus: 'paid',
+            shopName: updatedOrder.shop.name
+        });
+
+        await createNotification({
+            userId: updatedOrder.userId,
+            title: 'Pembayaran Diterima',
+            body: `Pembayaran Anda untuk Order #${order.id.slice(-6).toUpperCase()} telah dikonfirmasi oleh ${updatedOrder.shop.name}`,
+            type: 'ORDER_UPDATE',
+            link: `/dashboard/orders/${order.id}`
+        });
+
+        res.json(updatedOrder);
+
+    } catch (error) {
+        console.error('[OrderController] Error verifying payment:', error);
+        res.status(500).json({ message: 'Gagal memverifikasi pembayaran' });
+    }
+};
+
+/**
+ * User confirms payment (Legacy / Simple confirm)
  */
 export const confirmPayment = async (req, res) => {
     const { id } = req.params;
@@ -419,37 +556,29 @@ export const confirmPayment = async (req, res) => {
             return res.status(403).json({ message: 'Anda tidak memiliki akses ke pesanan ini' });
         }
 
-        // Update payment status to 'paid' (or 'awaiting_confirmation' if you prefer manual check)
-        // For this requirement, let's set it to 'paid' or a dedicated status, but 'paid' is standard.
-        // Let's assume user confirms transfer, maybe status is 'awaiting_verification' normally, 
-        // but user asked for "konfirmasi pembayaran". Let's stick to 'paid' for simplicity or 'processing'.
         const updatedOrder = await prisma.order.update({
             where: { id },
             data: { 
-                paymentStatus: 'paid', // Or 'awaiting_verification'
+                paymentStatus: 'paid',
                 updatedAt: new Date()
             },
             include: { shop: true, user: true }
         });
 
-        // 1. Emit to Seller
-        console.log(`[OrderController] Emitting payment_confirmed to shop room: shop_${updatedOrder.shopId}`);
+        // Notifications ... (re-using existing logic)
         emitShopEvent(updatedOrder.shopId, 'payment_confirmed', updatedOrder);
         
-        // 2. Emit to Buyer (Self-sync for other devices/tabs)
          emitOrderStatusUpdate(req.user.id, {
             id: updatedOrder.id,
             paymentStatus: updatedOrder.paymentStatus,
             shopName: updatedOrder.shop.name
         });
         
-        // Find shop owner to notify them
         const shopOwner = await prisma.user.findFirst({
             where: { shopId: order.shopId }
         });
 
         if (shopOwner) {
-            console.log(`[OrderController] Creating payment notification for owner: ${shopOwner.id}`);
             await createNotification({
                 userId: shopOwner.id,
                 title: 'Pembayaran Dikonfirmasi Buyer',

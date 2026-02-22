@@ -19,6 +19,7 @@ export default function MerchantProfilePage() {
     const { user, isLoggedIn, isLoading: isAuthLoading } = useAuthStore();
     const router = useRouter();
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const qrisInputRef = useRef<HTMLInputElement>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState('');
@@ -34,11 +35,17 @@ export default function MerchantProfilePage() {
         latitude: '',
         longitude: '',
         maxDeliveryDistance: 5,
-        paymentMethods: [] as string[]
+        paymentMethods: [] as string[],
+        bankName: '',
+        bankAccountName: '',
+        bankAccountNumber: '',
+        qrisImage: ''
     });
 
     const [logoFile, setLogoFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string>('');
+    const [qrisFile, setQrisFile] = useState<File | null>(null);
+    const [qrisPreviewUrl, setQrisPreviewUrl] = useState<string>('');
     const [locating, setLocating] = useState(false);
     const [isGeocoding, setIsGeocoding] = useState(false);
     const [debouncedAddress, setDebouncedAddress] = useState(formData.address);
@@ -75,11 +82,18 @@ export default function MerchantProfilePage() {
                     latitude: response.data.latitude || '',
                     longitude: response.data.longitude || '',
                     maxDeliveryDistance: response.data.maxDeliveryDistance || 5,
-                    paymentMethods: response.data.paymentMethods || []
+                    paymentMethods: response.data.paymentMethods || [],
+                    bankName: response.data.bankName || '',
+                    bankAccountName: response.data.bankAccountName || '',
+                    bankAccountNumber: response.data.bankAccountNumber || '',
+                    qrisImage: response.data.qrisImage || ''
                 });
+                const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5003';
                 if (response.data.logo) {
-                    const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5003';
                     setPreviewUrl(`${backendUrl}${response.data.logo}`);
+                }
+                if (response.data.qrisImage) {
+                    setQrisPreviewUrl(`${backendUrl}${response.data.qrisImage}`);
                 }
             }
         } catch (err: any) {
@@ -151,16 +165,21 @@ export default function MerchantProfilePage() {
         }
     };
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'logo' | 'qris' = 'logo') => {
         const file = e.target.files?.[0];
         if (file) {
             if (file.size > 5 * 1024 * 1024) {
                 setError('Ukuran file maksimal 5MB');
                 return;
             }
-            setLogoFile(file);
             const objectUrl = URL.createObjectURL(file);
-            setPreviewUrl(objectUrl);
+            if (type === 'logo') {
+                setLogoFile(file);
+                setPreviewUrl(objectUrl);
+            } else {
+                setQrisFile(file);
+                setQrisPreviewUrl(objectUrl);
+            }
             setError('');
         }
     };
@@ -220,9 +239,15 @@ export default function MerchantProfilePage() {
             data.append('longitude', formData.longitude);
             data.append('maxDeliveryDistance', String(formData.maxDeliveryDistance));
             data.append('paymentMethods', JSON.stringify(formData.paymentMethods));
+            data.append('bankName', formData.bankName);
+            data.append('bankAccountName', formData.bankAccountName);
+            data.append('bankAccountNumber', formData.bankAccountNumber);
 
             if (logoFile) {
                 data.append('logo', logoFile);
+            }
+            if (qrisFile) {
+                data.append('qrisImage', qrisFile);
             }
 
             const response = await axios.put(`${apiBaseUrl}/shops`, data, {
@@ -232,10 +257,14 @@ export default function MerchantProfilePage() {
 
             toast.success('Profil toko berhasil diperbarui!');
 
+            const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5003';
             if (response.data.logo) {
-                const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5003';
                 setPreviewUrl(`${backendUrl}${response.data.logo}`);
                 setLogoFile(null);
+            }
+            if (response.data.qrisImage) {
+                setQrisPreviewUrl(`${backendUrl}${response.data.qrisImage}`);
+                setQrisFile(null);
             }
 
             setTimeout(() => setSuccess(''), 3000);
@@ -465,65 +494,162 @@ export default function MerchantProfilePage() {
                                             </div>
 
                                             <div className="pt-4 border-t border-gray-100">
-                                                <label className="block text-[8px] sm:text-sm font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center">
-                                                    <Banknote className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
-                                                    Metode Pembayaran
-                                                </label>
-
-                                                <div className="space-y-3">
-                                                    <label className={`flex items-start p-3 rounded-xl border cursor-pointer transition-all ${formData.paymentMethods?.includes('cod') ? 'bg-green-50 border-[#1B5E20] ring-1 ring-[#1B5E20]' : 'bg-white border-gray-200 hover:border-gray-300'}`}>
-                                                        <input
-                                                            type="checkbox"
-                                                            className="mt-1 h-4 w-4 text-[#1B5E20] border-gray-300 rounded focus:ring-[#1B5E20]"
-                                                            checked={formData.paymentMethods?.includes('cod')}
-                                                            onChange={() => handlePaymentMethodChange('cod')}
-                                                        />
-                                                        <div className="ml-3">
-                                                            <div className="flex items-center">
-                                                                <span className="font-bold text-gray-900 text-sm">Cash On Delivery (COD)</span>
-                                                                <span className="ml-2 px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[10px] font-bold rounded">Tunai</span>
-                                                            </div>
-                                                            <p className="text-xs text-gray-500 mt-0.5">Pembeli membayar tunai saat pesanan sampai di lokasi.</p>
-                                                        </div>
+                                                <div className="mb-6">
+                                                    <label className="block text-[8px] sm:text-xs font-black text-gray-400 uppercase tracking-widest mb-4 flex items-center">
+                                                        <Banknote className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-2" />
+                                                        Kategori 1: Free Admin (Manual)
                                                     </label>
 
-                                                    <label className={`flex items-start p-3 rounded-xl border cursor-pointer transition-all ${formData.paymentMethods?.includes('transfer') ? 'bg-blue-50 border-blue-600 ring-1 ring-blue-600' : 'bg-white border-gray-200 hover:border-gray-300'}`}>
-                                                        <input
-                                                            type="checkbox"
-                                                            className="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                                                            checked={formData.paymentMethods?.includes('transfer')}
-                                                            onChange={() => handlePaymentMethodChange('transfer')}
-                                                        />
-                                                        <div className="ml-3">
-                                                            <div className="flex items-center">
-                                                                <span className="font-bold text-gray-900 text-sm">Bank Transfer</span>
-                                                                <span className="ml-2 px-1.5 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold rounded">Manual</span>
+                                                    <div className="space-y-4">
+                                                        {/* COD */}
+                                                        <label className={`flex items-start p-3 sm:p-4 rounded-2xl border cursor-pointer transition-all ${formData.paymentMethods?.includes('cod') ? 'bg-green-50 border-[#1B5E20] ring-1 ring-[#1B5E20]' : 'bg-white border-gray-100 hover:border-gray-200'}`}>
+                                                            <input
+                                                                type="checkbox"
+                                                                className="mt-1 h-4 w-4 text-[#1B5E20] border-gray-300 rounded focus:ring-[#1B5E20]"
+                                                                checked={formData.paymentMethods?.includes('cod')}
+                                                                onChange={() => handlePaymentMethodChange('cod')}
+                                                            />
+                                                            <div className="ml-3">
+                                                                <div className="flex items-center">
+                                                                    <span className="font-bold text-gray-900 text-xs sm:text-sm">Cash On Delivery (COD)</span>
+                                                                    <span className="ml-2 px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[8px] sm:text-[10px] font-bold rounded">Tunai</span>
+                                                                </div>
+                                                                <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5">Pembeli membayar tunai saat pesanan sampai.</p>
                                                             </div>
-                                                            <p className="text-xs text-gray-500 mt-0.5">Pembeli transfer ke rekening bank toko (konfirmasi manual).</p>
+                                                        </label>
+
+                                                        {/* Bank Transfer */}
+                                                        <div className="space-y-3">
+                                                            <label className={`flex items-start p-3 sm:p-4 rounded-2xl border cursor-pointer transition-all ${formData.paymentMethods?.includes('transfer') ? 'bg-blue-50 border-blue-600 ring-1 ring-blue-600 rounded-b-none' : 'bg-white border-gray-100 hover:border-gray-200'}`}>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    className="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                                                    checked={formData.paymentMethods?.includes('transfer')}
+                                                                    onChange={() => handlePaymentMethodChange('transfer')}
+                                                                />
+                                                                <div className="ml-3">
+                                                                    <div className="flex items-center">
+                                                                        <span className="font-bold text-gray-900 text-xs sm:text-sm">Bank Transfer</span>
+                                                                        <span className="ml-2 px-1.5 py-0.5 bg-blue-100 text-blue-700 text-[8px] sm:text-[10px] font-bold rounded">Manual</span>
+                                                                    </div>
+                                                                    <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5">Pembeli transfer ke rekening bank toko.</p>
+                                                                </div>
+                                                            </label>
+
+                                                            {formData.paymentMethods?.includes('transfer') && (
+                                                                <div className="p-4 bg-blue-50/50 border-x border-b border-blue-200 rounded-b-2xl -mt-3 space-y-3">
+                                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                                        <div>
+                                                                            <label className="block text-[8px] font-black text-blue-400 uppercase mb-1">Nama Bank</label>
+                                                                            <input
+                                                                                type="text"
+                                                                                name="bankName"
+                                                                                value={formData.bankName}
+                                                                                onChange={handleChange}
+                                                                                placeholder="Contoh: BCA / Mandiri"
+                                                                                className="w-full bg-white border border-blue-100 rounded-xl py-2 px-3 text-xs font-bold outline-none focus:border-blue-500"
+                                                                            />
+                                                                        </div>
+                                                                        <div>
+                                                                            <label className="block text-[8px] font-black text-blue-400 uppercase mb-1">Nomor Rekening</label>
+                                                                            <input
+                                                                                type="text"
+                                                                                name="bankAccountNumber"
+                                                                                value={formData.bankAccountNumber}
+                                                                                onChange={handleChange}
+                                                                                placeholder="Masukkan No Rekening"
+                                                                                className="w-full bg-white border border-blue-100 rounded-xl py-2 px-3 text-xs font-bold outline-none focus:border-blue-500"
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                    <div>
+                                                                        <label className="block text-[8px] font-black text-blue-400 uppercase mb-1">Nama Pemilik Rekening</label>
+                                                                        <input
+                                                                            type="text"
+                                                                            name="bankAccountName"
+                                                                            value={formData.bankAccountName}
+                                                                            onChange={handleChange}
+                                                                            placeholder="Nama di buku tabungan"
+                                                                            className="w-full bg-white border border-blue-100 rounded-xl py-2 px-3 text-xs font-bold outline-none focus:border-blue-500"
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                            )}
                                                         </div>
+
+                                                        {/* QRIS Pribadi */}
+                                                        <div className="space-y-3">
+                                                            <label className={`flex items-start p-3 sm:p-4 rounded-2xl border cursor-pointer transition-all ${formData.paymentMethods?.includes('qris') ? 'bg-pink-50 border-pink-600 ring-1 ring-pink-600 rounded-b-none' : 'bg-white border-gray-100 hover:border-gray-200'}`}>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    className="mt-1 h-4 w-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500"
+                                                                    checked={formData.paymentMethods?.includes('qris')}
+                                                                    onChange={() => handlePaymentMethodChange('qris')}
+                                                                />
+                                                                <div className="ml-3">
+                                                                    <div className="flex items-center">
+                                                                        <span className="font-bold text-gray-900 text-xs sm:text-sm">QRIS Pribadi</span>
+                                                                        <span className="ml-2 px-1.5 py-0.5 bg-pink-100 text-pink-700 text-[8px] sm:text-[10px] font-bold rounded">Otomatis</span>
+                                                                    </div>
+                                                                    <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5">Tampilkan gambar QRIS toko Anda saat checkout.</p>
+                                                                </div>
+                                                            </label>
+
+                                                            {formData.paymentMethods?.includes('qris') && (
+                                                                <div className="p-4 bg-pink-50/50 border-x border-b border-pink-200 rounded-b-2xl -mt-3">
+                                                                    <div className="flex items-center space-x-4">
+                                                                        <div className="w-20 h-20 sm:w-24 sm:h-24 bg-white rounded-xl border border-pink-100 flex items-center justify-center overflow-hidden shrink-0">
+                                                                            {qrisPreviewUrl ? (
+                                                                                <img src={qrisPreviewUrl} alt="QRIS Preview" className="w-full h-full object-cover" />
+                                                                            ) : (
+                                                                                <CreditCard className="h-8 w-8 text-pink-200" />
+                                                                            )}
+                                                                        </div>
+                                                                        <div className="flex-1">
+                                                                            <p className="text-[9px] font-bold text-pink-800 mb-2 leading-tight">Pastikan gambar QRIS jelas agar mudah discan oleh pembeli.</p>
+                                                                            <button
+                                                                                onClick={() => qrisInputRef.current?.click()}
+                                                                                className="px-3 py-1.5 bg-pink-600 text-white rounded-lg text-[10px] font-black uppercase hover:bg-pink-700 transition-colors"
+                                                                            >
+                                                                                Upload QRIS
+                                                                            </button>
+                                                                            <input
+                                                                                type="file"
+                                                                                ref={qrisInputRef}
+                                                                                className="hidden"
+                                                                                accept="image/*"
+                                                                                onChange={(e) => handleFileChange(e, 'qris')}
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="mb-6">
+                                                    <label className="block text-[8px] sm:text-xs font-black text-gray-400 uppercase tracking-widest mb-4 flex items-center">
+                                                        <CreditCard className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-2" />
+                                                        Kategori 2: Multi Payment (Otomatis)
                                                     </label>
 
-                                                    <label className={`flex items-start p-3 rounded-xl border cursor-pointer transition-all ${formData.paymentMethods?.includes('qris') ? 'bg-red-50 border-red-600 ring-1 ring-red-600' : 'bg-white border-gray-200 hover:border-gray-300'}`}>
-                                                        <input
-                                                            type="checkbox"
-                                                            className="mt-1 h-4 w-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
-                                                            checked={formData.paymentMethods?.includes('qris')}
-                                                            onChange={() => handlePaymentMethodChange('qris')}
-                                                        />
-                                                        <div className="ml-3">
-                                                            <div className="flex items-center">
-                                                                <span className="font-bold text-gray-900 text-sm">QRIS / E-Wallet</span>
-                                                                <span className="ml-2 px-1.5 py-0.5 bg-red-100 text-red-700 text-[10px] font-bold rounded">Otomatis</span>
+                                                    <div className="relative group grayscale">
+                                                        <div className="absolute inset-0 bg-white/50 z-10 rounded-2xl flex items-center justify-center">
+                                                            <div className="bg-gray-900/90 text-white px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest animate-pulse">
+                                                                Coming Soon
                                                             </div>
-                                                            <p className="text-xs text-gray-500 mt-0.5">Pembayaran instan via Gopay, OVO, Dana, dll.</p>
                                                         </div>
-                                                    </label>
-
-                                                    <div className="p-3 bg-yellow-50 rounded-xl border border-yellow-100 flex items-start">
-                                                        <Info className="h-4 w-4 text-yellow-600 mt-0.5 mr-2 shrink-0" />
-                                                        <p className="text-xs text-yellow-700">
-                                                            Pastikan Anda memiliki rekening/akun yang valid untuk metode non-tunai.
-                                                        </p>
+                                                        <label className="flex items-start p-3 sm:p-4 rounded-2xl border border-gray-100 bg-gray-50/50">
+                                                            <input type="checkbox" disabled className="mt-1 h-4 w-4 border-gray-300 rounded" />
+                                                            <div className="ml-3">
+                                                                <div className="flex items-center">
+                                                                    <span className="font-bold text-gray-400 text-xs sm:text-sm">Midtrans Integration</span>
+                                                                    <span className="ml-2 px-1.5 py-0.5 bg-gray-200 text-gray-500 text-[8px] sm:text-[10px] font-bold rounded">Auto</span>
+                                                                </div>
+                                                                <p className="text-[10px] sm:text-xs text-gray-400 mt-0.5">OVO, GoPay, Dana, VA Bank, dll terintegrasi otomatis.</p>
+                                                            </div>
+                                                        </label>
                                                     </div>
                                                 </div>
                                             </div>

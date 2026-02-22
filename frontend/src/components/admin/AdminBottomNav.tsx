@@ -3,16 +3,17 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, LayoutDashboard, Store, Settings } from 'lucide-react';
+import { Home, LayoutDashboard, Store, Tag, Scale } from 'lucide-react';
 import { clsx } from 'clsx';
 
 export default function AdminBottomNav() {
     const pathname = usePathname();
 
     const navItems = [
-        { label: 'Akun', icon: Settings, href: '/dashboard/profile' },
         { label: 'Stats', icon: LayoutDashboard, href: '/dashboard/admin' },
         { label: 'Toko', icon: Store, href: '/dashboard/admin/shops' },
+        { label: 'Kategori', icon: Tag, href: '/dashboard/admin/categories' },
+        { label: 'Satuan', icon: Scale, href: '/dashboard/admin/units' },
         { label: 'Home', icon: Home, href: '/' },
     ];
 

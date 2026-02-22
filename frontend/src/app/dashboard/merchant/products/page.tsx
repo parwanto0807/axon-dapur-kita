@@ -20,10 +20,22 @@ interface Product {
     price: number;
     stock: number;
     image: string | null;
-    unit: { name: string } | null;
+    unit: { name: string; symbol: string | null } | null;
+    category: {
+        id: string;
+        name: string;
+        parent: { name: string; slug: string } | null;
+    } | null;
     createdAt: string;
     slug: string;
     trackStock: boolean;
+    tags?: {
+        tag: {
+            id: string;
+            name: string;
+            type: string;
+        };
+    }[];
 }
 
 export default function ProductsPage() {
@@ -163,7 +175,7 @@ export default function ProductsPage() {
                     {/* Desktop Table - Hidden on Mobile & Tablet */}
                     <div className="hidden md:block overflow-x-auto">
                         <table className="w-full text-left border-collapse">
-                            <thead className="bg-gray-50 text-gray-400 text-[10px] uppercase font-black tracking-widest">
+                            <thead className="bg-gray-50 text-gray-400 text-[11px] uppercase font-semibold tracking-widest">
                                 <tr>
                                     <th className="px-6 py-4 w-24">Gambar</th>
                                     <th className="px-6 py-4">Nama Produk</th>
@@ -206,25 +218,43 @@ export default function ProductsPage() {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
-                                                <p className="font-black text-gray-900 text-sm tracking-tight uppercase line-clamp-1">{product.name}</p>
-                                                <p className="text-[10px] font-bold text-gray-400 mt-0.5 line-clamp-1 truncate uppercase tracking-widest">{product.description || 'No description'}</p>
+                                                <div className="flex flex-col">
+                                                    <p className="font-semibold text-gray-900 text-base tracking-tight uppercase line-clamp-1">{product.name}</p>
+                                                    {product.category && (
+                                                        <div className="flex items-center space-x-1.5 mt-1 text-[10px] font-medium uppercase tracking-tight">
+                                                            <span className="text-gray-400">
+                                                                {product.category.parent ? `${product.category.parent.name} > ` : ''}
+                                                            </span>
+                                                            <span className="text-[#1B5E20]">{product.category.name}</span>
+                                                        </div>
+                                                    )}
+                                                    {product.tags && product.tags.length > 0 && (
+                                                        <div className="flex flex-wrap gap-1 mt-1.5">
+                                                            {product.tags.map((t) => (
+                                                                <span key={t.tag.id} className="px-2 py-0.5 bg-[#1B5E20]/5 text-[#1B5E20] text-[9px] font-semibold rounded uppercase border border-[#1B5E20]/10 tracking-tight">
+                                                                    {t.tag.name}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </td>
-                                            <td className="px-6 py-4 text-sm font-black text-[#1B5E20]">
+                                            <td className="px-6 py-4 text-base font-semibold text-[#1B5E20]">
                                                 {formatPrice(product.price)}
                                             </td>
                                             <td className="px-6 py-4 text-center">
                                                 <div className="flex flex-col items-center space-y-2">
                                                     <span className={clsx(
-                                                        "px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border transition-all",
+                                                        "px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-widest border transition-all",
                                                         product.trackStock && product.stock > 10 ? 'bg-green-50 text-green-700 border-green-100' :
                                                             product.trackStock && product.stock > 0 ? 'bg-yellow-50 text-yellow-700 border-yellow-100' :
                                                                 product.trackStock && product.stock === 0 ? 'bg-red-50 text-red-700 border-red-100' :
                                                                     'bg-gray-50 text-gray-400 border-gray-100'
                                                     )}>
                                                         {product.trackStock ? (
-                                                            <span className="font-bold">{product.stock} {product.unit?.name}</span>
+                                                            <span className="font-semibold">{product.stock} {product.unit?.symbol || product.unit?.name || ''}</span>
                                                         ) : (
-                                                            <span className="text-[8px] bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full">OFF</span>
+                                                            <span className="text-[10px] bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full">OFF</span>
                                                         )}
                                                     </span>
                                                 </div>
@@ -265,7 +295,7 @@ export default function ProductsPage() {
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan={5} className="px-6 py-12 text-center text-gray-400 text-[10px] font-black uppercase tracking-widest">
+                                        <td colSpan={5} className="px-6 py-12 text-center text-gray-400 text-xs font-black uppercase tracking-widest">
                                             Tidak ada produk
                                         </td>
                                     </tr>
@@ -317,7 +347,15 @@ export default function ProductsPage() {
                                                 <p className="text-[#1B5E20] text-xs font-black mb-1.5">{formatPrice(product.price)}</p>
 
                                                 <div className="space-y-1">
-                                                    <div className="flex items-center space-x-1.5">
+                                                    {product.category && (
+                                                        <div className="flex items-center space-x-1.5 mb-1 text-[7px] sm:text-[8px] font-bold uppercase tracking-tight">
+                                                            <span className="text-gray-400">
+                                                                {product.category.parent ? `${product.category.parent.name} > ` : ''}
+                                                            </span>
+                                                            <span className="text-[#1B5E20]">{product.category.name}</span>
+                                                        </div>
+                                                    )}
+                                                    <div className="flex items-center space-x-1.5 mb-1.5">
                                                         <span className={clsx(
                                                             "px-1.5 py-0.5 rounded-full text-[7px] font-black uppercase tracking-widest border",
                                                             product.trackStock && product.stock > 10 ? 'bg-green-50 text-green-700 border-green-100' :
@@ -325,10 +363,20 @@ export default function ProductsPage() {
                                                                     product.trackStock && product.stock === 0 ? 'bg-red-50 text-red-700 border-red-100' :
                                                                         'bg-gray-50 text-gray-400 border-gray-100'
                                                         )}>
-                                                            {product.trackStock ? `${product.stock} ${product.unit?.name || ''}` : 'OFF'}
+                                                            {product.trackStock ? `${product.stock} ${product.unit?.symbol || product.unit?.name || ''}` : 'OFF'}
                                                         </span>
                                                         <span className="text-[8px] text-gray-400 font-bold uppercase tracking-tight">Stok</span>
                                                     </div>
+
+                                                    {product.tags && product.tags.length > 0 && (
+                                                        <div className="flex flex-wrap gap-0.5">
+                                                            {product.tags.map((t) => (
+                                                                <span key={t.tag.id} className="px-1 py-0.5 bg-[#1B5E20]/5 text-[#1B5E20] text-[6px] sm:text-[7px] font-bold rounded uppercase border border-[#1B5E20]/10 tracking-tight">
+                                                                    {t.tag.name}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>

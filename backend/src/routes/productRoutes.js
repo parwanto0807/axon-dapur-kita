@@ -43,25 +43,35 @@ router.get('/public', async (req, res) => {
         };
 
         if (category && category !== 'all') {
+            // Fetch the parent category + all its sub-categories
             const categoryRecord = await prisma.category.findUnique({
-                where: { slug: category }
+                where: { slug: category },
+                include: { children: { select: { id: true } } }
             });
-            
+
             if (categoryRecord) {
-                whereClause.categoryId = categoryRecord.id;
+                // Include parent ID AND all child IDs so products in sub-categories are shown
+                const categoryIds = [
+                    categoryRecord.id,
+                    ...categoryRecord.children.map(c => c.id)
+                ];
+                whereClause.categoryId = { in: categoryIds };
             }
         }
 
         const products = await prisma.product.findMany({
             where: whereClause,
-            take: 12, // Increased limit for better variety
+            take: 24,
             orderBy: { createdAt: 'desc' },
             include: {
                 shop: {
                     select: { name: true, slug: true, address: true }
                 },
                 images: true,
-                category: true
+                category: { 
+                    include: { parent: true }
+                },
+                tags: { include: { tag: true } }
             }
         });
 
@@ -110,7 +120,11 @@ router.get('/nearby', async (req, res) => {
                     select: { name: true, slug: true, address: true, latitude: true, longitude: true }
                 },
                 images: true,
-                category: true
+                category: {
+                    include: {
+                        parent: true
+                    }
+                }
             }
         });
 
@@ -170,9 +184,14 @@ router.get('/my-products', async (req, res) => {
             where: { shopId: shop.id },
             orderBy: { createdAt: 'desc' },
             include: {
-                category: true,
+                category: {
+                    include: {
+                        parent: true
+                    }
+                },
                 unit: true,
-                images: true
+                images: true,
+                tags: { include: { tag: true } }
             }
         });
 
@@ -199,7 +218,14 @@ router.get('/', async (req, res) => {
             orderBy: { createdAt: 'desc' },
             include: {
                 shop: { select: { name: true } },
-                images: true
+                category: {
+                    include: {
+                        parent: true
+                    }
+                },
+                unit: true,
+                images: true,
+                tags: { include: { tag: true } }
             }
         });
         
@@ -230,7 +256,8 @@ router.get('/:id', async (req, res) => {
                 },
                 images: true,
                 unit: true,
-                category: true
+                category: { select: { id: true, name: true, slug: true, parent: { select: { name: true, slug: true } } } },
+                tags: { include: { tag: true } }
             }
         });
 
@@ -261,12 +288,16 @@ router.post('/', upload.array('images', 10), async (req, res) => {
         const shop = await checkShopOwnership(req.user.id);
         if (!shop) return res.status(404).json({ message: 'Shop not found' });
 
-        const { name, description, price, stock, weight, category, condition, unitId, isActive, isPreOrder, expiryInfo, expiresAt, trackStock } = req.body;
+        const { name, description, price, stock, weight, category, condition, unitId, isActive, isPreOrder, expiryInfo, expiresAt, trackStock, tagIds } = req.body;
 
         const uploadDir = path.join('public', 'products', shop.slug);
         if (!fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir, { recursive: true });
         }
+
+        const tagIdsArray = tagIds 
+            ? (Array.isArray(tagIds) ? tagIds : [tagIds]).filter(Boolean)
+            : [];
 
         const productImages = [];
         let mainImageUrl = null;
@@ -323,9 +354,18 @@ router.post('/', upload.array('images', 10), async (req, res) => {
         const product = await prisma.product.create({
             data: productData,
             include: {
-                images: true
+                images: true,
+                tags: { include: { tag: true } }
             }
         });
+
+        // Associate tags via ProductTag
+        if (tagIdsArray.length > 0) {
+            await prisma.productTag.createMany({
+                data: tagIdsArray.map(tagId => ({ productId: product.id, tagId })),
+                skipDuplicates: true
+            });
+        }
 
         res.status(201).json(product);
     } catch (error) {
@@ -345,7 +385,11 @@ router.put('/:id', upload.array('images', 10), async (req, res) => {
         if (!shop) return res.status(404).json({ message: 'Shop not found' });
 
         const { id } = req.params;
-        const { name, description, price, stock, weight, category, condition, unitId, isActive, isPreOrder, expiryInfo, expiresAt, deletedImageIds, trackStock } = req.body;
+        const { name, description, price, stock, weight, category, condition, unitId, isActive, isPreOrder, expiryInfo, expiresAt, deletedImageIds, trackStock, tagIds } = req.body;
+
+        const tagIdsArray = tagIds
+            ? (Array.isArray(tagIds) ? tagIds : [tagIds]).filter(Boolean)
+            : null;
 
         const product = await prisma.product.findUnique({ 
             where: { id },
@@ -426,8 +470,19 @@ router.put('/:id', upload.array('images', 10), async (req, res) => {
         const updatedProduct = await prisma.product.update({
             where: { id },
             data: updateData,
-            include: { images: true }
+            include: { images: true, tags: { include: { tag: true } } }
         });
+
+        // Sync tags if provided
+        if (tagIdsArray !== null) {
+            await prisma.productTag.deleteMany({ where: { productId: id } });
+            if (tagIdsArray.length > 0) {
+                await prisma.productTag.createMany({
+                    data: tagIdsArray.map(tagId => ({ productId: id, tagId })),
+                    skipDuplicates: true
+                });
+            }
+        }
 
         res.json(updatedProduct);
     } catch (error) {

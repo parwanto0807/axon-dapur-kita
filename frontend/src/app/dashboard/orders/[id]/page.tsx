@@ -62,7 +62,7 @@ export default function OrderDetailsPage() {
         setTimeout(() => setCopied(false), 2000);
     };
 
-    const getStatusStyle = (status: string) => {
+    const getStatusStyle = (status: string, hasProof: boolean = false) => {
         switch (status?.toLowerCase()) {
             case 'paid':
                 return {
@@ -73,6 +73,15 @@ export default function OrderDetailsPage() {
                     sub: 'Pesanan sedang disiapkan'
                 };
             case 'pending':
+                if (hasProof) {
+                    return {
+                        bg: 'bg-orange-100',
+                        text: 'text-orange-700',
+                        icon: Clock,
+                        label: 'Menunggu Verifikasi',
+                        sub: 'Penjual sedang mengecek bukti bayar'
+                    };
+                }
                 return {
                     bg: 'bg-yellow-100',
                     text: 'text-yellow-700',
@@ -135,7 +144,7 @@ export default function OrderDetailsPage() {
         );
     }
 
-    const statusObj = getStatusStyle(order.paymentStatus);
+    const statusObj = getStatusStyle(order.paymentStatus, !!order.paymentProof);
     const StatusIcon = statusObj.icon;
 
     return (
@@ -316,48 +325,140 @@ export default function OrderDetailsPage() {
                                     Instruksi Pembayaran
                                 </h3>
 
-                                {order.paymentStatus === 'pending' ? (
+                                {order.paymentMethod === 'cod' ? (
                                     <div className="space-y-6">
-                                        <div className="bg-green-50/50 p-4 md:p-5 rounded-[1.5rem] md:rounded-3xl border border-green-100">
-                                            <p className="text-[8px] md:text-[10px] font-bold text-[#1B5E20] uppercase tracking-widest mb-2 md:mb-3">Bank Transfer (Manual)</p>
-                                            <div className="flex items-center justify-between mb-3 md:mb-4">
-                                                <div>
-                                                    <p className="text-[10px] md:text-xs text-gray-500 font-bold mb-0.5 md:mb-1">Nomor Rekening</p>
-                                                    <p className="text-base md:text-xl font-black text-gray-900 tracking-tight">7289-01-013000-53-0</p>
-                                                </div>
-                                                <button
-                                                    onClick={() => handleCopy('728901013000530')}
-                                                    className="p-2 md:p-3 bg-white text-[#1B5E20] rounded-xl md:rounded-2xl shadow-sm border border-green-100 hover:bg-green-50 transition-all font-bold text-[10px] md:text-xs"
-                                                >
-                                                    Salin
-                                                </button>
+                                        <div className="bg-blue-50 p-6 rounded-3xl border border-blue-100 flex flex-col items-center text-center">
+                                            <div className="h-16 w-16 bg-white rounded-2xl flex items-center justify-center shadow-sm mb-4">
+                                                <Truck className="h-8 w-8 text-blue-600" />
                                             </div>
-                                            <p className="text-[10px] md:text-xs text-gray-500 leading-relaxed font-medium">
-                                                Bank <span className="font-bold text-gray-900">BRI</span> a/n <span className="font-bold text-gray-900">Parwanto</span>
+                                            <h4 className="font-black text-blue-900 text-lg uppercase tracking-tight mb-2">Bayar di Tempat (COD)</h4>
+                                            <p className="text-sm text-blue-700 font-medium leading-relaxed">
+                                                Siapkan uang tunai sebesar <span className="font-black text-lg">{formatPrice(order.totalAmount)}</span> saat pesanan tiba di alamat Anda.
                                             </p>
                                         </div>
+                                        <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 text-center">
+                                            <p className="text-[10px] md:text-xs text-gray-500 font-bold uppercase tracking-widest leading-relaxed">
+                                                Penjual akan memproses pesanan Anda setelah konfirmasi ketersediaan stok.
+                                            </p>
+                                        </div>
+                                    </div>
+                                ) : order.paymentStatus === 'pending' ? (
+                                    <div className="space-y-6">
+                                        {/* Dynamic Bank / QRIS Info */}
+                                        {order.paymentMethod === 'transfer' && (
+                                            <div className="bg-green-50/50 p-4 md:p-5 rounded-[1.5rem] md:rounded-3xl border border-green-100">
+                                                <p className="text-[8px] md:text-[10px] font-bold text-[#1B5E20] uppercase tracking-widest mb-2 md:mb-3">Transfer Bank Manual</p>
+                                                <div className="flex items-center justify-between mb-3 md:mb-4">
+                                                    <div>
+                                                        <p className="text-[10px] md:text-xs text-gray-500 font-bold mb-0.5 md:mb-1 uppercase">{order.shop?.bankName || 'BANK'}</p>
+                                                        <p className="text-base md:text-xl font-black text-gray-900 tracking-tight">{order.shop?.bankAccountNumber || '-'}</p>
+                                                    </div>
+                                                    <button
+                                                        onClick={() => handleCopy(order.shop?.bankAccountNumber || '')}
+                                                        className="p-2 md:p-3 bg-white text-[#1B5E20] rounded-xl md:rounded-2xl shadow-sm border border-green-100 hover:bg-green-50 transition-all font-bold text-[10px] md:text-xs"
+                                                    >
+                                                        Salin
+                                                    </button>
+                                                </div>
+                                                <p className="text-[10px] md:text-xs text-gray-500 leading-relaxed font-medium">
+                                                    Atas Nama: <span className="font-bold text-gray-900 uppercase">{order.shop?.bankAccountName || '-'}</span>
+                                                </p>
+                                            </div>
+                                        )}
+
+                                        {order.paymentMethod === 'qris' && (
+                                            <div className="bg-pink-50/50 p-4 md:p-5 rounded-[1.5rem] md:rounded-3xl border border-pink-100 text-center">
+                                                <p className="text-[8px] md:text-[10px] font-bold text-pink-600 uppercase tracking-widest mb-4">Scan QRIS Merchant</p>
+                                                {order.shop?.qrisImage ? (
+                                                    <div className="bg-white p-3 rounded-2xl border border-pink-100 inline-block mb-3 shadow-sm">
+                                                        <img
+                                                            src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5003'}${order.shop.qrisImage}`}
+                                                            alt="QRIS"
+                                                            className="w-48 h-48 md:w-56 md:h-56 object-contain"
+                                                        />
+                                                    </div>
+                                                ) : (
+                                                    <div className="py-8 bg-white/50 rounded-2xl border border-dashed border-pink-200 mb-3">
+                                                        <p className="text-xs text-pink-400 font-medium">QRIS tidak tersedia. Hubungi penjual.</p>
+                                                    </div>
+                                                )}
+                                                <p className="text-[10px] md:text-xs text-gray-500 font-medium">Scan menggunakan aplikasi pembayaran pilihan Anda</p>
+                                            </div>
+                                        )}
 
                                         <div className="flex items-start space-x-3 p-4 bg-orange-50 rounded-2xl border border-orange-100">
                                             <AlertTriangle className="h-5 w-5 text-orange-600 shrink-0 mt-0.5" />
-                                            <p className="text-[11px] text-orange-800 leading-relaxed">
-                                                Gunakan <span className="font-bold">Order ID</span> di atas sebagai referensi transfer Anda agar verifikasi berjalan cepat.
+                                            <p className="text-[11px] text-orange-800 leading-relaxed font-medium">
+                                                Segera upload bukti setelah transfer. Sertakan <span className="font-bold">Order ID</span> di catatan transfer agar verifikasi lebih cepat.
                                             </p>
                                         </div>
 
-                                        <button
-                                            onClick={async () => {
-                                                if (confirm('Saya sudah melakukan transfer sesuai nominal. Konfirmasi pembayaran?')) {
-                                                    try {
-                                                        await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/orders/${id}/pay`, {}, { withCredentials: true });
-                                                        fetchOrderDetails();
-                                                        alert('Pembayaran dikonfirmasi! Menunggu verifikasi penjual.');
-                                                    } catch (e) { alert('Gagal konfirmasi pembayaran'); }
-                                                }
-                                            }}
-                                            className="w-full py-3.5 md:py-4 bg-white border-2 border-[#1B5E20] text-[#1B5E20] rounded-xl font-bold text-xs md:text-base hover:bg-green-50 transition-all flex items-center justify-center space-x-2"
-                                        >
-                                            <span>Saya Sudah Bayar</span>
-                                        </button>
+                                        {/* Payment Proof Preview / Upload */}
+                                        {order.paymentProof ? (
+                                            <div className="space-y-4">
+                                                <p className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Bukti yang Diunggah</p>
+                                                <div className="relative group rounded-2xl overflow-hidden border border-gray-200">
+                                                    <img
+                                                        src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5003'}${order.paymentProof}`}
+                                                        className="w-full h-auto max-h-48 object-cover group-hover:scale-105 transition-transform duration-500"
+                                                        alt="Bukti Bayar"
+                                                    />
+                                                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <span className="text-white text-[10px] font-bold uppercase tracking-widest">Awaiting Verification</span>
+                                                    </div>
+                                                </div>
+                                                <p className="text-[10px] text-orange-600 font-bold text-center bg-orange-50 py-2 rounded-xl border border-orange-100 animate-pulse">
+                                                    Menunggu Verifikasi Penjual
+                                                </p>
+                                            </div>
+                                        ) : (
+                                            <div className="mt-4">
+                                                <input
+                                                    type="file"
+                                                    id="proof-upload"
+                                                    className="hidden"
+                                                    accept="image/*"
+                                                    onChange={async (e) => {
+                                                        const file = e.target.files?.[0];
+                                                        if (!file) return;
+
+                                                        const formData = new FormData();
+                                                        formData.append('paymentProof', file);
+
+                                                        try {
+                                                            const btn = document.getElementById('proof-btn');
+                                                            if (btn) {
+                                                                btn.innerHTML = 'Mengunggah...';
+                                                                (btn as HTMLButtonElement).disabled = true;
+                                                            }
+                                                            await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api'}/orders/${id}/upload-proof`, formData, {
+                                                                withCredentials: true,
+                                                                headers: { 'Content-Type': 'multipart/form-data' }
+                                                            });
+                                                            fetchOrderDetails();
+                                                            alert('Bukti pembayaran berhasil diunggah!');
+                                                        } catch (err) {
+                                                            console.error(err);
+                                                            alert('Gagal mengunggah bukti pembayaran');
+                                                        } finally {
+                                                            const btn = document.getElementById('proof-btn');
+                                                            if (btn) {
+                                                                btn.innerHTML = 'Saya Sudah Bayar';
+                                                                (btn as HTMLButtonElement).disabled = false;
+                                                            }
+                                                        }
+                                                    }}
+                                                />
+                                                <button
+                                                    id="proof-btn"
+                                                    onClick={() => document.getElementById('proof-upload')?.click()}
+                                                    className="w-full py-3.5 md:py-4 bg-[#1B5E20] text-white rounded-xl font-bold text-xs md:text-base hover:bg-green-800 transition-all flex items-center justify-center space-x-2 shadow-lg shadow-green-100"
+                                                >
+                                                    <Download className="h-4 w-4" />
+                                                    <span>Unggah Bukti Pembayaran</span>
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 ) : order.paymentStatus === 'paid' ? (
                                     <div className="text-center py-6">
@@ -365,12 +466,24 @@ export default function OrderDetailsPage() {
                                             <CheckCircle className="h-8 w-8" />
                                         </div>
                                         <p className="font-bold text-gray-900">Pembayaran Terverifikasi</p>
-                                        <p className="text-xs text-gray-500 mt-1">Pesanan Anda telah dibayar penuh menggunakan {order.paymentMethod.toUpperCase()}</p>
+                                        <p className="text-xs text-gray-500 mt-1 uppercase tracking-tight font-medium">Lunas via {order.paymentMethod.replace('_', ' ')}</p>
+
+                                        {order.paymentProof && (
+                                            <div className="mt-4 pt-4 border-t border-gray-100">
+                                                <a
+                                                    href={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5003'}${order.paymentProof}`}
+                                                    target="_blank"
+                                                    className="text-[10px] text-[#1B5E20] font-bold hover:underline flex items-center justify-center"
+                                                >
+                                                    Lihat Bukti Transfer <ExternalLink className="h-3 w-3 ml-1" />
+                                                </a>
+                                            </div>
+                                        )}
                                     </div>
                                 ) : (
                                     <div className="text-center py-6 text-gray-400">
                                         <Info className="h-10 w-10 mx-auto mb-2 opacity-30" />
-                                        <p className="text-xs">Informasi tidak tersedia untuk status ini.</p>
+                                        <p className="text-xs font-bold uppercase tracking-widest">Status: {order.paymentStatus}</p>
                                     </div>
                                 )}
                             </div>

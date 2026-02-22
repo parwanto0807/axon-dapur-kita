@@ -58,6 +58,7 @@ interface Order {
     createdAt: string;
     totalAmount: number;
     paymentMethod: string;
+    paymentProof?: string;
     user: OrderUser;
     items: OrderItem[];
     shippingAddress?: {
@@ -137,9 +138,18 @@ export default function MerchantOrdersPage() {
         return matchesSearch && matchesStatus;
     });
 
-    const getStatusStyles = (status: string, paymentMethod?: string) => {
+    const getStatusStyles = (status: string, paymentMethod?: string, hasProof: boolean = false) => {
         switch (status) {
             case 'pending':
+                if (hasProof) {
+                    return {
+                        bg: 'bg-orange-50',
+                        text: 'text-orange-700',
+                        border: 'border-orange-100',
+                        label: 'MENUNGGU VERIFIKASI',
+                        icon: Clock
+                    };
+                }
                 if (paymentMethod === 'cod') {
                     return {
                         bg: 'bg-yellow-50',
@@ -292,7 +302,7 @@ export default function MerchantOrdersPage() {
                 ) : (
                     <div className="grid gap-4">
                         {filteredOrders.map((order) => {
-                            const statusStyle = getStatusStyles(order.paymentStatus, order.paymentMethod);
+                            const statusStyle = getStatusStyles(order.paymentStatus, order.paymentMethod, !!order.paymentProof);
                             const StatusIcon = statusStyle.icon;
 
                             return (
@@ -390,18 +400,37 @@ export default function MerchantOrdersPage() {
                                             <div className="flex items-center gap-2 w-full sm:w-auto">
                                                 {/* Action Buttons */}
                                                 {order.paymentStatus === 'pending' && (
-                                                    <button
-                                                        onClick={() => updateStatus(order.id, order.paymentMethod === 'cod' ? 'processing' : 'paid')}
-                                                        className="flex-1 sm:flex-none px-3 py-1.5 bg-[#1B5E20] text-white text-[10px] font-semibold rounded-lg hover:bg-green-800 transition-colors shadow-sm"
-                                                    >
-                                                        {order.paymentMethod === 'cod' ? t('btn.confirm') : t('btn.verify')}
-                                                    </button>
+                                                    <div className="flex flex-col gap-2 w-full sm:w-auto">
+                                                        {order.paymentProof && (
+                                                            <div className="flex items-center gap-1 text-[8px] text-[#1B5E20] font-bold bg-green-50 px-2 py-1 rounded border border-green-100 animate-pulse">
+                                                                <CheckCircle2 className="h-2.5 w-2.5" />
+                                                                ADA BUKTI BAYAR
+                                                            </div>
+                                                        )}
+                                                        <button
+                                                            onClick={async () => {
+                                                                if (order.paymentMethod === 'cod') {
+                                                                    updateStatus(order.id, 'processing');
+                                                                } else {
+                                                                    try {
+                                                                        const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
+                                                                        await axios.patch(`${apiBaseUrl}/orders/${order.id}/verify-payment`, {}, { withCredentials: true });
+                                                                        toast.success('Pembayaran diverifikasi');
+                                                                        fetchOrders();
+                                                                    } catch (err) { toast.error('Gagal verifikasi'); }
+                                                                }
+                                                            }}
+                                                            className="flex-1 sm:flex-none px-3 py-1.5 bg-[#1B5E20] text-white text-[10px] font-semibold rounded-lg hover:bg-green-800 transition-colors shadow-sm"
+                                                        >
+                                                            {order.paymentMethod === 'cod' ? t('btn.confirm') : t('btn.verify')}
+                                                        </button>
+                                                    </div>
                                                 )}
 
                                                 {order.paymentStatus === 'paid' && (
                                                     <button
                                                         onClick={() => updateStatus(order.id, 'processing')}
-                                                        className="flex-1 sm:flex-none px-3 py-1.5 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                                                        className="flex-1 sm:flex-none px-3 py-1.5 bg-purple-600 text-white text-[10px] font-semibold rounded-lg hover:bg-purple-700 transition-colors shadow-sm"
                                                     >
                                                         {t('btn.process')}
                                                     </button>
@@ -410,7 +439,7 @@ export default function MerchantOrdersPage() {
                                                 {order.paymentStatus === 'processing' && (
                                                     <button
                                                         onClick={() => updateStatus(order.id, 'shipped')}
-                                                        className="flex-1 sm:flex-none px-3 py-1.5 bg-indigo-600 text-white text-xs font-semibold rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
+                                                        className="flex-1 sm:flex-none px-3 py-1.5 bg-indigo-600 text-white text-[10px] font-semibold rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
                                                     >
                                                         {t('btn.ship')}
                                                     </button>
@@ -419,7 +448,7 @@ export default function MerchantOrdersPage() {
                                                 {order.paymentStatus === 'shipped' && (
                                                     <button
                                                         onClick={() => updateStatus(order.id, 'completed')}
-                                                        className="flex-1 sm:flex-none px-3 py-1.5 bg-emerald-600 text-white text-xs font-semibold rounded-lg hover:bg-emerald-700 transition-colors shadow-sm"
+                                                        className="flex-1 sm:flex-none px-3 py-1.5 bg-emerald-600 text-white text-[10px] font-semibold rounded-lg hover:bg-emerald-700 transition-colors shadow-sm"
                                                     >
                                                         {t('btn.done')}
                                                     </button>
@@ -427,7 +456,7 @@ export default function MerchantOrdersPage() {
 
                                                 <Link
                                                     href={`/dashboard/merchant/orders/${order.id}`}
-                                                    className="px-3 py-1.5 bg-white border border-gray-200 text-gray-600 text-[10px] font-semibold rounded-lg hover:bg-gray-50 transition-colors"
+                                                    className="px-3 py-1.5 bg-white border border-gray-200 text-gray-600 text-[10px] font-semibold rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center"
                                                 >
                                                     {t('btn.detail')}
                                                 </Link>
