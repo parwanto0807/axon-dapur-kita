@@ -4,6 +4,9 @@ import { createNotification } from './notificationController.js';
 import sharp from 'sharp';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 
 /**
@@ -434,7 +437,7 @@ export const uploadPaymentProof = async (req, res) => {
         }
 
         // Process image with sharp
-        const uploadDir = path.join('public', 'payments');
+        const uploadDir = path.join(__dirname, '../../', 'public', 'payments');
         if (!fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir, { recursive: true });
         }

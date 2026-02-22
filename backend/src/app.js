@@ -4,6 +4,9 @@ import morgan from 'morgan';
 import dotenv from 'dotenv';
 import session from 'express-session';
 import passport from 'passport';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
 import configurePassport from './config/passport.js';
 import userRoutes from './routes/userRoutes.js';
 import authRoutes from './routes/authRoutes.js';
@@ -41,13 +44,25 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(morgan('dev'));
-app.use(express.static('public')); // Serve static files
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const publicDir = path.join(__dirname, '..', 'public');
+
+// Ensure required directories exist
+const paymentsDir = path.join(publicDir, 'payments');
+const uploadsDir = path.join(__dirname, '..', 'uploads');
+if (!fs.existsSync(paymentsDir)) fs.mkdirSync(paymentsDir, { recursive: true });
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+
+app.use(express.static(publicDir)); // Serve static files with absolute path
 app.use('/uploads', express.static('uploads')); // Serve uploads
 
 // Fix for production proxy: also serve static files under /api
-app.use('/api/products', express.static('public/products'));
-app.use('/api/merchant', express.static('public/merchant'));
+app.use('/api/products', express.static(path.join(publicDir, 'products')));
+app.use('/api/merchant', express.static(path.join(publicDir, 'merchant')));
+app.use('/api/payments', express.static(path.join(publicDir, 'payments'))); // ADDED: Payment proofs
 app.use('/api/uploads', express.static('uploads'));
+app.use('/payments', express.static(path.join(publicDir, 'payments'))); // ADDED: Direct access to payments
 
 // Session Configuration
 export const sessionMiddleware = session({
