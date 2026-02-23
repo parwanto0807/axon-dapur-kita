@@ -1,4 +1,3 @@
-import Sentry from './config/sentry.js'; // MUST BE FIRST
 import express from 'express';
 
 import cors from 'cors';
@@ -134,10 +133,6 @@ app.get('/metrics', async (req, res) => {
     }
 });
 
-// Sentry Test Endpoint
-app.get('/debug-sentry', (req, res) => {
-    throw new Error('Sentry Test Error from Online Shop Backend!');
-});
 
 
 // Routes (with general rate limiter applied)
@@ -155,8 +150,6 @@ app.use('/api/tags', generalLimiter, tagRoutes);
 app.use('/api/admin', generalLimiter, adminRoutes);
 app.use('/api/carousel', generalLimiter, carouselRoutes);
 
-// Sentry Error Handler (must be before any other error middleware and after all controllers)
-Sentry.setupExpressErrorHandler(app);
 
 // Basic Error Handler
 
