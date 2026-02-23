@@ -274,11 +274,11 @@ export default function ProductPage() {
                                 <span className="px-2 py-0.5 bg-green-50 text-[#1B5E20] text-[10px] sm:text-xs font-medium rounded-full uppercase tracking-widest">
                                     {product.category?.name || 'Produk'}
                                 </span>
-                                <StarRating
+                                {/* <StarRating
                                     rating={stats.averageRating || 0}
                                     count={stats.totalReviews}
                                     showLabel
-                                />
+                                /> */}
                             </div>
 
                             <h1 className="mt-2 text-base md:text-2xl lg:text-3xl font-bold text-gray-900 leading-tight">
@@ -343,21 +343,15 @@ export default function ProductPage() {
                             </div>
                         </div>
 
-                        {/* Reviews Section */}
+                        {/* Reviews Section Hidden from Public */}
                         <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
-                            <div className="flex items-center justify-between mb-6">
-                                <h3 className="text-xs md:text-base font-bold text-gray-900 uppercase tracking-tight">Ulasan Pembeli</h3>
-                                {stats.totalReviews > 0 && (
-                                    <div className="text-right">
-                                        <div className="flex items-center justify-end space-x-1">
-                                            <span className="text-lg font-black text-gray-900">{stats.averageRating.toFixed(1)}</span>
-                                            <span className="text-xs text-gray-400 font-bold">/ 5.0</span>
-                                        </div>
-                                        <p className="text-[10px] text-gray-400 font-medium">{stats.totalReviews} Ulasan</p>
-                                    </div>
-                                )}
+                            <div className="flex items-center justify-between mb-2">
+                                <h3 className="text-xs md:text-base font-bold text-gray-900 uppercase tracking-tight">Kritik dan Saran</h3>
                             </div>
-                            <ReviewList reviews={reviews} isLoading={reviewsLoading} />
+                            <p className="text-[11px] text-gray-400 font-medium mb-4 italic">
+                                Masukan Anda sangat berarti bagi Penjual untuk perbaikan kualitas kedepannya. Kritik & saran hanya dapat dilihat oleh Penjual.
+                            </p>
+                            {/* ReviewList is hidden here for public, will be visible in Merchant Dashboard */}
                         </div>
                     </div>
                 </div>

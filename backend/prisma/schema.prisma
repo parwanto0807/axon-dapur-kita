@@ -166,6 +166,10 @@ model StockLog {
   createdAt DateTime @default(now())
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   shop      Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  @@index([productId, createdAt])
+  @@index([shopId, createdAt])
+  @@index([type])
 }
 
 model ProductImage {
@@ -224,6 +228,10 @@ model Order {
   @@index([shopId])
   @@index([paymentStatus])
   @@index([createdAt])
+  @@index([userId, createdAt])
+  @@index([shopId, createdAt])
+  @@index([shopId, paymentStatus])
+  @@index([status])
 }
 
 model OrderItem {

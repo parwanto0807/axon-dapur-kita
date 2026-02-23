@@ -19,10 +19,12 @@ import { formatPrice, formatShortDate, formatDate } from '@/utils/format';
 import { getImageUrl } from '@/utils/image';
 import ReviewModal from '@/components/features/ReviewModal';
 import StarRating from '@/components/ui/StarRating';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function OrderDetailsPage() {
     const { id } = useParams();
     const { isLoggedIn, isLoading: isAuthLoading } = useAuthStore();
+    const { t } = useLanguage();
     const router = useRouter();
     const [order, setOrder] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -71,14 +73,40 @@ export default function OrderDetailsPage() {
         setTimeout(() => setCopied(false), 2000);
     };
 
-    const getStatusStyle = (status: string, hasProof: boolean = false) => {
-        switch (status?.toLowerCase()) {
+    const handleCancelOrder = async () => {
+        if (!window.confirm('Apakah Anda yakin ingin membatalkan pesanan ini?')) return;
+
+        try {
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
+            await axios.patch(`${apiBaseUrl}/orders/${id}/cancel`, {}, {
+                withCredentials: true
+            });
+            toast.success('Pesanan berhasil dibatalkan');
+            fetchOrderDetails();
+        } catch (err: any) {
+            console.error('Error cancelling order:', err);
+            toast.error(err.response?.data?.message || 'Gagal membatalkan pesanan');
+        }
+    };
+
+    const getStatusStyle = (paymentStatus: string, hasProof: boolean = false, orderStatus: string = 'pending') => {
+        if (orderStatus?.toLowerCase() === 'cancelled') {
+            return {
+                bg: 'bg-red-100',
+                text: 'text-red-700',
+                icon: XCircle,
+                label: t('status.cancelled').toUpperCase(),
+                sub: 'Pesanan telah dibatalkan'
+            };
+        }
+
+        switch (paymentStatus?.toLowerCase()) {
             case 'paid':
                 return {
                     bg: 'bg-green-100',
                     text: 'text-green-700',
                     icon: CheckCircle,
-                    label: 'Berhasil Dibayar',
+                    label: t('status.paid').toUpperCase(),
                     sub: 'Pesanan sedang disiapkan'
                 };
             case 'pending':
@@ -87,7 +115,7 @@ export default function OrderDetailsPage() {
                         bg: 'bg-orange-100',
                         text: 'text-orange-700',
                         icon: Clock,
-                        label: 'Menunggu Verifikasi',
+                        label: 'MENUNGGU VERIFIKASI',
                         sub: 'Penjual sedang mengecek bukti bayar'
                     };
                 }
@@ -95,7 +123,7 @@ export default function OrderDetailsPage() {
                     bg: 'bg-yellow-100',
                     text: 'text-yellow-700',
                     icon: Clock,
-                    label: 'Menunggu Pembayaran',
+                    label: t('status.pending_transfer').toUpperCase(),
                     sub: 'Segera lakukan transfer'
                 };
             case 'failed':
@@ -103,7 +131,7 @@ export default function OrderDetailsPage() {
                     bg: 'bg-red-100',
                     text: 'text-red-700',
                     icon: XCircle,
-                    label: 'Pembayaran Gagal',
+                    label: t('status.failed').toUpperCase(),
                     sub: 'Silakan pesan kembali'
                 };
             case 'processing':
@@ -111,15 +139,31 @@ export default function OrderDetailsPage() {
                     bg: 'bg-blue-100',
                     text: 'text-blue-700',
                     icon: Truck,
-                    label: 'Sedang Diproses',
+                    label: t('status.processing').toUpperCase(),
                     sub: 'Oleh penjual'
+                };
+            case 'shipped':
+                return {
+                    bg: 'bg-indigo-100',
+                    text: 'text-indigo-700',
+                    icon: Truck,
+                    label: t('status.shipped').toUpperCase(),
+                    sub: 'Sedang dalam perjalanan'
+                };
+            case 'completed':
+                return {
+                    bg: 'bg-green-100',
+                    text: 'text-green-700',
+                    icon: CheckCircle,
+                    label: t('status.completed').toUpperCase(),
+                    sub: 'Selesai'
                 };
             default:
                 return {
                     bg: 'bg-gray-100',
                     text: 'text-gray-700',
                     icon: Package,
-                    label: status || 'Unknown',
+                    label: paymentStatus?.toUpperCase() || 'Unknown',
                     sub: 'Status pesanan'
                 };
         }
@@ -153,7 +197,7 @@ export default function OrderDetailsPage() {
         );
     }
 
-    const statusObj = getStatusStyle(order.paymentStatus, !!order.paymentProof);
+    const statusObj = getStatusStyle(order.paymentStatus, !!order.paymentProof, order.status);
     const StatusIcon = statusObj.icon;
 
     return (
@@ -237,18 +281,35 @@ export default function OrderDetailsPage() {
                                             className="inline-flex items-center space-x-1 px-2 py-1 bg-[#1B5E20]/5 text-[#1B5E20] text-[10px] font-bold rounded-lg hover:bg-[#1B5E20]/10 transition-colors border border-[#1B5E20]/10 w-fit"
                                         >
                                             <StarRating rating={0} size={10} />
-                                            <span>Beri Ulasan Toko</span>
+                                            <span>Kritik dan Saran</span>
                                         </button>
                                     )}
                                     {order.hasShopReview && (
                                         <div className="inline-flex items-center space-x-1 px-2 py-1 bg-gray-50 text-gray-400 text-[10px] font-bold rounded-lg border border-gray-100 w-fit">
                                             <CheckCircle className="h-3 w-3" />
-                                            <span>Toko Sudah Diulas</span>
+                                            <span>Masukan Terkirim</span>
                                         </div>
                                     )}
                                 </div>
                             </div>
                         </div>
+
+                        {/* Action Area for Pending Order */}
+                        {order.status === 'pending' && order.paymentStatus === 'pending' && order.deliveryStatus === 'pending' && (
+                            <div className="bg-white rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-8 border border-red-100 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+                                <div>
+                                    <h4 className="font-bold text-gray-900 text-sm md:text-base">Batalkan Pesanan?</h4>
+                                    <p className="text-[10px] md:text-xs text-gray-500">Anda masih bisa membatalkan pesanan ini karena belum diproses oleh penjual.</p>
+                                </div>
+                                <button
+                                    onClick={handleCancelOrder}
+                                    className="w-full sm:w-auto px-6 py-3 bg-red-50 text-red-600 rounded-xl font-bold border border-red-100 hover:bg-red-100 transition-all flex items-center justify-center gap-2"
+                                >
+                                    <XCircle className="h-4 w-4 md:h-5 md:w-5" />
+                                    <span>Batalkan Pesanan</span>
+                                </button>
+                            </div>
+                        )}
 
                         {/* Order Items */}
                         <div className="bg-white rounded-[1.5rem] md:rounded-[2rem] overflow-hidden border border-gray-100 shadow-sm">
@@ -294,14 +355,14 @@ export default function OrderDetailsPage() {
                                                         className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-[#1B5E20]/5 text-[#1B5E20] text-[10px] sm:text-xs font-bold rounded-lg hover:bg-[#1B5E20]/10 transition-colors border border-[#1B5E20]/10"
                                                     >
                                                         <StarRating rating={0} size={10} />
-                                                        <span>Beri Ulasan Produk</span>
+                                                        <span>Kritik & Saran Produk</span>
                                                     </button>
                                                 )}
 
                                                 {item.hasReview && (
                                                     <div className="inline-flex items-center space-x-1 px-2 py-1 bg-gray-50 text-gray-400 text-[10px] font-bold rounded-lg border border-gray-100">
                                                         <CheckCircle className="h-3 w-3" />
-                                                        <span>Sudah Diulas</span>
+                                                        <span>Masukan Terkirim</span>
                                                     </div>
                                                 )}
                                             </div>

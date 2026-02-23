@@ -5,19 +5,21 @@ import axios from 'axios';
 import {
     Package, ArrowLeft, CheckCircle2, Clock, AlertCircle,
     Truck, Wallet, MessageCircle, User, MapPin, ExternalLink,
-    Banknote, Info, Copy, Check, ChevronRight
+    Banknote, Info, Copy, Check, ChevronRight, XCircle
 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import { formatPrice, formatDate } from '@/utils/format';
 import { getImageUrl } from '@/utils/image';
 import { useAuthStore } from '@/store/authStore';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'react-hot-toast';
 
 export default function MerchantOrderDetailPage() {
     const { id } = useParams();
     const router = useRouter();
     const { user } = useAuthStore();
+    const { t } = useLanguage();
     const [order, setOrder] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isUpdating, setIsUpdating] = useState(false);
@@ -72,6 +74,25 @@ export default function MerchantOrderDetailPage() {
         }
     };
 
+    const handleCancelOrder = async () => {
+        if (!window.confirm('Apakah Anda yakin ingin membatalkan pesanan ini? Stok akan dikembalikan otomatis.')) return;
+
+        try {
+            setIsUpdating(true);
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
+            await axios.patch(`${apiBaseUrl}/orders/${id}/cancel`, {}, {
+                withCredentials: true
+            });
+            toast.success('Pesanan berhasil dibatalkan');
+            fetchOrderDetails();
+        } catch (err: any) {
+            console.error('Error cancelling order:', err);
+            toast.error(err.response?.data?.message || 'Gagal membatalkan pesanan');
+        } finally {
+            setIsUpdating(false);
+        }
+    };
+
     if (isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -82,8 +103,18 @@ export default function MerchantOrderDetailPage() {
 
     if (!order) return null;
 
-    const getStatusStyles = (status: string, method: string, hasProof: boolean = false) => {
-        switch (status) {
+    const getStatusStyles = (paymentStatus: string, method: string, hasProof: boolean = false, orderStatus: string = 'pending') => {
+        if (orderStatus === 'cancelled') {
+            return {
+                bg: 'bg-red-50',
+                text: 'text-red-700',
+                border: 'border-red-100',
+                label: t('status.cancelled').toUpperCase(),
+                icon: AlertCircle
+            };
+        }
+
+        switch (paymentStatus) {
             case 'pending':
                 if (hasProof) {
                     return {
@@ -98,52 +129,52 @@ export default function MerchantOrderDetailPage() {
                     bg: method === 'cod' ? 'bg-yellow-50' : 'bg-amber-50',
                     text: method === 'cod' ? 'text-yellow-700' : 'text-amber-700',
                     border: method === 'cod' ? 'border-yellow-100' : 'border-amber-100',
-                    label: method === 'cod' ? 'MENUNGGU COD' : 'MENUNGGU BAYAR',
+                    label: method === 'cod' ? t('status.pending_cod').toUpperCase() : t('status.pending_transfer').toUpperCase(),
                     icon: Clock
                 };
             case 'paid':
-                return { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-100', label: 'SUDAH BAYAR', icon: CheckCircle2 };
+                return { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-100', label: t('status.paid').toUpperCase(), icon: CheckCircle2 };
             case 'processing':
-                return { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-100', label: 'DIPROSES', icon: Package };
+                return { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-100', label: t('status.processing').toUpperCase(), icon: Package };
             case 'shipped':
-                return { bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-100', label: 'DIKIRIM', icon: Truck };
+                return { bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-100', label: t('status.shipped').toUpperCase(), icon: Truck };
             case 'completed':
-                return { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-100', label: 'SELESAI', icon: CheckCircle2 };
+                return { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-100', label: t('status.completed').toUpperCase(), icon: CheckCircle2 };
             default:
-                return { bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-100', label: status.toUpperCase(), icon: Info };
+                return { bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-100', label: paymentStatus.toUpperCase(), icon: Info };
         }
     };
 
-    const statusStyle = getStatusStyles(order.paymentStatus, order.paymentMethod, !!order.paymentProof);
+    const statusStyle = getStatusStyles(order.paymentStatus, order.paymentMethod, !!order.paymentProof, order.status);
     const StatusIcon = statusStyle.icon;
 
     return (
         <div className="min-h-screen bg-[#F8F9FA] pb-24 font-[family-name:var(--font-poppins)]">
             {/* Header Sticky */}
             <div className="bg-white border-b sticky top-0 z-40 transition-shadow">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                        <button onClick={() => router.back()} className="p-2 -ml-2 hover:bg-gray-100 rounded-full transition-colors text-gray-600">
-                            <ArrowLeft className="h-6 w-6" />
+                <div className="max-w-4xl mx-auto px-3 sm:px-6 h-14 md:h-16 flex items-center justify-between font-bold">
+                    <div className="flex items-center space-x-2">
+                        <button onClick={() => router.back()} className="p-1.5 -ml-1.5 hover:bg-gray-100 rounded-full transition-colors text-gray-600">
+                            <ArrowLeft className="h-5 w-5 md:h-6 md:w-6" />
                         </button>
-                        <h1 className="font-bold text-gray-900 text-sm sm:text-base">Detail Pesanan Toko</h1>
+                        <h1 className="text-gray-900 text-xs sm:text-base tracking-tight">Detail Pesanan Toko</h1>
                     </div>
                     <div className={clsx(
-                        "px-2.5 py-1 rounded-lg text-xs font-bold border flex items-center gap-1.5",
+                        "px-2 py-0.5 md:px-2.5 md:py-1 rounded-lg text-[10px] md:text-xs font-black border flex items-center gap-1",
                         statusStyle.bg, statusStyle.text, statusStyle.border
                     )}>
-                        <StatusIcon className="h-3.5 w-3.5" />
+                        <StatusIcon className="h-3 w-3 md:h-3.5 md:w-3.5" />
                         {statusStyle.label}
                     </div>
                 </div>
             </div>
 
-            <main className="max-w-4xl mx-auto px-4 sm:px-6 py-4 md:py-6">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+            <main className="max-w-4xl mx-auto px-3 sm:px-6 py-3 md:py-6">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 md:gap-4">
                     {/* Left Column: Items & Details */}
-                    <div className="lg:col-span-8 space-y-4">
+                    <div className="lg:col-span-8 space-y-3 md:space-y-4">
                         {/* Order ID & Time */}
-                        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm flex flex-wrap justify-between items-center gap-3">
+                        <div className="bg-white rounded-xl p-3 md:p-4 border border-gray-100 shadow-sm flex flex-wrap justify-between items-center gap-2">
                             <div>
                                 <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-0.5">Order ID</p>
                                 <p className="text-sm font-black text-gray-900">#{order.id.slice(-8).toUpperCase()}</p>
@@ -154,37 +185,58 @@ export default function MerchantOrderDetailPage() {
                             </div>
                         </div>
 
-                        {/* Customer Info */}
-                        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-                            <h3 className="font-bold text-gray-900 mb-3 flex items-center text-sm">
-                                <User className="h-4 w-4 mr-2 text-[#1B5E20]" />
-                                Informasi Pembeli
-                            </h3>
-                            <div className="flex items-center gap-3">
-                                <div className="h-10 w-10 bg-gray-50 rounded-full flex items-center justify-center text-[#1B5E20] font-bold text-base">
-                                    {order.user?.name?.[0]?.toUpperCase()}
+                        {/* Combined Customer & Shipping Info */}
+                        <div className="bg-white rounded-xl p-3 md:p-4 border border-gray-100 shadow-sm space-y-4">
+                            <div>
+                                <h3 className="font-bold text-gray-900 mb-2 md:mb-3 flex items-center text-xs md:text-sm">
+                                    <User className="h-3.5 w-3.5 md:h-4 md:w-4 mr-2 text-[#1B5E20]" />
+                                    Informasi Pembeli
+                                </h3>
+                                <div className="flex items-center gap-3">
+                                    <div className="h-10 w-10 bg-gray-50 rounded-full flex items-center justify-center text-[#1B5E20] font-bold text-base">
+                                        {order.user?.name?.[0]?.toUpperCase()}
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-gray-900 text-sm">{order.user?.name}</p>
+                                        <p className="text-xs text-gray-500">{order.user?.email}</p>
+                                        {order.user?.whatsapp && (
+                                            <a href={`https://wa.me/62${order.user.whatsapp.replace(/^0/, '')}`} target="_blank" className="text-xs text-[#25D366] font-bold flex items-center mt-1">
+                                                <MessageCircle className="h-3 w-3 mr-1" /> WhatsApp Pembeli
+                                            </a>
+                                        )}
+                                    </div>
                                 </div>
-                                <div>
-                                    <p className="font-bold text-gray-900 text-sm">{order.user?.name}</p>
-                                    <p className="text-xs text-gray-500">{order.user?.email}</p>
-                                    {order.user?.whatsapp && (
-                                        <a href={`https://wa.me/62${order.user.whatsapp.replace(/^0/, '')}`} target="_blank" className="text-xs text-[#25D366] font-bold flex items-center mt-1">
-                                            <MessageCircle className="h-3 w-3 mr-1" /> WhatsApp Pembeli
-                                        </a>
-                                    )}
+                            </div>
+
+                            <div className="pt-3 border-t border-gray-50">
+                                <h3 className="font-bold text-gray-900 mb-2 md:mb-3 flex items-center text-xs md:text-sm">
+                                    <MapPin className="h-3.5 w-3.5 md:h-4 md:w-4 mr-2 text-[#1B5E20]" />
+                                    Alamat Pengiriman
+                                </h3>
+                                <div className="p-3 md:p-3.5 bg-gray-50 rounded-xl border border-gray-100">
+                                    <p className="font-bold text-gray-900 text-xs mb-1">{order.shippingAddress?.receiverName || order.user?.name}</p>
+                                    <p className="text-xs text-gray-600 leading-relaxed mb-1.5">{order.shippingAddress?.street}, {order.shippingAddress?.city}, {order.shippingAddress?.province}</p>
+                                    <p className="text-xs font-bold text-gray-800 tracking-tight flex items-center">
+                                        <MessageCircle className="h-3.5 w-3.5 mr-1.5 text-gray-400" /> {order.shippingAddress?.phone}
+                                    </p>
                                 </div>
+                                {order.notes && (
+                                    <div className="mt-2 p-2 bg-yellow-50 rounded-lg border border-yellow-100 text-[10px] text-yellow-800 italic">
+                                        "{order.notes}"
+                                    </div>
+                                )}
                             </div>
                         </div>
 
                         {/* Order Items */}
                         <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-                            <div className="px-4 py-3 border-b border-gray-50 bg-gray-50/50">
-                                <h3 className="font-bold text-gray-900 text-sm flex items-center">
-                                    <Package className="h-4 w-4 mr-2 text-[#1B5E20]" />
+                            <div className="px-3 py-2 md:px-4 md:py-3 border-b border-gray-50 bg-gray-50/50">
+                                <h3 className="font-bold text-gray-900 text-xs md:text-sm flex items-center">
+                                    <Package className="h-3.5 w-3.5 md:h-4 md:w-4 mr-2 text-[#1B5E20]" />
                                     Produk yang Dipesan
                                 </h3>
                             </div>
-                            <div className="p-4 space-y-3">
+                            <div className="p-3 md:p-4 space-y-3">
                                 {order.items.map((item: any) => (
                                     <div key={item.id} className="flex gap-3">
                                         <div className="h-14 w-14 bg-gray-50 rounded-lg border border-gray-100 overflow-hidden shrink-0">
@@ -202,41 +254,21 @@ export default function MerchantOrderDetailPage() {
                                     </div>
                                 ))}
                             </div>
-                            <div className="p-4 bg-gray-50/50 border-t border-gray-100">
+                            <div className="p-3 md:p-4 bg-gray-50/50 border-t border-gray-100">
                                 <div className="flex justify-between items-center">
-                                    <span className="font-bold text-gray-400 uppercase tracking-widest text-xs">Total Belanja</span>
-                                    <span className="font-black text-[#1B5E20] text-lg">{formatPrice(order.totalAmount)}</span>
+                                    <span className="font-bold text-gray-400 uppercase tracking-widest text-[10px] md:text-xs">Total Belanja</span>
+                                    <span className="font-black text-[#1B5E20] text-base md:text-lg">{formatPrice(order.totalAmount)}</span>
                                 </div>
                             </div>
-                        </div>
-
-                        {/* Shipping Address */}
-                        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-                            <h3 className="font-bold text-gray-900 mb-3 flex items-center text-sm">
-                                <MapPin className="h-4 w-4 mr-2 text-[#1B5E20]" />
-                                Alamat Pengiriman
-                            </h3>
-                            <div className="p-3.5 bg-gray-50 rounded-xl border border-gray-100">
-                                <p className="font-bold text-gray-900 text-xs mb-1">{order.shippingAddress?.receiverName || order.user?.name}</p>
-                                <p className="text-xs text-gray-600 leading-relaxed mb-1.5">{order.shippingAddress?.street}, {order.shippingAddress?.city}, {order.shippingAddress?.province}</p>
-                                <p className="text-xs font-bold text-gray-800 tracking-tight flex items-center">
-                                    <MessageCircle className="h-3.5 w-3.5 mr-1.5 text-gray-400" /> {order.shippingAddress?.phone}
-                                </p>
-                            </div>
-                            {order.notes && (
-                                <div className="mt-3 p-2.5 bg-yellow-50 rounded-lg border border-yellow-100 text-[11px] text-yellow-800 italic">
-                                    "{order.notes}"
-                                </div>
-                            )}
                         </div>
                     </div>
 
                     {/* Right Column: Actions & Payment Proof */}
-                    <div className="lg:col-span-4 space-y-4">
+                    <div className="lg:col-span-4 space-y-3 md:space-y-4">
                         {/* Action Panel */}
-                        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm sticky top-24">
-                            <h3 className="font-bold text-gray-900 mb-4 flex items-center text-xs uppercase tracking-widest">
-                                <Banknote className="h-4 w-4 mr-2 text-[#1B5E20]" />
+                        <div className="bg-white rounded-xl p-3.5 md:p-4 border border-gray-100 shadow-sm sticky top-16 md:top-24">
+                            <h3 className="font-bold text-gray-900 mb-3 md:mb-4 flex items-center text-[10px] md:text-xs uppercase tracking-widest">
+                                <Banknote className="h-3.5 w-3.5 md:h-4 md:w-4 mr-2 text-[#1B5E20]" />
                                 Kelola Pesanan
                             </h3>
 
@@ -331,7 +363,19 @@ export default function MerchantOrderDetailPage() {
                                 const finalPhone = formattedPhone.startsWith('62') ? formattedPhone : `62${formattedPhone}`;
 
                                 return (
-                                    <div className="mt-6">
+                                    <div className="mt-6 flex flex-col gap-3">
+                                        {/* Merchant Cancel Button */}
+                                        {!['shipped', 'delivered', 'completed', 'cancelled', 'failed'].includes(order.paymentStatus) && (
+                                            <button
+                                                disabled={isUpdating}
+                                                onClick={handleCancelOrder}
+                                                className="w-full py-2.5 bg-red-50 text-red-600 rounded-xl font-bold text-xs flex items-center justify-center space-x-2 border border-red-100 hover:bg-red-100 transition-all disabled:opacity-50"
+                                            >
+                                                <XCircle className="h-4 w-4" />
+                                                <span>Batalkan Pesanan</span>
+                                            </button>
+                                        )}
+
                                         <a
                                             href={`https://wa.me/${finalPhone}`}
                                             target="_blank"

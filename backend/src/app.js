@@ -1,4 +1,6 @@
+import Sentry from './config/sentry.js'; // MUST BE FIRST
 import express from 'express';
+
 import cors from 'cors';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
@@ -7,7 +9,11 @@ import passport from 'passport';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+import rateLimit from 'express-rate-limit';
+import connectPgSimple from 'connect-pg-simple';
 import configurePassport from './config/passport.js';
+import register, { metricsMiddleware } from './utils/metrics.js';
+
 import userRoutes from './routes/userRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import productRoutes from './routes/productRoutes.js';
@@ -45,6 +51,8 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(morgan('dev'));
+app.use(metricsMiddleware); // Track metrics for all requests
+
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const publicDir = path.join(__dirname, '..', 'public');
@@ -68,14 +76,40 @@ app.use('/api/payments', express.static(path.join(publicDir, 'payments'))); // A
 app.use('/api/uploads', express.static('uploads'));
 app.use('/payments', express.static(path.join(publicDir, 'payments'))); // ADDED: Direct access to payments
 
-// Session Configuration
+const PgSession = connectPgSimple(session);
+
+// ─── Rate Limiters ───────────────────────────────────────────────────────────
+const generalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 300,                  // Max 300 requests per 15 min per IP
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { message: 'Terlalu banyak permintaan dari IP ini. Coba lagi dalam beberapa menit.' }
+});
+
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 20,                   // Max 20 login attempts per 15 min
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { message: 'Terlalu banyak percobaan login. Coba lagi dalam beberapa menit.' }
+});
+
+// Session Configuration (Persistent via PostgreSQL)
 export const sessionMiddleware = session({
+    store: new PgSession({
+        conString: process.env.DATABASE_URL,
+        tableName: 'Session',
+        createTableIfMissing: true,
+    }),
     secret: process.env.SESSION_SECRET || 'secret',
     resave: false,
     saveUninitialized: false,
     cookie: {
-        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     },
 });
 
@@ -90,22 +124,42 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'Backend is running' });
 });
 
-// Routes
-app.use('/api/users', userRoutes);
-app.use('/api/auth', authRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/shops', shopRoutes);
-app.use('/api/reviews', reviewRoutes);
-app.use('/api/categories', categoryRoutes);
-app.use('/api/units', unitRoutes);
-app.use('/api/orders', orderRoutes);
-app.use('/api/addresses', addressRoutes);
-app.use('/api/notifications', notificationRoutes);
-app.use('/api/tags', tagRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/carousel', carouselRoutes);
+// Prometheus Metrics Endpoint
+app.get('/metrics', async (req, res) => {
+    try {
+        res.set('Content-Type', register.contentType);
+        res.end(await register.metrics());
+    } catch (err) {
+        res.status(500).end(err);
+    }
+});
+
+// Sentry Test Endpoint
+app.get('/debug-sentry', (req, res) => {
+    throw new Error('Sentry Test Error from Online Shop Backend!');
+});
+
+
+// Routes (with general rate limiter applied)
+app.use('/api/users', generalLimiter, userRoutes);
+app.use('/api/auth', authLimiter, authRoutes);
+app.use('/api/products', generalLimiter, productRoutes);
+app.use('/api/shops', generalLimiter, shopRoutes);
+app.use('/api/reviews', generalLimiter, reviewRoutes);
+app.use('/api/categories', generalLimiter, categoryRoutes);
+app.use('/api/units', generalLimiter, unitRoutes);
+app.use('/api/orders', generalLimiter, orderRoutes);
+app.use('/api/addresses', generalLimiter, addressRoutes);
+app.use('/api/notifications', generalLimiter, notificationRoutes);
+app.use('/api/tags', generalLimiter, tagRoutes);
+app.use('/api/admin', generalLimiter, adminRoutes);
+app.use('/api/carousel', generalLimiter, carouselRoutes);
+
+// Sentry Error Handler (must be before any other error middleware and after all controllers)
+Sentry.setupExpressErrorHandler(app);
 
 // Basic Error Handler
+
 app.use((err, req, res, next) => {
   console.error('SERVER ERROR:', err);
   res.status(500).json({ 

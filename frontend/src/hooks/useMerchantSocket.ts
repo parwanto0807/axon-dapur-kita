@@ -75,7 +75,7 @@ export function useMerchantSocket({ shopId, onNewOrder }: UseMerchantSocketOptio
             try {
                 const res = await axios.get(`${API_URL}/orders/shop`, {
                     withCredentials: true,
-                    params: { limit: 5 }
+                    params: { pageSize: 5 }
                 });
                 setLastSync(new Date());
                 // The parent component handles state update via onNewOrder
@@ -177,6 +177,12 @@ export function useMerchantSocket({ shopId, onNewOrder }: UseMerchantSocketOptio
 
         socket.on('order_completed', (order: RealtimeOrder) => {
             console.log('[Socket] Order Completed:', order.id);
+            setLastSync(new Date());
+            if (onNewOrderRef.current) onNewOrderRef.current(order);
+        });
+
+        socket.on('order_cancelled', (order: RealtimeOrder) => {
+            console.log('[Socket] Order Cancelled:', order.id);
             setLastSync(new Date());
             if (onNewOrderRef.current) onNewOrderRef.current(order);
         });

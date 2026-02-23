@@ -3,13 +3,14 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, ShoppingBag, Package, Settings, PlusCircle, Store } from 'lucide-react';
+import { Home, ShoppingBag, Package, Settings, PlusCircle, Store, MessageSquare } from 'lucide-react';
 import { clsx } from 'clsx';
 
 const menuItems = [
     { label: 'Akun', icon: Settings, href: '/dashboard/merchant/profile' },
     { label: 'Produk', icon: Package, href: '/dashboard/merchant/products' },
     { label: 'Pesanan', icon: ShoppingBag, href: '/dashboard/merchant/orders' },
+    { label: 'Masukan', icon: MessageSquare, href: '/dashboard/merchant/reviews' },
     { label: 'Beranda', icon: Home, href: '/dashboard/merchant' },
     { label: 'Market', icon: Store, href: '/dashboard' },
 ];

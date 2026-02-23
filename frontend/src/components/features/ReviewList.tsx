@@ -53,7 +53,7 @@ export default function ReviewList({ reviews, isLoading }: ReviewListProps) {
                 <div className="h-16 w-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Package className="h-8 w-8 text-gray-200" />
                 </div>
-                <p className="text-sm text-gray-500 font-medium">Belum ada ulasan untuk produk ini.</p>
+                <p className="text-sm text-gray-500 font-medium">Belum ada kritik atau saran untuk produk ini.</p>
             </div>
         );
     }
@@ -83,9 +83,9 @@ export default function ReviewList({ reviews, isLoading }: ReviewListProps) {
                                     <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">{formatShortDate(review.createdAt)}</p>
                                     <span className="h-1 w-1 bg-gray-300 rounded-full"></span>
                                     {review.productId ? (
-                                        <span className="text-[9px] font-black text-[#1B5E20] px-1.5 py-0.5 bg-green-50 rounded border border-green-100 uppercase tracking-tighter">Ulasan Produk</span>
+                                        <span className="text-[9px] font-black text-[#1B5E20] px-1.5 py-0.5 bg-green-50 rounded border border-green-100 uppercase tracking-tighter">Kritik & Saran Produk</span>
                                     ) : (
-                                        <span className="text-[9px] font-black text-amber-600 px-1.5 py-0.5 bg-amber-50 rounded border border-amber-100 uppercase tracking-tighter">Ulasan Toko</span>
+                                        <span className="text-[9px] font-black text-amber-600 px-1.5 py-0.5 bg-amber-50 rounded border border-amber-100 uppercase tracking-tighter">Kritik & Saran Toko</span>
                                     )}
                                 </div>
                             </div>

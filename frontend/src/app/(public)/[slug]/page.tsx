@@ -185,12 +185,12 @@ export default function ShopPage() {
                                     <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 text-gray-700" />
                                     <span className="font-bold">{shop.address || 'Lokasi belum diatur'}</span>
                                 </div>
-                                <div className="flex items-center">
+                                {/* <div className="flex items-center">
                                     <StarRating rating={shopStats.averageRating} size={14} className="mr-1" />
                                     <span className="font-black text-black">{shopStats.averageRating.toFixed(1)}</span>
                                     <span className="ml-1 text-gray-600 font-bold">({shopStats.totalReviews} ulasan)</span>
                                 </div>
-                                <div className="h-1 w-1 bg-gray-300 rounded-full mx-1"></div>
+                                <div className="h-1 w-1 bg-gray-300 rounded-full mx-1"></div> */}
                                 <div className="flex items-center">
                                     <ShoppingBag className="h-4 w-4 mr-1 text-blue-600 font-black" />
                                     <span className="font-black text-black">{shopStats.totalCompletedOrders}</span>
@@ -233,7 +233,7 @@ export default function ShopPage() {
                         >
                             Produk ({shop.products.length})
                         </button>
-                        <button
+                        {/* <button
                             onClick={() => setActiveTab('REVIEWS')}
                             className={clsx(
                                 "px-4 py-2 border-b-2 font-black text-xs sm:text-sm transition-colors",
@@ -241,7 +241,7 @@ export default function ShopPage() {
                             )}
                         >
                             Ulasan ({shopStats.totalReviews})
-                        </button>
+                        </button> */}
                         <button
                             onClick={() => setActiveTab('HOME')}
                             className={clsx(

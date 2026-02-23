@@ -1,6 +1,9 @@
 import { Server } from 'socket.io';
 import { PrismaClient } from '@prisma/client';
 import passport from 'passport';
+import { createAdapter } from '@socket.io/redis-adapter';
+import redisClient from './config/redis.js';
+
 
 const prisma = new PrismaClient();
 
@@ -29,6 +32,23 @@ export const initSocket = (httpServer, sessionMiddleware) => {
         pingTimeout: 60000,
         pingInterval: 25000,
     });
+
+    // ─── Redis Adapter Configuration ─────────────────────────────────────────
+    if (redisClient.isReady) {
+        const pubClient = redisClient.duplicate();
+        const subClient = redisClient.duplicate();
+        
+        // Connect duplicates for the adapter
+        Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
+            io.adapter(createAdapter(pubClient, subClient));
+            console.log('[Socket] Redis Adapter Integrated');
+        }).catch(err => {
+            console.error('[Socket] Failed to integrate Redis Adapter:', err);
+        });
+    } else {
+        console.warn('[Socket] Redis not available, using default in-memory adapter');
+    }
+
 
     // ─── Session-based Auth Middleware ────────────────────────────────────────
     // Wrap Express middleware so it works with Socket.io

@@ -127,10 +127,12 @@ export default function Navbar() {
         setIsOrdersLoading(true);
         try {
             const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
-            const response = await axios.get(`${apiBaseUrl}/orders/my-orders?limit=3`, { withCredentials: true });
-            setRecentOrders(response.data);
+            const response = await axios.get(`${apiBaseUrl}/orders/my-orders?pageSize=3`, { withCredentials: true });
+            // Extract the 'data' array from the paginated response
+            setRecentOrders(response.data.data || []);
         } catch (error) {
             console.error('Error fetching recent orders for navbar:', error);
+            setRecentOrders([]); // Set to empty array on error to prevent crashes
         } finally {
             setIsOrdersLoading(false);
         }
@@ -444,7 +446,7 @@ export default function Navbar() {
                                     title="Pesanan Saya"
                                 >
                                     <Mail className="h-5 w-5 sm:h-6 sm:w-6 text-black group-hover:scale-110 transition-transform" />
-                                    {mounted && recentOrders.filter(o => o.paymentStatus === 'pending').length > 0 && (
+                                    {mounted && Array.isArray(recentOrders) && recentOrders.filter(o => o.paymentStatus === 'pending').length > 0 && (
                                         <span className="absolute top-1.5 sm:top-2 right-1.5 sm:right-2 flex h-2 w-2 sm:h-2.5 sm:w-2.5">
                                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                                             <span className="relative inline-flex rounded-full h-2 sm:h-2.5 w-2 sm:w-2.5 bg-red-500 border border-white"></span>
@@ -472,7 +474,7 @@ export default function Navbar() {
                                                     <div className="h-8 w-8 border-2 border-gray-200 border-t-[#1B5E20] rounded-full animate-spin mx-auto mb-2"></div>
                                                     <p className="text-xs text-gray-500 font-medium">Memuat pesanan...</p>
                                                 </div>
-                                            ) : recentOrders.length > 0 ? (
+                                            ) : (Array.isArray(recentOrders) && recentOrders.length > 0) ? (
                                                 recentOrders.map((order) => (
                                                     <Link key={order.id} href={`/dashboard/orders/${order.id}`} className="flex items-center space-x-4 px-5 py-3 hover:bg-gray-50 transition-colors">
                                                         <div className="h-12 w-12 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center text-[#1B5E20] shrink-0">

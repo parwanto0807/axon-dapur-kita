@@ -358,9 +358,9 @@ export default function Home() {
                           {shop.name}
                         </h3>
                         <div className="flex items-center mt-1">
-                          <StarRating rating={shop.averageRating || 0} size={10} className="mr-1" />
+                          {/* <StarRating rating={shop.averageRating || 0} size={10} className="mr-1" />
                           <span className="text-[10px] sm:text-xs font-black text-black">{(shop.averageRating || 0).toFixed(1)}</span>
-                          <span className="text-[9px] sm:text-xs text-gray-400 ml-1 font-bold">({shop.totalReviews || 0} ulasan)</span>
+                          <span className="text-[9px] sm:text-xs text-gray-400 ml-1 font-bold">({shop.totalReviews || 0} ulasan)</span> */}
                         </div>
                         <p className="text-[10px] sm:text-xs text-gray-500 truncate flex items-center mt-1 font-bold">
                           <MapPin className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 shrink-0" />
@@ -471,11 +471,11 @@ export default function Home() {
                           {product.name}
                         </h3>
 
-                        <div className="flex items-center mb-2">
+                        {/* <div className="flex items-center mb-2">
                           <StarRating rating={product.averageRating || 0} size={10} className="mr-1" />
                           <span className="text-[10px] font-black text-black">{(product.averageRating || 0).toFixed(1)}</span>
                           <span className="text-[9px] text-gray-400 ml-1 font-bold">({product.totalReviews || 0})</span>
-                        </div>
+                        </div> */}
 
                         {product.category && (() => {
                           const catStyle = getCategoryStyle(product.category.slug);

@@ -1,5 +1,7 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
+import { cacheMiddleware, clearCache } from '../middlewares/cacheMiddleware.js';
+
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -7,7 +9,7 @@ const prisma = new PrismaClient();
 // @desc    Get all categories (with children / sub-categories)
 // @route   GET /api/categories
 // @access  Public
-router.get('/', async (req, res) => {
+router.get('/', cacheMiddleware('categories', 86400), async (req, res) => {
     try {
         const categories = await prisma.category.findMany({
             where: { parentId: null }, // Only root/parent categories
@@ -48,7 +50,7 @@ router.get('/', async (req, res) => {
 // @desc    Get all categories flat (for dropdowns)
 // @route   GET /api/categories/all
 // @access  Public
-router.get('/all', async (req, res) => {
+router.get('/all', cacheMiddleware('categories', 86400), async (req, res) => {
     try {
         const categories = await prisma.category.findMany({
             orderBy: [{ parentId: 'asc' }, { name: 'asc' }],
@@ -67,7 +69,7 @@ router.get('/all', async (req, res) => {
 // @desc    Get single category by slug
 // @route   GET /api/categories/:slug
 // @access  Public
-router.get('/:slug', async (req, res) => {
+router.get('/:slug', cacheMiddleware('categories', 86400), async (req, res) => {
     try {
         const category = await prisma.category.findUnique({
             where: { slug: req.params.slug },
@@ -98,6 +100,9 @@ router.post('/', async (req, res) => {
         const category = await prisma.category.create({
             data: { name, slug: categorySlug, parentId: parentId || null, icon: icon || null }
         });
+        // Invalidate cache
+        await clearCache('categories:*');
+        
         res.status(201).json(category);
     } catch (error) {
         console.error('Error creating category:', error);
@@ -122,7 +127,11 @@ router.put('/:id', async (req, res) => {
                 icon: icon || null
             }
         });
+        // Invalidate cache
+        await clearCache('categories:*');
+
         res.json(category);
+
     } catch (error) {
         console.error('Error updating category:', error);
         res.status(500).json({ message: 'Server error updating category' });
@@ -146,6 +155,9 @@ router.delete('/:id', async (req, res) => {
         }
 
         await prisma.category.delete({ where: { id: req.params.id } });
+        // Invalidate cache
+        await clearCache('categories:*');
+
         res.json({ message: 'Category deleted' });
     } catch (error) {
         console.error('Error deleting category:', error);

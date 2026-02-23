@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, ShoppingBag, Package, Settings, Store, Menu, X, LogOut, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, Package, Settings, Store, Menu, X, LogOut, ChevronRight, MessageSquare } from 'lucide-react';
 import { useState } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import Image from 'next/image';
@@ -23,6 +23,7 @@ export default function MerchantSidebar({ isOpen, onClose }: MerchantSidebarProp
         { name: 'Dashboard', href: '/dashboard/merchant', icon: LayoutDashboard },
         { name: 'Pesanan', href: '/dashboard/merchant/orders', icon: ShoppingBag },
         { name: 'Produk', href: '/dashboard/merchant/products', icon: Package },
+        { name: 'Kritik & Saran', href: '/dashboard/merchant/reviews', icon: MessageSquare },
         { name: 'Pengaturan Toko', href: '/dashboard/merchant/profile', icon: Settings },
     ];
 

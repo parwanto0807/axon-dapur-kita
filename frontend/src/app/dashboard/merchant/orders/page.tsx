@@ -19,7 +19,8 @@ import {
     MessageCircle,
     User,
     ExternalLink,
-    MapPin
+    MapPin,
+    XCircle
 } from 'lucide-react';
 import Link from 'next/link';
 import clsx from 'clsx';
@@ -59,6 +60,7 @@ interface Order {
     totalAmount: number;
     paymentMethod: string;
     paymentProof?: string;
+    status: string;
     user: OrderUser;
     items: OrderItem[];
     shippingAddress?: {
@@ -77,39 +79,66 @@ export default function MerchantOrdersPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [total, setTotal] = useState(0);
+    const pageSize = 20;
+
+    const [stats, setStats] = useState<any>({ all: 0, pending: 0, paid: 0, processing: 0, shipped: 0, completed: 0, failed: 0 });
+
+    const fetchOrders = async (silent = false, currentPage = page, currentStatus = statusFilter, currentSearch = searchTerm) => {
+        try {
+            if (!silent) setIsLoading(true);
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
+            const params = new URLSearchParams({
+                page: String(currentPage),
+                pageSize: String(pageSize),
+                ...(currentStatus !== 'all' && { status: currentStatus }),
+                ...(currentSearch.trim() && { search: currentSearch.trim() }),
+            });
+            const response = await axios.get(`${apiBaseUrl}/orders/shop?${params.toString()}`, {
+                withCredentials: true,
+                headers: { 'Accept': 'application/json' }
+            });
+            setOrders(response.data.data);
+            setTotal(response.data.total);
+            setTotalPages(response.data.totalPages);
+            setStats(response.data.stats || { all: response.data.total });
+        } catch (error: any) {
+            console.error('Fetch error:', error);
+            const message = error.response?.data?.message || error.message;
+            toast.error(`Gagal mengambil data pesanan: ${message}`);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     useEffect(() => {
-        fetchOrders();
+        fetchOrders(false, 1, statusFilter, searchTerm);
+        setPage(1);
+    }, [statusFilter]);
+
+    useEffect(() => {
+        const debounce = setTimeout(() => {
+            fetchOrders(false, 1, statusFilter, searchTerm);
+            setPage(1);
+        }, 400);
+        return () => clearTimeout(debounce);
+    }, [searchTerm]);
+
+    useEffect(() => {
+        fetchOrders(false, page, statusFilter, searchTerm);
+    }, [page]);
+
+    useEffect(() => {
+        fetchOrders(false, 1);
     }, []);
 
     // Real-time: auto-refresh order list when a new order arrives
     useMerchantSocket({
         shopId: user?.shopId || null,
-        onNewOrder: () => {
-            fetchOrders();
-        }
+        onNewOrder: () => { fetchOrders(true, 1, statusFilter, searchTerm); setPage(1); }
     });
-
-    const fetchOrders = async () => {
-        try {
-            setIsLoading(true);
-            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
-            const response = await axios.get(`${apiBaseUrl}/orders/shop`, {
-                withCredentials: true,
-                headers: {
-                    'Accept': 'application/json'
-                }
-            });
-            setOrders(response.data);
-        } catch (error: any) {
-            console.error('Fetch error:', error);
-            const status = error.response?.status;
-            const message = error.response?.data?.message || error.message;
-            alert(`Gagal mengambil data pesanan (Status: ${status}). Detail: ${message}`);
-        } finally {
-            setIsLoading(false);
-        }
-    };
 
     const updateStatus = async (orderId: string, newStatus: string) => {
         try {
@@ -118,9 +147,8 @@ export default function MerchantOrdersPage() {
                 { paymentStatus: newStatus },
                 { withCredentials: true }
             );
-
             toast.success('Status pesanan berhasil diperbarui');
-            fetchOrders(); // Refresh list
+            fetchOrders(true, page, statusFilter, searchTerm);
         } catch (error: any) {
             const message = error.response?.data?.message || error.message;
             toast.error(`Gagal memperbarui status: ${message}`);
@@ -128,18 +156,21 @@ export default function MerchantOrdersPage() {
         }
     };
 
-    const filteredOrders = orders.filter(order => {
-        const matchesSearch =
-            order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            order.user.name?.toLowerCase().includes(searchTerm.toLowerCase());
+    const handleCancelOrder = async (orderId: string) => {
+        if (!window.confirm('Apakah Anda yakin ingin membatalkan pesanan ini? Stok akan dikembalikan otomatis.')) return;
+        try {
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
+            await axios.patch(`${apiBaseUrl}/orders/${orderId}/cancel`, {}, { withCredentials: true });
+            toast.success('Pesanan berhasil dibatalkan');
+            fetchOrders(true, page, statusFilter, searchTerm);
+        } catch (err: any) {
+            console.error('Error cancelling order:', err);
+            toast.error(err.response?.data?.message || 'Gagal membatalkan pesanan');
+        }
+    };
 
-        const matchesStatus = statusFilter === 'all' || order.paymentStatus === statusFilter;
-
-        return matchesSearch && matchesStatus;
-    });
-
-    // Grouping Logic
-    const groupedOrders = filteredOrders.reduce((groups: { [key: string]: Order[] }, order) => {
+    // Grouping only on current page data (already filtered server-side)
+    const groupedOrders = orders.reduce((groups: { [key: string]: Order[] }, order) => {
         const dateKey = new Date(order.createdAt).toLocaleDateString('id-ID', {
             day: 'numeric',
             month: 'long',
@@ -176,7 +207,17 @@ export default function MerchantOrdersPage() {
         return dateStr === yesterdayStr;
     };
 
-    const getStatusStyles = (status: string, paymentMethod?: string, hasProof: boolean = false) => {
+    const getStatusStyles = (status: string, paymentMethod?: string, hasProof: boolean = false, orderStatus: string = 'pending') => {
+        if (orderStatus === 'cancelled') {
+            return {
+                bg: 'bg-red-50',
+                text: 'text-red-700',
+                border: 'border-red-100',
+                label: t('status.cancelled').toUpperCase(),
+                icon: AlertCircle
+            };
+        }
+
         switch (status) {
             case 'pending':
                 if (hasProof) {
@@ -276,7 +317,7 @@ export default function MerchantOrdersPage() {
                             </div>
                             <div className="flex items-center gap-2">
                                 <button
-                                    onClick={fetchOrders}
+                                    onClick={() => fetchOrders()}
                                     className="p-2 bg-[#1B5E20] text-white rounded-lg hover:bg-green-800 transition-all shadow-sm active:scale-95"
                                     title="Refresh Data"
                                 >
@@ -303,18 +344,26 @@ export default function MerchantOrdersPage() {
                                         key={s}
                                         onClick={() => setStatusFilter(s)}
                                         className={clsx(
-                                            "whitespace-nowrap px-3 py-1.5 rounded-lg text-xs sm:text-xs font-semibold border transition-all",
+                                            "whitespace-nowrap px-3 py-1.5 rounded-lg text-xs sm:text-xs font-semibold border transition-all flex items-center gap-1.5",
                                             statusFilter === s
                                                 ? "bg-[#1B5E20] text-white border-[#1B5E20]"
                                                 : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
                                         )}
                                     >
-                                        {s === 'all' ? t('merchant.tab_all') :
-                                            s === 'pending' ? t('merchant.tab_pending') :
-                                                s === 'paid' ? t('merchant.tab_paid') :
-                                                    s === 'processing' ? t('merchant.tab_processing') :
-                                                        s === 'shipped' ? t('merchant.tab_shipped') :
-                                                            s === 'completed' ? t('merchant.tab_completed') : t('merchant.tab_failed')}
+                                        <span>
+                                            {s === 'all' ? t('merchant.tab_all') :
+                                                s === 'pending' ? t('merchant.tab_pending') :
+                                                    s === 'paid' ? t('merchant.tab_paid') :
+                                                        s === 'processing' ? t('merchant.tab_processing') :
+                                                            s === 'shipped' ? t('merchant.tab_shipped') :
+                                                                s === 'completed' ? t('merchant.tab_completed') : t('merchant.tab_failed')}
+                                        </span>
+                                        <span className={clsx(
+                                            "text-[10px] px-1.5 py-0.5 rounded-full",
+                                            statusFilter === s ? "bg-white/20 text-white" : "bg-gray-100 text-gray-500"
+                                        )}>
+                                            {stats[s] || 0}
+                                        </span>
                                     </button>
                                 ))}
                             </div>
@@ -329,7 +378,7 @@ export default function MerchantOrdersPage() {
                         <div className="h-8 w-8 border-2 border-gray-200 border-t-[#1B5E20] rounded-full animate-spin mb-3"></div>
                         <p className="text-sm text-gray-500 font-medium">{t('merchant.loading')}</p>
                     </div>
-                ) : filteredOrders.length === 0 ? (
+                ) : orders.length === 0 ? (
                     <div className="text-center py-12 bg-white rounded-xl border border-dashed border-gray-200">
                         <div className="bg-gray-50 mx-auto w-12 h-12 rounded-full flex items-center justify-center mb-3">
                             <ShoppingBag className="h-6 w-6 text-gray-300" />
@@ -358,7 +407,7 @@ export default function MerchantOrdersPage() {
 
                                 <div className="grid gap-4">
                                     {groupedOrders[date].map((order) => {
-                                        const statusStyle = getStatusStyles(order.paymentStatus, order.paymentMethod, !!order.paymentProof);
+                                        const statusStyle = getStatusStyles(order.paymentStatus, order.paymentMethod, !!order.paymentProof, order.status);
                                         const StatusIcon = statusStyle.icon;
 
                                         return (
@@ -468,6 +517,18 @@ export default function MerchantOrdersPage() {
                                                         </div>
 
                                                         <div className="flex items-center gap-2 w-full sm:w-auto">
+                                                            {/* Cancel Button for Merchant */}
+                                                            {!['shipped', 'delivered', 'completed', 'cancelled', 'failed'].includes(order.paymentStatus) && (
+                                                                <button
+                                                                    onClick={() => handleCancelOrder(order.id)}
+                                                                    className="px-3 py-1.5 bg-red-50 text-red-600 text-xs font-bold rounded-lg border border-red-100 hover:bg-red-100 transition-all flex items-center justify-center gap-1.5"
+                                                                    title="Batalkan Pesanan"
+                                                                >
+                                                                    <XCircle className="h-3.5 w-3.5" />
+                                                                    <span>Batalkan</span>
+                                                                </button>
+                                                            )}
+
                                                             {/* Action Buttons */}
                                                             {order.paymentStatus === 'pending' && (
                                                                 <div className="flex flex-col gap-2 w-full sm:w-auto">
@@ -545,7 +606,7 @@ export default function MerchantOrdersPage() {
 
                                                             <Link
                                                                 href={`/dashboard/merchant/orders/${order.id}`}
-                                                                className="px-3 py-1.5 bg-white border border-gray-200 text-gray-600 text-xs font-semibold rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center"
+                                                                className="px-3 py-1.5 bg-white border border-gray-200 text-gray-600 text-xs font-semibold rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center text-center"
                                                             >
                                                                 {t('btn.detail')}
                                                             </Link>
@@ -571,8 +632,33 @@ export default function MerchantOrdersPage() {
                     </div>
                 )}
             </div>
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+                <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 mt-2">
+                    <span className="text-xs text-gray-500">
+                        {total} pesanan &bull; Hal {page} dari {totalPages}
+                    </span>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setPage(p => Math.max(1, p - 1))}
+                            disabled={page === 1}
+                            className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-200 disabled:opacity-40 hover:bg-gray-50 transition-colors"
+                        >
+                            ← Sebelumnya
+                        </button>
+                        <button
+                            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                            disabled={page === totalPages}
+                            className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-200 disabled:opacity-40 hover:bg-gray-50 transition-colors"
+                        >
+                            Selanjutnya →
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <MerchantBottomNav />
         </div>
     );
 }
+

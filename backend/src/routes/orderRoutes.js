@@ -8,7 +8,8 @@ import {
     confirmPayment, 
     receiveOrder,
     uploadPaymentProof,
-    verifyPayment
+    verifyPayment,
+    cancelOrder
 } from '../controllers/orderController.js';
 import multer from 'multer';
 
@@ -78,5 +79,10 @@ router.patch('/:id/verify-payment', isAuthenticated, verifyPayment);
 // @route   PATCH /api/orders/:id/receive
 // @access  Private (Owner only)
 router.patch('/:id/receive', isAuthenticated, receiveOrder); // Need to import this
+
+// @desc    Cancel order (User)
+// @route   PATCH /api/orders/:id/cancel
+// @access  Private (Owner only)
+router.patch('/:id/cancel', isAuthenticated, cancelOrder);
 
 export default router;

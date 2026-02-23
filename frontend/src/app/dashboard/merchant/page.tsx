@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useAuthStore } from "@/store/authStore";
 import { useRouter } from 'next/navigation';
-import { Store, ShoppingBag, TrendingUp, Package, Plus, Eye, Settings, ChevronRight, Bell, CheckCircle, Truck, Clock, XCircle, X } from 'lucide-react';
+import { Store, ShoppingBag, TrendingUp, Package, Plus, Eye, Settings, ChevronRight, Bell, CheckCircle, Truck, Clock, XCircle, X, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import StatCard from '@/components/merchant/StatCard';
 import MerchantBottomNav from '@/components/merchant/MerchantBottomNav';
@@ -245,6 +245,10 @@ export default function MerchantDashboardPage() {
                         <p className="text-gray-400 text-[8px] sm:text-sm font-medium">Ringkasan aktivitas tokomu hari ini.</p>
                     </div>
                     <div className="mt-4 sm:mt-0 flex space-x-2 sm:space-x-3 w-full sm:w-auto">
+                        <Link href="/dashboard/merchant/reviews" className="flex-1 sm:flex-none flex items-center justify-center space-x-1.5 sm:space-x-2 bg-white text-blue-600 px-3 py-2 sm:px-4 sm:py-2 rounded-2xl border border-blue-50 hover:bg-blue-50 transition-colors">
+                            <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
+                            <span className="font-bold text-[8px] sm:text-sm">Kritik & Saran</span>
+                        </Link>
                         <Link href="/dashboard/merchant/profile" className="flex-1 sm:flex-none flex items-center justify-center space-x-1.5 sm:space-x-2 bg-white text-gray-700 px-3 py-2 sm:px-4 sm:py-2 rounded-2xl border border-gray-100 hover:bg-gray-50 transition-colors">
                             <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
                             <span className="font-bold text-[8px] sm:text-sm">Pengaturan</span>

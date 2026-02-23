@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X, Camera, Loader2 } from 'lucide-react';
+import { X, Camera, Loader2, Info } from 'lucide-react';
 import { InteractiveStarRating } from '../ui/StarRating';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
@@ -38,7 +38,7 @@ export default function ReviewModal({ isOpen, onClose, product, orderId, onSucce
                 orderId
             }, { withCredentials: true });
 
-            toast.success('Ulasan berhasil dikirim!');
+            toast.success('Kritik & saran berhasil dikirim!');
             if (onSuccess) onSuccess();
             onClose();
         } catch (error: any) {
@@ -55,17 +55,27 @@ export default function ReviewModal({ isOpen, onClose, product, orderId, onSucce
                 {/* Header */}
                 <div className="px-8 py-6 border-b border-gray-100 flex items-center justify-between">
                     <div>
-                        <h3 className="text-xl font-black text-black">{!product.id ? 'Ulas Toko' : 'Beri Ulasan'}</h3>
-                        <p className="text-xs text-black font-semibold">{!product.id ? 'Bagikan pengalamanmu berbelanja di toko ini' : 'Bagikan pengalamanmu dengan produk ini'}</p>
+                        <h3 className="text-xl font-black text-black">{!product.id ? 'Beri Kritik & Saran Toko' : 'Beri Kritik & Saran'}</h3>
+                        <p className="text-xs text-black font-semibold">{!product.id ? 'Bagikan pengalaman atau saranmu untuk toko ini' : 'Bagikan masukan atau saranmu untuk produk ini'}</p>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
                         <X className="h-6 w-6 text-gray-900" />
                     </button>
                 </div>
 
-                <div className="p-8 space-y-8">
+                <div className="p-8 space-y-6">
+                    {/* Privacy Warning Label */}
+                    <div className="p-4 bg-amber-50 rounded-[1.5rem] border border-amber-100 flex items-start space-x-3">
+                        <div className="h-5 w-5 bg-white rounded-lg flex items-center justify-center shadow-sm text-amber-600 mt-0.5 shrink-0">
+                            <Info className="h-3.5 w-3.5" />
+                        </div>
+                        <p className="text-[10px] md:text-xs text-amber-900 font-bold leading-relaxed italic">
+                            Kritik dan Saran yang anda bagikan adalah masukan yang berharga untuk perbaikan Toko / Produk bagi Penjual dan rating ini tidak ditampilkan di Public.
+                        </p>
+                    </div>
+
                     {/* Product Summary */}
-                    <div className="flex items-center space-x-4 bg-gray-50 p-4 rounded-3xl">
+                    <div className="flex items-center space-x-4 bg-gray-50/50 p-4 rounded-3xl border border-gray-100">
                         <div className="h-16 w-16 rounded-xl overflow-hidden border border-gray-200 bg-white shrink-0">
                             {product.image ? (
                                 <img src={product.image} alt={product.name} className="h-full w-full object-cover" />
@@ -80,7 +90,7 @@ export default function ReviewModal({ isOpen, onClose, product, orderId, onSucce
 
                     {/* Star Rating */}
                     <div className="space-y-3 text-center">
-                        <p className="text-xs font-black text-black uppercase tracking-widest">{!product.id ? 'Pelayanan Toko' : 'Kualitas Produk'}</p>
+                        <p className="text-xs font-black text-black uppercase tracking-widest">{!product.id ? 'Pelayanan Toko (Rating)' : 'Kualitas Produk (Rating)'}</p>
                         <div className="flex justify-center">
                             <InteractiveStarRating rating={rating} onRatingChange={setRating} size={40} />
                         </div>
@@ -94,11 +104,11 @@ export default function ReviewModal({ isOpen, onClose, product, orderId, onSucce
 
                     {/* Comment */}
                     <div className="space-y-3">
-                        <p className="text-xs font-black text-black uppercase tracking-widest">Tulis Komentar</p>
+                        <p className="text-xs font-black text-black uppercase tracking-widest">Kritik & Saran</p>
                         <textarea
                             value={comment}
                             onChange={(e) => setComment(e.target.value)}
-                            placeholder={!product.id ? "Bagaimana pelayanan tokonya?" : "Apa yang kamu sukai dari produk ini?"}
+                            placeholder={!product.id ? "Apa saran Anda untuk pelayanan toko ini?" : "Apa masukan atau saran Anda untuk produk ini?"}
                             className="w-full px-5 py-4 bg-gray-50 border-2 border-gray-200 rounded-2xl text-sm focus:bg-white focus:ring-4 focus:ring-[#1B5E20]/5 focus:border-[#1B5E20] transition-all min-h-[120px] resize-none outline-none font-bold text-black"
                         />
                     </div>
@@ -115,7 +125,7 @@ export default function ReviewModal({ isOpen, onClose, product, orderId, onSucce
                                 <span>Mengirim...</span>
                             </>
                         ) : (
-                            <span>Kirim Ulasan</span>
+                            <span>Kirim Kritik & Saran</span>
                         )}
                     </button>
                 </div>

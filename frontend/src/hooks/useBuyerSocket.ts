@@ -53,7 +53,7 @@ export const useBuyerSocket = (onOrderUpdate?: (order: any) => void, options: { 
                 const statusLabels: Record<string, string> = {
                     paid: 'dikonfirmasi pembayarannya ✅',
                     pending: 'menunggu pembayaran ⏳',
-                    failed: 'gagal ❌',
+                    failed: 'dibatalkan ❌',
                     processing: 'sedang diproses 🔄',
                     shipped: 'dikirim 🚚',
                     delivered: 'telah sampai 📦',

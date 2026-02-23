@@ -17,10 +17,12 @@ import {
     Package,
     LayoutDashboard,
     CreditCard,
-    MessageCircle
+    MessageCircle,
+    XCircle
 } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import axios from 'axios';
+import { toast } from 'react-hot-toast';
 import { clsx } from 'clsx';
 import { useBuyerSocket } from '@/hooks/useBuyerSocket';
 import { formatPrice, formatShortDate } from '@/utils/format';
@@ -59,6 +61,7 @@ interface Order {
             whatsapp?: string;
         };
     };
+    paymentProof?: string;
     items: OrderItem[];
 }
 
@@ -68,20 +71,31 @@ export default function OrdersPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
     const [filter, setFilter] = useState('all');
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [total, setTotal] = useState(0);
+    const pageSize = 20;
 
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState<{ id: string, name: string, image: string } | null>(null);
+    const [selectedProduct, setSelectedProduct] = useState<{ id: string, name: string, image: string, shopId?: string } | null>(null);
     const [currentOrderId, setCurrentOrderId] = useState<string>('');
 
     const { t } = useLanguage();
 
-    const fetchOrders = useCallback(async () => {
+    const [stats, setStats] = useState<any>({ all: 0, pending: 0, paid: 0 });
+
+    const fetchOrders = useCallback(async (currentPage = 1) => {
         try {
             const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
-            const res = await axios.get(`${apiBaseUrl}/orders/my-orders`, {
+            const params = new URLSearchParams({ page: String(currentPage), pageSize: String(pageSize) });
+            const res = await axios.get(`${apiBaseUrl}/orders/my-orders?${params.toString()}`, {
                 withCredentials: true
             });
-            setOrders(res.data);
+            setOrders(res.data.data);
+            setTotal(res.data.total);
+            setTotalPages(res.data.totalPages);
+            setStats(res.data.stats || { all: res.data.total, pending: 0, paid: 0 });
+            setPage(currentPage);
         } catch (err) {
             console.error('Error fetching orders:', err);
             setError('Gagal memuat pesanan');
@@ -90,16 +104,42 @@ export default function OrdersPage() {
         }
     }, []);
 
+    const handleCancelOrder = async (orderId: string) => {
+        if (!window.confirm('Apakah Anda yakin ingin membatalkan pesanan ini?')) return;
+
+        try {
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
+            await axios.patch(`${apiBaseUrl}/orders/${orderId}/cancel`, {}, {
+                withCredentials: true
+            });
+            toast.success('Pesanan berhasil dibatalkan');
+            fetchOrders(page);
+        } catch (err: any) {
+            console.error('Error cancelling order:', err);
+            toast.error(err.response?.data?.message || 'Gagal membatalkan pesanan');
+        }
+    };
+
     // Real-time updates — auto-refresh list when seller updates order status
-    useBuyerSocket(fetchOrders, { notify: false });
+    useBuyerSocket(() => fetchOrders(page), { notify: false });
 
     useEffect(() => {
         if (isAuthLoading) return;
-        fetchOrders();
+        fetchOrders(1);
     }, [isAuthLoading, fetchOrders]);
 
 
-    const getStatusStyle = (paymentStatus: string, method: string) => {
+    const getStatusStyle = (paymentStatus: string, method: string, orderStatus: string = 'pending') => {
+        if (orderStatus === 'cancelled') {
+            return {
+                label: t('status.cancelled'),
+                bg: 'bg-red-50',
+                text: 'text-red-700',
+                border: 'border-red-200',
+                icon: XCircle
+            };
+        }
+
         if (paymentStatus === 'pending') {
             if (method === 'cod') {
                 return {
@@ -207,7 +247,7 @@ export default function OrdersPage() {
                     >
                         <ShoppingBag className={clsx("h-4 w-4 sm:h-5 sm:w-5 mb-1 sm:mb-2", filter === 'all' ? "text-gray-400" : "text-gray-400")} />
                         <p className="text-[10px] font-bold uppercase tracking-wider opacity-80 leading-none mb-0.5">Semua</p>
-                        <p className="text-sm sm:text-xl font-black leading-none">{orders.length}</p>
+                        <p className="text-sm sm:text-xl font-black leading-none">{stats.all || 0}</p>
                     </button>
 
                     <button
@@ -219,7 +259,7 @@ export default function OrdersPage() {
                     >
                         <CreditCard className={clsx("h-4 w-4 sm:h-5 sm:w-5 mb-1 sm:mb-2", filter === 'pending' ? "text-yellow-100" : "text-yellow-500")} />
                         <p className="text-[10px] font-bold uppercase tracking-wider opacity-80 leading-none mb-0.5">Bayar</p>
-                        <p className="text-sm sm:text-xl font-black leading-none">{orders.filter(o => o.paymentStatus === 'pending').length}</p>
+                        <p className="text-sm sm:text-xl font-black leading-none">{stats.pending || 0}</p>
                     </button>
 
                     <button
@@ -231,7 +271,7 @@ export default function OrdersPage() {
                     >
                         <CheckCircle className={clsx("h-4 w-4 sm:h-5 sm:w-5 mb-1 sm:mb-2", filter === 'paid' ? "text-green-100" : "text-green-600")} />
                         <p className="text-[10px] font-bold uppercase tracking-wider opacity-80 leading-none mb-0.5">Lunas</p>
-                        <p className="text-sm sm:text-xl font-black leading-none">{orders.filter(o => o.paymentStatus === 'paid').length}</p>
+                        <p className="text-sm sm:text-xl font-black leading-none">{(stats.paid || 0) + (stats.processing || 0) + (stats.shipped || 0) + (stats.completed || 0)}</p>
                     </button>
                 </div>
 
@@ -245,7 +285,7 @@ export default function OrdersPage() {
                 <div className="space-y-4">
                     {filteredOrders.length > 0 ? (
                         filteredOrders.map((order) => {
-                            const status = getStatusStyle(order.paymentStatus, order.paymentMethod);
+                            const status = getStatusStyle(order.paymentStatus, order.paymentMethod, order.status);
                             const StatusIcon = status.icon;
 
                             return (
@@ -324,14 +364,14 @@ export default function OrdersPage() {
                                                                 className="mt-2 inline-flex items-center space-x-1.5 px-3 py-1.5 bg-[#1B5E20]/5 text-[#1B5E20] text-[10px] sm:text-xs font-bold rounded-lg hover:bg-[#1B5E20]/10 transition-colors border border-[#1B5E20]/10"
                                                             >
                                                                 <StarRating rating={0} size={10} />
-                                                                <span>Beri Ulasan</span>
+                                                                <span>Kritik & Saran</span>
                                                             </button>
                                                         )}
 
                                                         {item.hasReview && (
                                                             <div className="mt-2 inline-flex items-center space-x-1 px-2 py-1 bg-gray-50 text-gray-400 text-[10px] font-bold rounded-lg border border-gray-100">
                                                                 <CheckCircle className="h-3 w-3" />
-                                                                <span>Sudah Diulas</span>
+                                                                <span>Masukan Terkirim</span>
                                                             </div>
                                                         )}
                                                     </div>
@@ -343,6 +383,24 @@ export default function OrdersPage() {
                                         )}
                                     </div>
 
+                                    {/* Payment Warning */}
+                                    {order.paymentStatus === 'pending' && order.paymentMethod !== 'cod' && !order.paymentProof && (
+                                        <div className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 rounded-2xl bg-orange-50 border border-orange-100 mb-6 animate-[pulse_2s_ease-in-out_infinite] shadow-sm">
+                                            <div className="flex items-center gap-2 flex-1">
+                                                <AlertCircle className="h-5 w-5 text-orange-600 shrink-0" />
+                                                <p className="text-xs sm:text-sm font-bold text-orange-800 leading-tight">
+                                                    Unggah bukti Pembayaran Anda untuk segera diproses oleh penjual.
+                                                </p>
+                                            </div>
+                                            <Link
+                                                href={`/dashboard/orders/${order.id}`}
+                                                className="px-4 py-2 bg-orange-600 text-white text-[10px] sm:text-xs font-black rounded-xl hover:bg-orange-700 transition-all shadow-sm shadow-orange-600/20 text-center active:scale-95 whitespace-nowrap"
+                                            >
+                                                UPLOAD SEKARANG
+                                            </Link>
+                                        </div>
+                                    )}
+
                                     {/* Total & Action */}
                                     <div className="flex items-center justify-between pt-4 border-t border-gray-50">
                                         <div>
@@ -350,6 +408,15 @@ export default function OrdersPage() {
                                             <p className="text-sm sm:text-lg font-black text-brand leading-none">{formatPrice(order.totalAmount)}</p>
                                         </div>
                                         <div className="flex items-center gap-2">
+                                            {order.status === 'pending' && order.paymentStatus === 'pending' && order.deliveryStatus === 'pending' && (
+                                                <button
+                                                    onClick={() => handleCancelOrder(order.id)}
+                                                    className="px-3 py-2 bg-red-50 text-red-700 text-[10px] sm:text-xs font-bold rounded-lg border border-red-100 hover:bg-red-100 transition-all flex items-center gap-1.5"
+                                                >
+                                                    <XCircle className="h-3 w-3" />
+                                                    <span>Batalkan</span>
+                                                </button>
+                                            )}
                                             {(order.status === 'completed' || order.deliveryStatus === 'delivered' || order.status === 'delivered' || order.paymentStatus === 'paid' || order.paymentStatus === 'completed' || order.deliveryStatus === 'completed') && !order.hasShopReview && (
                                                 <button
                                                     onClick={() => {
@@ -365,13 +432,13 @@ export default function OrdersPage() {
                                                     className="px-3 py-2 bg-yellow-50 text-yellow-700 text-[10px] sm:text-xs font-bold rounded-lg border border-yellow-100 hover:bg-yellow-100 transition-all flex items-center gap-1.5"
                                                 >
                                                     <StarRating rating={0} size={10} />
-                                                    <span>Ulas Toko</span>
+                                                    <span>Kritik dan Saran</span>
                                                 </button>
                                             )}
                                             {order.hasShopReview && (
                                                 <div className="px-3 py-2 bg-gray-50 text-gray-400 text-[10px] sm:text-xs font-bold rounded-lg border border-gray-100 flex items-center gap-1.5">
                                                     <CheckCircle className="h-3 w-3" />
-                                                    <span>Toko Diulas</span>
+                                                    <span>Masukan Terkirim</span>
                                                 </div>
                                             )}
                                             {order.shop.owner?.whatsapp && (
@@ -417,6 +484,25 @@ export default function OrdersPage() {
                     )}
                 </div>
             </main>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+                <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-100 mx-4 sm:mx-0 rounded-2xl mt-2">
+                    <span className="text-xs text-gray-500">
+                        {total} pesanan &bull; Hal {page} dari {totalPages}
+                    </span>
+                    <div className="flex items-center gap-2">
+                        <button onClick={() => fetchOrders(Math.max(1, page - 1))} disabled={page === 1}
+                            className="px-3 py-1.5 text-xs font-semibold rounded-xl border border-gray-200 disabled:opacity-40 hover:bg-gray-50 transition-colors">
+                            ← Sebelumnya
+                        </button>
+                        <button onClick={() => fetchOrders(Math.min(totalPages, page + 1))} disabled={page === totalPages}
+                            className="px-3 py-1.5 text-xs font-semibold rounded-xl border border-gray-200 disabled:opacity-40 hover:bg-gray-50 transition-colors">
+                            Selanjutnya →
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {selectedProduct && (
                 <ReviewModal

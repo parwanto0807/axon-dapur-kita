@@ -235,10 +235,16 @@ export const getOrderDetails = async (req, res) => {
             return res.status(404).json({ message: 'Pesanan tidak ditemukan' });
         }
 
-        // Security: Only buyer or shop owner can see order details
-        if (order.userId !== req.user.id && order.shop.ownerId !== req.user.id) {
-            // Wait, shop.owner is a relation, I should check shop owner in include
-            // Let's refine the security check
+        // Security: Only the buyer OR the shop owner can see order details
+        const shopOwnerId = order.shop?.owner ? 
+            (await prisma.user.findFirst({ where: { shopId: order.shopId }, select: { id: true } }))?.id 
+            : null;
+        const isBuyer = order.userId === req.user.id;
+        const isShopOwner = shopOwnerId === req.user.id;
+        const isAdmin = req.user.role === 'ADMIN';
+        
+        if (!isBuyer && !isShopOwner && !isAdmin) {
+            return res.status(403).json({ message: 'Akses ditolak: Anda tidak berhak melihat pesanan ini' });
         }
 
         const orderWithStatus = {
@@ -258,37 +264,48 @@ export const getOrderDetails = async (req, res) => {
 };
 
 /**
- * Get user orders
+ * Get user orders (with pagination)
  */
 export const getMyOrders = async (req, res) => {
     try {
-        const { limit } = req.query;
-        const orders = await prisma.order.findMany({
-            where: { userId: req.user.id },
-            include: {
-                shop: {
-                    include: {
-                        owner: {
-                            select: {
-                                whatsapp: true
-                            }
+        const page = Math.max(1, parseInt(req.query.page) || 1);
+        const pageSize = Math.min(50, Math.max(1, parseInt(req.query.pageSize) || 20));
+        const skip = (page - 1) * pageSize;
+
+        const where = { userId: req.user.id };
+
+        const [orders, total, stats] = await Promise.all([
+            prisma.order.findMany({
+                where,
+                include: {
+                    shop: {
+                        include: {
+                            owner: { select: { whatsapp: true } }
+                        }
+                    },
+                    reviews: true,
+                    items: {
+                        include: {
+                            product: { include: { images: true } }
                         }
                     }
                 },
-                reviews: true,
-                items: {
-                    include: {
-                        product: {
-                            include: {
-                                images: true
-                            }
-                        }
-                    }
-                }
-            },
-            orderBy: { createdAt: 'desc' },
-            take: limit ? parseInt(limit) : undefined
-        });
+                orderBy: { createdAt: 'desc' },
+                skip,
+                take: pageSize,
+            }),
+            prisma.order.count({ where }),
+            prisma.order.groupBy({
+                by: ['paymentStatus'],
+                where: { userId: req.user.id },
+                _count: { id: true }
+            })
+        ]);
+
+        const statsFormatted = stats.reduce((acc, curr) => {
+            acc[curr.paymentStatus] = curr._count.id;
+            return acc;
+        }, { all: total });
 
         const ordersWithStatus = orders.map(order => ({
             ...order,
@@ -299,20 +316,30 @@ export const getMyOrders = async (req, res) => {
             }))
         }));
 
-        res.json(ordersWithStatus);
+        res.json({
+            data: ordersWithStatus,
+            total,
+            stats: statsFormatted,
+            page,
+            pageSize,
+            totalPages: Math.ceil(total / pageSize)
+        });
     } catch (error) {
         console.error('Error fetching user orders:', error);
         res.status(500).json({ message: 'Server error fetching orders' });
     }
 };
 /**
- * Get orders for a specific shop (Merchant view)
+ * Get orders for a specific shop (Merchant view — with pagination & server-side filter)
  */
 export const getShopOrders = async (req, res) => {
     try {
-        const { limit } = req.query;
-        
-        // Find shop owned by current user - robust lookup
+        const page = Math.max(1, parseInt(req.query.page) || 1);
+        const pageSize = Math.min(50, Math.max(1, parseInt(req.query.pageSize) || 20));
+        const skip = (page - 1) * pageSize;
+        const { status, search } = req.query;
+
+        // Find shop owned by current user
         const userWithShop = await prisma.user.findUnique({
             where: { id: req.user.id },
             include: { shop: true }
@@ -324,33 +351,56 @@ export const getShopOrders = async (req, res) => {
             return res.status(404).json({ message: 'Toko tidak ditemukan atau Anda bukan pemilik toko' });
         }
 
-        const orders = await prisma.order.findMany({
-            where: { shopId: shop.id },
-            include: {
-                user: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true,
-                        whatsapp: true,
-                        image: true
-                    }
-                },
-                items: {
-                    include: {
-                        product: {
-                            include: {
-                                images: true
-                            }
+        // Build server-side where clause
+        const where = {
+            shopId: shop.id,
+            ...(status && status !== 'all' && { paymentStatus: status }),
+            ...(search && {
+                OR: [
+                    { id: { contains: search, mode: 'insensitive' } },
+                    { user: { name: { contains: search, mode: 'insensitive' } } }
+                ]
+            })
+        };
+
+        const [orders, total, stats] = await Promise.all([
+            prisma.order.findMany({
+                where,
+                include: {
+                    user: {
+                        select: { id: true, name: true, email: true, whatsapp: true, image: true }
+                    },
+                    items: {
+                        include: {
+                            product: { include: { images: true } }
                         }
                     }
-                }
-            },
-            orderBy: { createdAt: 'desc' },
-            take: limit ? parseInt(limit) : undefined
-        });
+                },
+                orderBy: { createdAt: 'desc' },
+                skip,
+                take: pageSize,
+            }),
+            prisma.order.count({ where: { shopId: shop.id } }),
+            prisma.order.groupBy({
+                by: ['paymentStatus'],
+                where: { shopId: shop.id },
+                _count: { id: true }
+            })
+        ]);
 
-        res.json(orders);
+        const statsFormatted = stats.reduce((acc, curr) => {
+            acc[curr.paymentStatus] = curr._count.id;
+            return acc;
+        }, { all: total });
+
+        res.json({
+            data: orders,
+            total,
+            stats: statsFormatted,
+            page,
+            pageSize,
+            totalPages: Math.ceil(total / pageSize)
+        });
     } catch (error) {
         console.error('ERROR in getShopOrders:', error);
         res.status(500).json({ message: 'Server error fetching shop orders' });
@@ -696,5 +746,135 @@ export const receiveOrder = async (req, res) => {
     } catch (error) {
         console.error('[OrderController] Error receiving order:', error);
         res.status(500).json({ message: 'Gagal menyelesaikan pesanan' });
+    }
+};
+
+/**
+ * Cancel order (Buyer or Seller)
+ * Buyer: Only if all statuses are 'pending'
+ * Seller: If deliveryStatus hasn't reached 'shipped'
+ */
+export const cancelOrder = async (req, res) => {
+    const { id } = req.params;
+    const userId = req.user.id;
+    const userShopId = req.user.shopId;
+
+    try {
+        const order = await prisma.order.findUnique({
+            where: { id },
+            include: { 
+                items: {
+                    include: { product: true }
+                },
+                shop: true 
+            }
+        });
+
+        if (!order) {
+            return res.status(404).json({ message: 'Pesanan tidak ditemukan' });
+        }
+
+        const isBuyer = order.userId === userId;
+        const isMerchant = order.shopId === userShopId;
+
+        if (!isBuyer && !isMerchant) {
+            return res.status(403).json({ message: 'Anda tidak memiliki akses ke pesanan ini' });
+        }
+
+        // Validation based on role
+        if (isBuyer) {
+            // Buyer can only cancel if NOTHING has happened yet
+            if (order.status !== 'pending' || order.paymentStatus !== 'pending' || order.deliveryStatus !== 'pending') {
+                return res.status(400).json({ message: 'Pesanan tidak dapat dibatalkan karena sudah dalam proses' });
+            }
+        } else if (isMerchant) {
+            // Merchant can cancel as long as it's not shipped/completed/cancelled
+            if (['shipped', 'delivered', 'completed'].includes(order.deliveryStatus)) {
+                return res.status(400).json({ message: 'Pesanan sudah dikirim atau selesai, tidak dapat dibatalkan' });
+            }
+            if (order.status === 'cancelled' || order.status === 'failed') {
+                return res.status(400).json({ message: 'Pesanan sudah dibatalkan' });
+            }
+        }
+
+        // Use transaction for status update and stock return
+        const cancelledOrder = await prisma.$transaction(async (tx) => {
+            // 1. Update order status
+            const updated = await tx.order.update({
+                where: { id },
+                data: {
+                    status: 'cancelled',
+                    paymentStatus: 'failed',
+                    deliveryStatus: 'cancelled',
+                    updatedAt: new Date()
+                },
+                include: { shop: true, user: true }
+            });
+
+            // 2. Return stock for each item
+            for (const item of order.items) {
+                if (item.product.trackStock) {
+                    await tx.product.update({
+                        where: { id: item.productId },
+                        data: { stock: { increment: item.quantity } }
+                    });
+
+                    await tx.stockLog.create({
+                        data: {
+                            productId: item.productId,
+                            shopId: order.shopId,
+                            quantity: item.quantity,
+                            type: 'CANCEL_RETURN'
+                        }
+                    });
+                }
+            }
+
+            return updated;
+        });
+
+        // 3. Notify the other party
+        if (isBuyer) {
+            // Notify Merchant
+            emitShopEvent(order.shopId, 'order_cancelled', cancelledOrder);
+            const shopOwner = await prisma.user.findFirst({
+                where: { shopId: order.shopId }
+            });
+
+            if (shopOwner) {
+                await createNotification({
+                    userId: shopOwner.id,
+                    title: 'Pesanan Dibatalkan Pembeli',
+                    body: `Order #${order.id.slice(-6).toUpperCase()} telah dibatalkan oleh pembeli. Stok telah dikembalikan.`,
+                    type: 'ORDER_CANCEL',
+                    link: `/dashboard/merchant/orders/${order.id}`
+                });
+            }
+        } else {
+            // Notify Buyer
+            emitOrderStatusUpdate(order.userId, {
+                id: order.id,
+                status: 'cancelled',
+                paymentStatus: 'failed',
+                shopName: order.shop.name
+            });
+
+            // ALSO notify other Merchant sessions/tabs
+            emitShopEvent(order.shopId, 'order_cancelled', cancelledOrder);
+
+            await createNotification({
+                userId: order.userId,
+                title: 'Pesanan Dibatalkan Penjual',
+                body: `Pesanan #${order.id.slice(-6).toUpperCase()} telah dibatalkan oleh ${order.shop.name}. Stok telah dikembalikan.`,
+                type: 'ORDER_CANCEL',
+                link: `/dashboard/orders/${order.id}`
+            });
+        }
+
+        res.json({ message: 'Pesanan berhasil dibatalkan', order: cancelledOrder });
+
+    } catch (error) {
+        console.error('[OrderController] Error cancelling order:', error);
+        res.status(500).json({ message: 'Gagal membatalkan pesanan' });
     }
 };

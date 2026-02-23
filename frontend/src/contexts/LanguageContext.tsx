@@ -12,7 +12,8 @@ const dict = {
     'status.processing': { ID: 'Sedang Diproses', EN: 'Processing' },
     'status.shipped': { ID: 'Sedang Dikirim', EN: 'Out for Delivery' },
     'status.completed': { ID: 'Pesanan Selesai', EN: 'Order Completed' },
-    'status.failed': { ID: 'Gagal', EN: 'Failed' },
+    'status.failed': { ID: 'Dibatalkan', EN: 'Cancelled' },
+    'status.cancelled': { ID: 'Dibatalkan', EN: 'Cancelled' },
 
     // ── Action Buttons ─────────────────────────────────────────
     'btn.confirm': { ID: 'Konfirmasi', EN: 'Confirm' },
@@ -82,7 +83,7 @@ const dict = {
     'merchant.tab_processing': { ID: 'Diproses', EN: 'Processing' },
     'merchant.tab_shipped': { ID: 'Dikirim', EN: 'Shipped' },
     'merchant.tab_completed': { ID: 'Selesai', EN: 'Completed' },
-    'merchant.tab_failed': { ID: 'Gagal', EN: 'Failed' },
+    'merchant.tab_failed': { ID: 'Dibatalkan', EN: 'Cancelled' },
     'merchant.total': { ID: 'Total Belanja', EN: 'Order Total' },
     'merchant.empty_title': { ID: 'Belum ada pesanan', EN: 'No orders yet' },
     'merchant.empty_sub': { ID: 'Pesanan baru akan muncul di sini', EN: 'New orders will appear here' },

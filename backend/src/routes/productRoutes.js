@@ -4,6 +4,8 @@ import multer from 'multer';
 import sharp from 'sharp';
 import fs from 'fs';
 import path from 'path';
+import { cacheMiddleware, clearCache } from '../middlewares/cacheMiddleware.js';
+
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -32,7 +34,7 @@ const checkShopOwnership = async (userId) => {
 // @desc    Get public product list (Best Sellers/Latest)
 // @route   GET /api/products/public
 // @access  Public
-router.get('/public', async (req, res) => {
+router.get('/public', cacheMiddleware('products', 3600), async (req, res) => {
     try {
         const { category } = req.query;
 
@@ -108,7 +110,7 @@ router.get('/public', async (req, res) => {
 // @desc    Get products nearby
 // @route   GET /api/products/nearby
 // @access  Public
-router.get('/nearby', async (req, res) => {
+router.get('/nearby', cacheMiddleware('products', 600), async (req, res) => {
     try {
         const { lat, lng, radius = 5 } = req.query; // radius in km
 
@@ -261,7 +263,7 @@ router.get('/', async (req, res) => {
 // @desc    Get product by ID (Public)
 // @route   GET /api/products/:id
 // @access  Public
-router.get('/:id', async (req, res) => {
+router.get('/:id', cacheMiddleware('products', 3600), async (req, res) => {
     try {
         const { id } = req.params;
         const product = await prisma.product.findUnique({
@@ -383,6 +385,9 @@ router.post('/', upload.array('images', 10), async (req, res) => {
             });
         }
 
+        // Invalidate cache
+        await clearCache('products:*');
+
         res.status(201).json(product);
     } catch (error) {
         console.error('Error creating product:', error);
@@ -500,6 +505,9 @@ router.put('/:id', upload.array('images', 10), async (req, res) => {
             }
         }
 
+        // Invalidate cache
+        await clearCache('products:*');
+
         res.json(updatedProduct);
     } catch (error) {
         console.error('Error updating product:', error);
@@ -525,6 +533,9 @@ router.delete('/:id', async (req, res) => {
         }
 
         await prisma.product.delete({ where: { id } });
+
+        // Invalidate cache
+        await clearCache('products:*');
 
         res.json({ message: 'Product deleted' });
     } catch (error) {
